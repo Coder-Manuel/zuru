@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:get/get.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:zuru/core/remote/network_client.dart';
@@ -5,15 +6,21 @@ import 'package:zuru/modules/missions/data/repositories_impl/missions_repository
 import 'package:zuru/modules/missions/data/sources/remote_missions_datasource.dart';
 import 'package:zuru/modules/missions/data/sources/remote_places_datasource.dart';
 import 'package:zuru/modules/missions/domain/repository/missions_repository.dart';
+import 'package:zuru/modules/missions/domain/usecases/accept_mission.usecase.dart';
 import 'package:zuru/modules/missions/domain/usecases/get_my_missions.usecase.dart';
 import 'package:zuru/modules/missions/domain/usecases/get_nearby_scouts.usecase.dart';
-import 'package:zuru/modules/missions/domain/usecases/watch_active_missions.usecase.dart';
+import 'package:zuru/modules/missions/domain/usecases/nearby_missions.usecase.dart';
 import 'package:zuru/modules/missions/domain/usecases/post_mission.usecase.dart';
+import 'package:zuru/modules/missions/domain/usecases/update_mission_status.usecase.dart';
+import 'package:zuru/modules/missions/domain/usecases/watch_active_mission.usecase.dart';
+import 'package:zuru/modules/missions/domain/usecases/watch_active_missions.usecase.dart';
 import 'package:zuru/modules/missions/domain/usecases/watch_active_session.usecase.dart';
 import 'package:zuru/modules/missions/presentation/controllers/finding_scouts_controller.dart';
 import 'package:zuru/modules/missions/presentation/controllers/location_picker_controller.dart';
+import 'package:zuru/modules/missions/presentation/controllers/missions_controller.dart';
 import 'package:zuru/modules/missions/presentation/controllers/missions_tab_controller.dart';
 import 'package:zuru/modules/missions/presentation/controllers/post_mission_controller.dart';
+import 'package:zuru/modules/missions/presentation/controllers/radar_controller.dart';
 
 class MissionsBindings extends Bindings {
   @override
@@ -24,10 +31,11 @@ class MissionsBindings extends Bindings {
       fenix: true,
     );
 
-    // Dedicated Dio instance for Google Places / Geocoding APIs (no base URL)
+    // Dedicated Dio instance for Google Places / Geocoding APIs
     Get.lazyPut<RemotePlacesDatasource>(
-      () =>
-          RemotePlacesDatasourceImpl(dio: NetworkClient.dioClient(baseUrl: '')),
+      () => RemotePlacesDatasourceImpl(
+        dio: Get.find<Dio>(tag: NetworkDioClientType.global.name),
+      ),
       fenix: true,
     );
 
@@ -38,13 +46,9 @@ class MissionsBindings extends Bindings {
       fenix: true,
     );
 
-    // ── Use cases ─────────────────────────────────────────────────────────────
+    // ── Use cases: client ─────────────────────────────────────────────────────
     Get.lazyPut<PostMissionUseCase>(
       () => PostMissionUseCase(repo: Get.find<MissionsRepository>()),
-      fenix: true,
-    );
-    Get.lazyPut<GetMyMissionsUseCase>(
-      () => GetMyMissionsUseCase(repo: Get.find<MissionsRepository>()),
       fenix: true,
     );
     Get.lazyPut<GetNearbyScoutsUseCase>(
@@ -60,7 +64,29 @@ class MissionsBindings extends Bindings {
       fenix: true,
     );
 
-    // ── Controllers ───────────────────────────────────────────────────────────
+    // ── Use cases: scout ──────────────────────────────────────────────────────
+    Get.lazyPut<GetMyMissionsUseCase>(
+      () => GetMyMissionsUseCase(repo: Get.find<MissionsRepository>()),
+      fenix: true,
+    );
+    Get.lazyPut<NearbyMissionsUseCase>(
+      () => NearbyMissionsUseCase(repo: Get.find<MissionsRepository>()),
+      fenix: true,
+    );
+    Get.lazyPut<WatchActiveMissionUseCase>(
+      () => WatchActiveMissionUseCase(repo: Get.find<MissionsRepository>()),
+      fenix: true,
+    );
+    Get.lazyPut<AcceptMissionUseCase>(
+      () => AcceptMissionUseCase(repo: Get.find<MissionsRepository>()),
+      fenix: true,
+    );
+    Get.lazyPut<UpdateMissionStatusUseCase>(
+      () => UpdateMissionStatusUseCase(repo: Get.find<MissionsRepository>()),
+      fenix: true,
+    );
+
+    // ── Controllers: client ───────────────────────────────────────────────────
     Get.lazyPut<MissionsTabController>(
       () => MissionsTabController(),
       fenix: true,
@@ -77,5 +103,9 @@ class MissionsBindings extends Bindings {
       () => LocationPickerController(),
       fenix: true,
     );
+
+    // ── Controllers: scout ────────────────────────────────────────────────────
+    Get.lazyPut<RadarController>(() => RadarController(), fenix: true);
+    Get.lazyPut<MissionsController>(() => MissionsController(), fenix: true);
   }
 }

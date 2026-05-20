@@ -101,4 +101,117 @@ class MissionsRepositoryImpl extends MissionsRepository {
       description: 'while streaming sessions',
     );
   }
+
+  // ── Scout ─────────────────────────────────────────────────────────────────
+
+  @override
+  Future<RepoResponse<List<MissionEntity>>> getScoutMissions() async {
+    final response =
+        await ErrorWrapper.async<RepoResponse<List<MissionEntity>>>(
+          () async {
+            final data = await remoteDatasource.getScoutMissions();
+            return SuccessResponse(
+              data.map((r) => MissionModel.fromScoutMap(r)).toList(),
+            );
+          },
+          onError: (_) =>
+              FailureResponse('Failed to load missions, kindly retry'),
+          library: _library,
+          description: 'while loading scout missions',
+        );
+    return response!;
+  }
+
+  @override
+  Stream<RepoResponse<List<MissionEntity>>> watchNearbyMissions(
+    NearbyMissionsInput input,
+  ) async* {
+    yield* ErrorWrapper.stream<RepoResponse<List<MissionEntity>>>(
+      () async* {
+        await for (final rows in remoteDatasource.watchNearbyMissions(
+          input.toMap(),
+        )) {
+          yield SuccessResponse(
+            rows
+                .map(
+                  (row) => MissionModel.fromScoutMap(
+                    row,
+                    scoutLat: input.lat,
+                    scoutLng: input.lng,
+                  ),
+                )
+                .toList(),
+          );
+        }
+      },
+      onError: (_) => FailureResponse('An error occurred. Kindly retry.'),
+      library: _library,
+      description: 'while streaming nearby missions',
+    );
+  }
+
+  @override
+  Future<RepoResponse<void>> acceptMission(AcceptMissionInput input) async {
+    final response = await ErrorWrapper.async<RepoResponse<void>>(
+      () async {
+        final res = await remoteDatasource.acceptMission(input.missionId);
+        if (!res) {
+          return FailureResponse('Failed to accept mission. Please try again.');
+        }
+        return SuccessResponse(null);
+      },
+      onError: (_) => FailureResponse('An error occurred. Please try again.'),
+      library: _library,
+      description: 'while accepting mission',
+    );
+    return response!;
+  }
+
+  @override
+  Stream<RepoResponse<MissionEntity?>> watchActiveMission(
+    WatchActiveMissionInput input,
+  ) async* {
+    yield* ErrorWrapper.stream<RepoResponse<MissionEntity?>>(
+      () async* {
+        await for (final row in remoteDatasource.watchScoutActiveMission()) {
+          if (row == null) {
+            yield SuccessResponse(null);
+          } else {
+            yield SuccessResponse(
+              MissionModel.fromScoutMap(
+                row,
+                scoutLat: input.scoutLat,
+                scoutLng: input.scoutLng,
+              ),
+            );
+          }
+        }
+      },
+      onError: (_) => FailureResponse('Failed to watch active mission.'),
+      library: _library,
+      description: 'while streaming active mission',
+    );
+  }
+
+  @override
+  Future<RepoResponse<void>> updateMissionStatus(
+    UpdateMissionStatusInput input,
+  ) async {
+    final ok = await ErrorWrapper.async<bool>(
+      () async {
+        await remoteDatasource.updateMissionStatus(
+          missionId: input.missionId,
+          status: input.status.name,
+        );
+        return true;
+      },
+      onError: (_) => false,
+      library: _library,
+      description: 'while updating mission status',
+    );
+    if (ok != true) {
+      return FailureResponse('Failed to update mission. Please try again.');
+    }
+    return SuccessResponse(null);
+  }
 }

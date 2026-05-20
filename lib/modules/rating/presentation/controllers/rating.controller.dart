@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:zuru/core/utils/loader.dart';
 import 'package:zuru/core/utils/toast.dart';
 import 'package:zuru/modules/missions/domain/entities/mission.entity.dart';
+import 'package:zuru/modules/missions/presentation/pages/mission_complete_page.dart';
 import 'package:zuru/modules/rating/data/models/rating.input.dart';
 import 'package:zuru/modules/rating/domain/usecases/create_rating.usecase.dart';
 
@@ -21,11 +22,18 @@ class RatingController extends GetxController
 
   Rx<bool> isRating = false.obs;
 
+  // ── Client view ───────────────────────────────────────────────────────────
   String get scoutName => mission.scout?.displayName ?? 'Scout';
 
   String get paymentText =>
       'Payment of ${mission.currency} ${mission.price.toStringAsFixed(2)} '
       'has been released to $scoutName.';
+
+  // ── Scout view ────────────────────────────────────────────────────────────
+  String get clientName => mission.client?.displayName ?? 'Client';
+
+  void onContinue() =>
+      Get.offNamed(MissionCompletePage.route, arguments: mission);
 
   @override
   void onInit() {

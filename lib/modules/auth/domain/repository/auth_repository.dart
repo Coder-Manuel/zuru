@@ -29,6 +29,9 @@ abstract class AuthRepository {
   /// Sends a recovery OTP to [input.email] via Supabase.
   Future<RepoResponse<bool>> sendPasswordResetOtp(ResetPasswordInput input);
 
+  /// Scout-side alias: sends a password reset email link.
+  Future<RepoResponse<bool>> sendPasswordResetEmail(ForgotPasswordInput input);
+
   /// Verifies the recovery OTP — establishes a session required for [updatePassword].
   Future<RepoResponse<bool>> verifyPasswordResetOtp(VerifyOtpInput input);
 

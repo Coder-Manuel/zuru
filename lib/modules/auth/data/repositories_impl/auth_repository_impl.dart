@@ -260,6 +260,11 @@ class AuthRepositoryImpl extends AuthRepository {
   }
 
   @override
+  Future<RepoResponse<bool>> sendPasswordResetEmail(
+    ForgotPasswordInput input,
+  ) => sendPasswordResetOtp(input);
+
+  @override
   Future<RepoResponse<bool>> updatePassword(UpdatePasswordInput input) async {
     final response = await ErrorWrapper.async<RepoResponse<bool>>(
       () async {

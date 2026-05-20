@@ -86,7 +86,19 @@ class ResetPasswordInput {
   ResetPasswordInput({required this.email});
 }
 
+/// Scout-side password reset input (email link flow).
+typedef ForgotPasswordInput = ResetPasswordInput;
+
 class UpdatePasswordInput {
   final String newPassword;
   UpdatePasswordInput({required this.newPassword});
+}
+
+/// Scout-side new-password input alias.
+typedef NewPasswordInput = UpdatePasswordInput;
+
+class ResetOtpInput {
+  final String email;
+  final String otp;
+  ResetOtpInput({required this.email, required this.otp});
 }

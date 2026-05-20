@@ -5,11 +5,24 @@ import 'package:zuru/core/services/monitor_service/monitor.service.dart';
 import 'package:zuru/modules/missions/data/models/enum.dart';
 
 abstract class RemoteMissionsDatasource {
+  // ── Client ────────────────────────────────────────────────────────────────
   Future<Map<String, dynamic>> postMission(Map<String, dynamic> data);
   Future<List<Map<String, dynamic>>> getNearbyScouts(Map<String, dynamic> data);
   Future<List<Map<String, dynamic>>> getMyMissions();
   Stream<List<Map<String, dynamic>>> watchActiveMissions();
   Stream<Map<String, dynamic>> watchLiveSessions(List<String> missions);
+
+  // ── Scout ─────────────────────────────────────────────────────────────────
+  Future<List<Map<String, dynamic>>> getScoutMissions();
+  Stream<List<Map<String, dynamic>>> watchNearbyMissions(
+    Map<String, dynamic> data,
+  );
+  Future<bool> acceptMission(String missionId);
+  Stream<Map<String, dynamic>?> watchScoutActiveMission();
+  Future<Map<String, dynamic>?> updateMissionStatus({
+    required String missionId,
+    required String status,
+  });
 }
 
 class RemoteMissionsDatasourceImpl extends RemoteMissionsDatasource {
@@ -139,23 +152,17 @@ class RemoteMissionsDatasourceImpl extends RemoteMissionsDatasource {
 
   @override
   Stream<Map<String, dynamic>> watchLiveSessions(List<String> missions) {
-    // Use a broadcast controller so multiple listeners can attach without
-    // triggering multiple subscriptions.
     final ctrl = StreamController<Map<String, dynamic>>.broadcast();
     RealtimeChannel? channel;
 
     final userId = client.auth.currentUser?.id;
 
-    // ── PostGIS fetch ───────────────────────────────────────────────────────
     void streamData(PostgresChangePayload payload) {
       if (ctrl.isClosed) return;
-
       final res = payload.newRecord;
-
       if (!ctrl.isClosed) ctrl.add(Map<String, dynamic>.from(res));
     }
 
-    // ── Realtime subscription ───────────────────────────────────────────────
     channel = client
         .channel('active_sessions_watch_$userId')
         .onPostgresChanges(
@@ -171,12 +178,199 @@ class RemoteMissionsDatasourceImpl extends RemoteMissionsDatasource {
         )
         .subscribe();
 
-    // ── Cleanup ─────────────────────────────────────────────────────────────
     ctrl.onCancel = () {
       client.removeChannel(channel!);
       ctrl.close();
     };
 
     return ctrl.stream;
+  }
+
+  // ── Scout ─────────────────────────────────────────────────────────────────
+
+  @override
+  Future<List<Map<String, dynamic>>> getScoutMissions() {
+    return client
+        .from('missions')
+        .select("""
+          *,
+          client:client_id (
+            id,
+            first_name,
+            last_name,
+            rating,
+            total_reviews
+          ),
+          ratings!ratings_mission_id_fkey (
+            id,
+            from_user_id,
+            to_user_id,
+            score
+          )
+          """)
+        .eq('scout_id', client.auth.currentUser?.id ?? '')
+        .order('created_at', ascending: false);
+  }
+
+  @override
+  Stream<List<Map<String, dynamic>>> watchNearbyMissions(
+    Map<String, dynamic> data,
+  ) {
+    final ctrl = StreamController<List<Map<String, dynamic>>>.broadcast();
+    Timer? debounceTimer;
+    RealtimeChannel? channel;
+
+    Future<void> fetchNearby() async {
+      if (ctrl.isClosed) return;
+      try {
+        List raw = await client.rpc('get_missions_within_radius', params: data);
+        final rows = raw
+            .map((e) => Map<String, dynamic>.from(e as Map))
+            .toList();
+        if (!ctrl.isClosed) ctrl.add(rows);
+      } catch (e, stack) {
+        MonitorService.report(
+          ex: e,
+          library: 'missions_datasource',
+          description: 'while calling get_missions_within_radius RPC',
+          stack: stack,
+        );
+        if (!ctrl.isClosed) ctrl.addError(e);
+      }
+    }
+
+    void debouncedFetch() {
+      debounceTimer?.cancel();
+      debounceTimer = Timer(const Duration(milliseconds: 300), fetchNearby);
+    }
+
+    channel = client
+        .channel('nearby_missions_watch')
+        .onPostgresChanges(
+          event: PostgresChangeEvent.all,
+          schema: 'public',
+          table: 'missions',
+          callback: (_) => debouncedFetch(),
+        )
+        .subscribe();
+
+    fetchNearby();
+
+    ctrl.onCancel = () {
+      debounceTimer?.cancel();
+      client.removeChannel(channel!);
+      ctrl.close();
+    };
+
+    return ctrl.stream;
+  }
+
+  @override
+  Future<bool> acceptMission(String missionId) {
+    return client.rpc<bool>(
+      'accept_mission',
+      params: {'p_mission_id': missionId},
+    );
+  }
+
+  @override
+  Stream<Map<String, dynamic>?> watchScoutActiveMission() {
+    final ctrl = StreamController<Map<String, dynamic>?>.broadcast();
+    Timer? debounceTimer;
+    RealtimeChannel? channel;
+
+    final userId = client.auth.currentUser?.id;
+
+    Future<void> fetchActive() async {
+      if (ctrl.isClosed) return;
+      if (userId == null) {
+        if (!ctrl.isClosed) ctrl.add(null);
+        return;
+      }
+      try {
+        final res = await client
+            .from('missions')
+            .select("""
+              *,
+              client:client_id (
+                id,
+                first_name,
+                last_name,
+                rating,
+                total_reviews
+              )
+            """)
+            .eq('scout_id', userId)
+            .eq('status', 'accepted')
+            .limit(1)
+            .maybeSingle();
+
+        if (!ctrl.isClosed) {
+          ctrl.add(res != null ? Map<String, dynamic>.from(res) : null);
+        }
+      } catch (e, stack) {
+        MonitorService.report(
+          ex: e,
+          library: 'missions_datasource',
+          description: 'while fetching active mission',
+          stack: stack,
+        );
+        if (!ctrl.isClosed) ctrl.addError(e);
+      }
+    }
+
+    void debouncedFetch() {
+      debounceTimer?.cancel();
+      debounceTimer = Timer(const Duration(milliseconds: 300), fetchActive);
+    }
+
+    if (userId != null) {
+      channel = client
+          .channel('active_mission_watch_$userId')
+          .onPostgresChanges(
+            event: PostgresChangeEvent.all,
+            schema: 'public',
+            table: 'missions',
+            filter: PostgresChangeFilter(
+              type: PostgresChangeFilterType.eq,
+              column: 'scout_id',
+              value: userId,
+            ),
+            callback: (_) => debouncedFetch(),
+          )
+          .subscribe();
+    }
+
+    fetchActive();
+
+    ctrl.onCancel = () {
+      debounceTimer?.cancel();
+      if (channel != null) client.removeChannel(channel);
+      ctrl.close();
+    };
+
+    return ctrl.stream;
+  }
+
+  @override
+  Future<Map<String, dynamic>?> updateMissionStatus({
+    required String missionId,
+    required String status,
+  }) {
+    return client
+        .from('missions')
+        .update({'status': status})
+        .eq('id', missionId)
+        .select("""
+          *,
+          client:client_id (
+            id,
+            first_name,
+            last_name,
+            rating,
+            total_reviews
+          )
+        """)
+        .single();
   }
 }

@@ -7,6 +7,7 @@ import 'package:zuru/modules/auth/domain/usecases/login.usecase.dart';
 import 'package:zuru/modules/auth/domain/usecases/login_oauth.usecase.dart';
 import 'package:zuru/modules/auth/domain/usecases/logout.usecase.dart';
 import 'package:zuru/modules/auth/domain/usecases/register.usecase.dart';
+import 'package:zuru/modules/auth/domain/usecases/send_reset_email.usecase.dart';
 import 'package:zuru/modules/auth/domain/usecases/send_reset_otp.usecase.dart';
 import 'package:zuru/modules/auth/domain/usecases/setup_names.usecase.dart';
 import 'package:zuru/modules/auth/domain/usecases/setup_phone.usecase.dart';
@@ -68,6 +69,10 @@ class AuthBindings extends Bindings {
     );
     Get.lazyPut<SendResetOtpUseCase>(
       () => SendResetOtpUseCase(repo: Get.find<AuthRepository>()),
+      fenix: true,
+    );
+    Get.lazyPut<SendResetEmailUseCase>(
+      () => SendResetEmailUseCase(repo: Get.find<AuthRepository>()),
       fenix: true,
     );
     Get.lazyPut<VerifyResetOtpUseCase>(

@@ -2,7 +2,14 @@ import 'dart:developer';
 
 import 'package:get_storage/get_storage.dart';
 
-enum StorageKeys { onBoardKey, userDataKey, emailKey, passwordKey }
+enum StorageKeys {
+  onBoardKey,
+  userDataKey,
+  emailKey,
+  passwordKey,
+  biometricsKey,
+  notificationKey,
+}
 
 class StorageService {
   static late GetStorage _storage;

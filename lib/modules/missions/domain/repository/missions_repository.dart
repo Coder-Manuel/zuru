@@ -5,6 +5,7 @@ import 'package:zuru/modules/missions/domain/entities/nearby_scout.entity.dart';
 import 'package:zuru/modules/missions/domain/entities/session.entity.dart';
 
 abstract class MissionsRepository {
+  // ── Client ────────────────────────────────────────────────────────────────
   Future<RepoResponse<MissionEntity>> postMission(PostMissionInput input);
   Future<RepoResponse<List<MissionEntity>>> getMyMissions();
   Future<RepoResponse<List<NearbyScout>>> getNearbyScouts({
@@ -12,11 +13,19 @@ abstract class MissionsRepository {
     required double longitude,
     required double radiusKm,
   });
-
-  /// Real-time stream of the current user's missions.
-  ///
-  /// Supabase RLS ensures only the authenticated user's rows are delivered.
-  /// Rows are emitted in full on every insert / update / delete.
   Stream<RepoResponse<List<MissionEntity>>> watchActiveMissions();
   Stream<RepoResponse<SessionEntity>> watchLiveSession(List<String> missions);
+
+  // ── Scout ─────────────────────────────────────────────────────────────────
+  Future<RepoResponse<List<MissionEntity>>> getScoutMissions();
+  Stream<RepoResponse<List<MissionEntity>>> watchNearbyMissions(
+    NearbyMissionsInput input,
+  );
+  Future<RepoResponse<void>> acceptMission(AcceptMissionInput input);
+  Stream<RepoResponse<MissionEntity?>> watchActiveMission(
+    WatchActiveMissionInput input,
+  );
+  Future<RepoResponse<void>> updateMissionStatus(
+    UpdateMissionStatusInput input,
+  );
 }

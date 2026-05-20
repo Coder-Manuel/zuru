@@ -3,8 +3,10 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:zuru/modules/stream/data/repositories_impl/stream_repository_impl.dart';
 import 'package:zuru/modules/stream/data/sources/remote_stream_datasource.dart';
 import 'package:zuru/modules/stream/domain/repository/stream_repository.dart';
+import 'package:zuru/modules/stream/domain/usecases/go_live.usecase.dart';
 import 'package:zuru/modules/stream/domain/usecases/join_stream.usecase.dart';
 import 'package:zuru/modules/stream/presentation/controllers/join_stream_controller.dart';
+import 'package:zuru/modules/stream/presentation/controllers/live_stream_controller.dart';
 
 class StreamBindings extends Bindings {
   @override
@@ -26,12 +28,20 @@ class StreamBindings extends Bindings {
       () => JoinStreamUseCase(repo: Get.find<StreamRepository>()),
       fenix: true,
     );
+    Get.lazyPut<GoLiveUseCase>(
+      () => GoLiveUseCase(repo: Get.find<StreamRepository>()),
+      fenix: true,
+    );
 
     // ── Controllers ───────────────────────────────────────────────────────────
     Get.lazyPut<JoinStreamController>(
       () => JoinStreamController(
         joinStreamUseCase: Get.find<JoinStreamUseCase>(),
       ),
+      fenix: true,
+    );
+    Get.lazyPut<LiveStreamController>(
+      () => LiveStreamController(goLiveUseCase: Get.find<GoLiveUseCase>()),
       fenix: true,
     );
   }
