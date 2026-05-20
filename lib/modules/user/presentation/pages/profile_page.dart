@@ -458,7 +458,7 @@ class _IconBox extends StatelessWidget {
       width: 40,
       height: 40,
       decoration: BoxDecoration(
-        color: ClientColors.primaryGlow.setOpacity(0.1),
+        color: ClientColors.primary.withAlpha(26),
         borderRadius: BorderRadius.circular(10),
       ),
       child: Icon(icon, color: ClientColors.primary, size: 20),

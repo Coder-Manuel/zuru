@@ -169,7 +169,7 @@ class _StatementCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final (statusLabel, statusColor) = switch (statement.status) {
-      StatementStatus.disbursed => ('DISBURSED', ClientColors.textAccent),
+      StatementStatus.disbursed => ('DISBURSED', ClientColors.primary),
       StatementStatus.pending => ('PENDING', const Color(0xFFF5A020)),
       StatementStatus.failed => ('FAILED', const Color(0xFFCC1E1E)),
     };
@@ -223,7 +223,7 @@ class _StatementCard extends StatelessWidget {
                     Text(
                       statement.formattedAmount,
                       style: TextStyle(
-                        color: ClientColors.textAccent,
+                        color: ClientColors.primary,
                         fontSize: 18,
                         fontWeight: FontWeight.w800,
                       ),
@@ -430,7 +430,7 @@ class _ErrorView extends StatelessWidget {
         children: [
           Icon(
             Icons.error_outline_rounded,
-            color: ClientColors.scoutMarker,
+            color: ClientColors.green,
             size: 48,
           ),
           20.verticalSpace,

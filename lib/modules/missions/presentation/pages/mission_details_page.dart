@@ -77,7 +77,7 @@ class MissionDetailsPage extends GetView<RadarController> {
                         _DetailRow(
                           label: 'PRICE',
                           value: mission.formattedPrice,
-                          valueColor: ClientColors.textAccent,
+                          valueColor: ClientColors.primary,
                         ),
                         _Divider(),
                         _DetailRow(
@@ -237,13 +237,13 @@ class _DistanceBadge extends StatelessWidget {
       ),
       child: Column(
         children: [
-          Icon(Icons.location_on, color: ClientColors.scoutMarker, size: 36),
+          Icon(Icons.location_on, color: ClientColors.green, size: 36),
           10.verticalSpace,
           Text(
             label,
             textAlign: TextAlign.center,
             style: TextStyle(
-              color: ClientColors.scoutMarker,
+              color: ClientColors.green,
               fontSize: 13,
               fontWeight: FontWeight.w700,
               letterSpacing: 1.0,
@@ -408,7 +408,7 @@ class _ClientRow extends StatelessWidget {
               Text(
                 '$rating',
                 style: TextStyle(
-                  color: ClientColors.textAccent,
+                  color: ClientColors.primary,
                   fontSize: 13,
                 ),
               ),

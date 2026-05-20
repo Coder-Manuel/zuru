@@ -121,7 +121,7 @@ class LoginPage extends GetView<LoginController> {
                           width: 65,
                           height: 55,
                           decoration: BoxDecoration(
-                            color: ClientColors.surface,
+                            color: ClientColors.biometricBg,
                             borderRadius: BorderRadius.circular(18),
                           ),
                           child: Icon(

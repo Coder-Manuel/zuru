@@ -26,7 +26,7 @@ class VerifyPage extends GetView<RegisterController> {
                 width: 80,
                 height: 80,
                 decoration: BoxDecoration(
-                  color: ClientColors.surface,
+                  color: ClientColors.biometricBg,
                   shape: BoxShape.circle,
                 ),
                 child: Icon(

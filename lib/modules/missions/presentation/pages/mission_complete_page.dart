@@ -151,7 +151,7 @@ class _StatsCard extends StatelessWidget {
           _StatRow(
             label: 'Total',
             value: '+ KES ${mission.formattedPrice}',
-            valueColor: ClientColors.textAccent,
+            valueColor: ClientColors.primary,
             valueBold: true,
           ),
         ],

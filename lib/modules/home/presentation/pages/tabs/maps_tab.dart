@@ -167,7 +167,7 @@ class _MissionMarkerState extends State<_MissionMarker>
 
   Color get _color => switch (widget.mission.status) {
     MissionStatus.live => const Color(0xFFEF4444),
-    MissionStatus.accepted || MissionStatus.enroute => ClientColors.primaryDark,
+    MissionStatus.accepted || MissionStatus.enroute => ClientColors.green,
     _ => ClientColors.primary,
   };
 

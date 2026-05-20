@@ -118,7 +118,7 @@ class _CameraFeed extends StatelessWidget {
               children: [
                 Icon(
                   Icons.videocam_off_outlined,
-                  color: ClientColors.scoutMarker,
+                  color: ClientColors.green,
                   size: 52,
                 ),
                 20.verticalSpace,
@@ -514,7 +514,7 @@ class _ClientStatusText extends StatelessWidget {
         'Waiting for client to join…',
         ClientColors.textSecondary,
       ),
-      ClientStreamState.joined => ('Client is watching', ClientColors.textAccent),
+      ClientStreamState.joined => ('Client is watching', ClientColors.primary),
       ClientStreamState.disconnected => (
         'Client disconnected — reconnecting…',
         Color(0xFFF5A020),
