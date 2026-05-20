@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:zuru/config/colors.dart';
+import 'package:zuru/config/client_colors.dart';
 import 'package:zuru/core/utils/size.util.dart';
 import 'package:zuru/modules/auth/presentation/controllers/register_controller.dart';
 import 'package:zuru/modules/auth/presentation/widgets/auth_widgets.dart';
@@ -28,12 +28,12 @@ class NamesSetupPage extends GetView<RegisterController> {
                   width: 80,
                   height: 80,
                   decoration: BoxDecoration(
-                    color: AppColors.biometricBg,
+                    color: ClientColors.surface,
                     shape: BoxShape.circle,
                   ),
                   child: Icon(
                     Icons.person_outline,
-                    color: AppColors.primary,
+                    color: ClientColors.primary,
                     size: 36,
                   ),
                 ),
@@ -43,7 +43,7 @@ class NamesSetupPage extends GetView<RegisterController> {
                   child: Text(
                     'Personal Details',
                     style: TextStyle(
-                      color: AppColors.textPrimary,
+                      color: ClientColors.textPrimary,
                       fontSize: 30,
                       fontWeight: FontWeight.bold,
                     ),
@@ -55,7 +55,7 @@ class NamesSetupPage extends GetView<RegisterController> {
                   child: Text(
                     'How should we address you?',
                     style: TextStyle(
-                      color: AppColors.textSecondary,
+                      color: ClientColors.textSecondary,
                       fontSize: 15,
                     ),
                   ),

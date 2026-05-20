@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:zuru/config/colors.dart';
+import 'package:zuru/config/client_colors.dart';
 import 'package:zuru/core/utils/extensions.dart';
 import 'package:zuru/core/utils/size.util.dart';
 import 'package:zuru/core/widgets/location_listener.builder.dart';
@@ -19,7 +19,7 @@ class MissionDetailsPage extends GetView<RadarController> {
     final mission = Get.arguments as MissionEntity;
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: ClientColors.background,
       body: SafeArea(
         child: Column(
           children: [
@@ -33,7 +33,7 @@ class MissionDetailsPage extends GetView<RadarController> {
                   Text(
                     'Mission Details',
                     style: TextStyle(
-                      color: AppColors.textPrimary,
+                      color: ClientColors.textPrimary,
                       fontSize: 26,
                       fontWeight: FontWeight.w700,
                       fontStyle: FontStyle.italic,
@@ -77,7 +77,7 @@ class MissionDetailsPage extends GetView<RadarController> {
                         _DetailRow(
                           label: 'PRICE',
                           value: mission.formattedPrice,
-                          valueColor: AppColors.textAccent,
+                          valueColor: ClientColors.textAccent,
                         ),
                         _Divider(),
                         _DetailRow(
@@ -115,8 +115,8 @@ class MissionDetailsPage extends GetView<RadarController> {
                           ),
                         ),
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColors.primary,
-                          foregroundColor: AppColors.background,
+                          backgroundColor: ClientColors.primary,
+                          foregroundColor: ClientColors.background,
                           minimumSize: const Size.fromHeight(56),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(14),
@@ -132,9 +132,9 @@ class MissionDetailsPage extends GetView<RadarController> {
                               ? null
                               : () => controller.acceptMission(mission.id!),
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: AppColors.primary,
-                            foregroundColor: AppColors.background,
-                            disabledBackgroundColor: AppColors.primary
+                            backgroundColor: ClientColors.primary,
+                            foregroundColor: ClientColors.background,
+                            disabledBackgroundColor: ClientColors.primary
                                 .withAlpha(100),
                             minimumSize: const Size.fromHeight(56),
                             shape: RoundedRectangleBorder(
@@ -148,7 +148,7 @@ class MissionDetailsPage extends GetView<RadarController> {
                                   height: 22,
                                   child: CircularProgressIndicator(
                                     strokeWidth: 2.5,
-                                    color: AppColors.background,
+                                    color: ClientColors.background,
                                   ),
                                 )
                               : const Text(
@@ -166,9 +166,9 @@ class MissionDetailsPage extends GetView<RadarController> {
                       OutlinedButton(
                         onPressed: () => Get.back(),
                         style: OutlinedButton.styleFrom(
-                          foregroundColor: AppColors.textSecondary,
+                          foregroundColor: ClientColors.textSecondary,
                           side: BorderSide(
-                            color: AppColors.divider,
+                            color: ClientColors.divider,
                             width: 1.2,
                           ),
                           minimumSize: const Size.fromHeight(56),
@@ -208,12 +208,12 @@ class _BackButton extends StatelessWidget {
         width: 42,
         height: 42,
         decoration: BoxDecoration(
-          color: AppColors.surface,
+          color: ClientColors.surface,
           shape: BoxShape.circle,
         ),
         child: Icon(
           Icons.chevron_left,
-          color: AppColors.textPrimary,
+          color: ClientColors.textPrimary,
           size: 24,
         ),
       ),
@@ -232,18 +232,18 @@ class _DistanceBadge extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 20),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: ClientColors.surface,
         borderRadius: BorderRadius.circular(14),
       ),
       child: Column(
         children: [
-          Icon(Icons.location_on, color: AppColors.scoutMarker, size: 36),
+          Icon(Icons.location_on, color: ClientColors.scoutMarker, size: 36),
           10.verticalSpace,
           Text(
             label,
             textAlign: TextAlign.center,
             style: TextStyle(
-              color: AppColors.scoutMarker,
+              color: ClientColors.scoutMarker,
               fontSize: 13,
               fontWeight: FontWeight.w700,
               letterSpacing: 1.0,
@@ -265,7 +265,7 @@ class _DetailCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: ClientColors.surface,
         borderRadius: BorderRadius.circular(14),
       ),
       child: Column(
@@ -280,7 +280,7 @@ class _Divider extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Divider(
-      color: AppColors.divider,
+      color: ClientColors.divider,
       height: 1,
       thickness: 1,
       indent: 18,
@@ -307,7 +307,7 @@ class _DetailRow extends StatelessWidget {
           Text(
             label,
             style: TextStyle(
-              color: AppColors.textSecondary,
+              color: ClientColors.textSecondary,
               fontSize: 11,
               fontWeight: FontWeight.w600,
               letterSpacing: 0.8,
@@ -316,7 +316,7 @@ class _DetailRow extends StatelessWidget {
           Text(
             value,
             style: TextStyle(
-              color: valueColor ?? AppColors.textPrimary,
+              color: valueColor ?? ClientColors.textPrimary,
               fontSize: 15,
               fontWeight: FontWeight.w600,
             ),
@@ -343,7 +343,7 @@ class _InstructionsRow extends StatelessWidget {
           Text(
             'INSTRUCTIONS',
             style: TextStyle(
-              color: AppColors.textSecondary,
+              color: ClientColors.textSecondary,
               fontSize: 11,
               fontWeight: FontWeight.w600,
               letterSpacing: 0.8,
@@ -353,7 +353,7 @@ class _InstructionsRow extends StatelessWidget {
           Text(
             text,
             style: TextStyle(
-              color: AppColors.textPrimary,
+              color: ClientColors.textPrimary,
               fontSize: 14.5,
               height: 1.5,
             ),
@@ -386,7 +386,7 @@ class _ClientRow extends StatelessWidget {
           Text(
             'CLIENT',
             style: TextStyle(
-              color: AppColors.textSecondary,
+              color: ClientColors.textSecondary,
               fontSize: 11,
               fontWeight: FontWeight.w600,
               letterSpacing: 0.8,
@@ -397,18 +397,18 @@ class _ClientRow extends StatelessWidget {
               Text(
                 name,
                 style: TextStyle(
-                  color: AppColors.textPrimary,
+                  color: ClientColors.textPrimary,
                   fontSize: 15,
                   fontWeight: FontWeight.w600,
                 ),
               ),
               const SizedBox(width: 6),
-              Icon(Icons.star, color: AppColors.primary, size: 14),
+              Icon(Icons.star, color: ClientColors.primary, size: 14),
               const SizedBox(width: 3),
               Text(
                 '$rating',
                 style: TextStyle(
-                  color: AppColors.textAccent,
+                  color: ClientColors.textAccent,
                   fontSize: 13,
                 ),
               ),

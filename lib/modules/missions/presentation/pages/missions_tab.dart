@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:get/get.dart';
 import 'package:shimmer/shimmer.dart';
-import 'package:zuru/config/colors.dart';
+import 'package:zuru/config/client_colors.dart';
 import 'package:zuru/core/utils/extensions.dart';
 import 'package:zuru/modules/missions/data/models/enum.dart';
 import 'package:zuru/modules/missions/domain/entities/mission.entity.dart';
@@ -29,7 +29,7 @@ class MissionsTab extends GetView<MissionsTabController> {
                   Text(
                     'Missions',
                     style: TextStyle(
-                      color: AppColors.textPrimary,
+                      color: ClientColors.textPrimary,
                       fontSize: 28,
                       fontWeight: FontWeight.bold,
                     ),
@@ -42,7 +42,7 @@ class MissionsTab extends GetView<MissionsTabController> {
                         vertical: 8,
                       ),
                       decoration: BoxDecoration(
-                        color: AppColors.primary,
+                        color: ClientColors.primary,
                         borderRadius: BorderRadius.circular(20),
                       ),
                       child: const Row(
@@ -89,8 +89,8 @@ class MissionsTab extends GetView<MissionsTabController> {
                 }
 
                 return RefreshIndicator(
-                  color: AppColors.primary,
-                  backgroundColor: AppColors.surface,
+                  color: ClientColors.primary,
+                  backgroundColor: ClientColors.surface,
                   onRefresh: controller.fetchMissions,
                   child: ListView.separated(
                     padding: const EdgeInsets.fromLTRB(24, 8, 24, 32),
@@ -147,13 +147,13 @@ class _FilterRow extends StatelessWidget {
               duration: const Duration(milliseconds: 200),
               padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 8),
               decoration: BoxDecoration(
-                color: selected ? AppColors.primary : AppColors.surface,
+                color: selected ? ClientColors.primary : ClientColors.surface,
                 borderRadius: BorderRadius.circular(20),
               ),
               child: Text(
                 _labels[filter]!,
                 style: TextStyle(
-                  color: selected ? Colors.black : AppColors.textSecondary,
+                  color: selected ? Colors.black : ClientColors.textSecondary,
                   fontWeight: FontWeight.w600,
                   fontSize: 13,
                 ),
@@ -194,10 +194,10 @@ class _MissionCard extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: AppColors.surface,
+          color: ClientColors.surface,
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
-            color: AppColors.divider.withAlpha(40),
+            color: ClientColors.divider.withAlpha(40),
             width: 0.5,
           ),
         ),
@@ -213,7 +213,7 @@ class _MissionCard extends StatelessWidget {
                   child: Text(
                     '${mission.type?.label}\n${mission.address}',
                     style: TextStyle(
-                      color: AppColors.textPrimary,
+                      color: ClientColors.textPrimary,
                       fontSize: 15,
                       fontWeight: FontWeight.w700,
                     ),
@@ -229,7 +229,7 @@ class _MissionCard extends StatelessWidget {
             Text(
               mission.description,
               style: TextStyle(
-                color: AppColors.textSecondary,
+                color: ClientColors.textSecondary,
                 fontSize: 13,
                 height: 1.4,
               ),
@@ -242,7 +242,7 @@ class _MissionCard extends StatelessWidget {
                 // Duration
                 Icon(
                       Icons.timer_outlined,
-                      color: AppColors.textSecondary,
+                      color: ClientColors.textSecondary,
                       size: 14,
                     )
                     .animate(onPlay: (c) => c.repeat(reverse: true))
@@ -256,7 +256,7 @@ class _MissionCard extends StatelessWidget {
                 Text(
                   mission.durationLabel,
                   style: TextStyle(
-                    color: AppColors.textSecondary,
+                    color: ClientColors.textSecondary,
                     fontSize: 12,
                   ),
                 ),
@@ -266,7 +266,7 @@ class _MissionCard extends StatelessWidget {
                 Text(
                   '${mission.currency} ${mission.price.toStringAsFixed(0)}',
                   style: TextStyle(
-                    color: AppColors.primary,
+                    color: ClientColors.primary,
                     fontSize: 12,
                     fontWeight: FontWeight.w600,
                   ),
@@ -275,14 +275,14 @@ class _MissionCard extends StatelessWidget {
                 // Time ago
                 Icon(
                   Icons.access_time,
-                  color: AppColors.textSecondary,
+                  color: ClientColors.textSecondary,
                   size: 13,
                 ),
                 const SizedBox(width: 3),
                 Text(
                   createdAt.timeAgo,
                   style: TextStyle(
-                    color: AppColors.textSecondary,
+                    color: ClientColors.textSecondary,
                     fontSize: 12,
                   ),
                 ),
@@ -338,8 +338,8 @@ class _StatusBadge extends StatelessWidget {
       MissionStatus.live => ('Live', const Color(0xFF22C55E)),
       MissionStatus.accepted => ('Accepted', const Color(0xFF3B82F6)),
       MissionStatus.enroute => ('EnRoute', const Color(0xFF3B82F6)),
-      MissionStatus.open => ('Pending', AppColors.primary),
-      MissionStatus.completed => ('Completed', AppColors.textSecondary),
+      MissionStatus.open => ('Pending', ClientColors.primary),
+      MissionStatus.completed => ('Completed', ClientColors.textSecondary),
       MissionStatus.cancelled => ('Cancelled', const Color(0xFFEF4444)),
     };
 
@@ -369,7 +369,7 @@ class _ShimmerList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Shimmer.fromColors(
-      baseColor: AppColors.surface,
+      baseColor: ClientColors.surface,
       highlightColor: const Color(0xFF2A3547),
       child: ListView.separated(
         padding: const EdgeInsets.fromLTRB(24, 8, 24, 32),
@@ -390,7 +390,7 @@ class _ShimmerCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: ClientColors.surface,
         borderRadius: BorderRadius.circular(16),
       ),
       child: Column(
@@ -475,12 +475,12 @@ class _EmptyState extends StatelessWidget {
               width: 72,
               height: 72,
               decoration: BoxDecoration(
-                color: AppColors.surface,
+                color: ClientColors.surface,
                 shape: BoxShape.circle,
               ),
               child: Icon(
                 Icons.radar_outlined,
-                color: AppColors.primary,
+                color: ClientColors.primary,
                 size: 34,
               ),
             ),
@@ -489,7 +489,7 @@ class _EmptyState extends StatelessWidget {
               _message,
               textAlign: TextAlign.center,
               style: TextStyle(
-                color: AppColors.textSecondary,
+                color: ClientColors.textSecondary,
                 fontSize: 14,
                 height: 1.5,
               ),
@@ -504,7 +504,7 @@ class _EmptyState extends StatelessWidget {
                     vertical: 12,
                   ),
                   decoration: BoxDecoration(
-                    color: AppColors.primary,
+                    color: ClientColors.primary,
                     borderRadius: BorderRadius.circular(24),
                   ),
                   child: const Text(

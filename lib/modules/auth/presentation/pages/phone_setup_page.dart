@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:zuru/config/colors.dart';
+import 'package:zuru/config/client_colors.dart';
 import 'package:zuru/core/utils/size.util.dart';
 import 'package:zuru/modules/auth/presentation/controllers/register_controller.dart';
 import 'package:zuru/modules/auth/presentation/widgets/auth_widgets.dart';
@@ -23,7 +23,7 @@ class PhoneSetupPage extends GetView<RegisterController> {
               Text(
                 'Phone Number',
                 style: TextStyle(
-                  color: AppColors.textPrimary,
+                  color: ClientColors.textPrimary,
                   fontSize: 30,
                   fontWeight: FontWeight.bold,
                 ),
@@ -31,7 +31,7 @@ class PhoneSetupPage extends GetView<RegisterController> {
               12.verticalSpace,
               Text(
                 'Required for mission coordination and security.',
-                style: TextStyle(color: AppColors.textSecondary, fontSize: 15),
+                style: TextStyle(color: ClientColors.textSecondary, fontSize: 15),
               ),
               28.verticalSpace,
               Row(
@@ -43,14 +43,14 @@ class PhoneSetupPage extends GetView<RegisterController> {
                         height: 58,
                         padding: const EdgeInsets.symmetric(horizontal: 14),
                         decoration: BoxDecoration(
-                          color: AppColors.inputBg,
+                          color: ClientColors.inputBg,
                           borderRadius: BorderRadius.circular(12),
                         ),
                         alignment: Alignment.center,
                         child: Text(
                           controller.countryCode.value,
                           style: TextStyle(
-                            color: AppColors.textPrimary,
+                            color: ClientColors.textPrimary,
                             fontSize: 16,
                             fontWeight: FontWeight.w600,
                           ),
@@ -65,14 +65,14 @@ class PhoneSetupPage extends GetView<RegisterController> {
                       child: TextField(
                         controller: controller.phoneCTRL,
                         keyboardType: TextInputType.phone,
-                        style: TextStyle(color: AppColors.textPrimary),
+                        style: TextStyle(color: ClientColors.textPrimary),
                         decoration: InputDecoration(
                           hintText: '712 345 678',
                           hintStyle: TextStyle(
-                            color: AppColors.textSecondary,
+                            color: ClientColors.textSecondary,
                           ),
                           filled: true,
-                          fillColor: AppColors.inputBg,
+                          fillColor: ClientColors.inputBg,
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
                             borderSide: BorderSide.none,
@@ -84,7 +84,7 @@ class PhoneSetupPage extends GetView<RegisterController> {
                           focusedBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
                             borderSide: BorderSide(
-                              color: AppColors.primary,
+                              color: ClientColors.primary,
                               width: 1.5,
                             ),
                           ),
@@ -115,7 +115,7 @@ class PhoneSetupPage extends GetView<RegisterController> {
     final codes = ['+254', '+1', '+44', '+91', '+27', '+234', '+255', '+256'];
     showModalBottomSheet(
       context: context,
-      backgroundColor: AppColors.surface,
+      backgroundColor: ClientColors.surface,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
@@ -123,11 +123,11 @@ class PhoneSetupPage extends GetView<RegisterController> {
         padding: const EdgeInsets.symmetric(vertical: 16),
         itemCount: codes.length,
         separatorBuilder: (_, _) =>
-            Divider(color: AppColors.divider, height: 1),
+            Divider(color: ClientColors.divider, height: 1),
         itemBuilder: (_, i) => ListTile(
           title: Text(
             codes[i],
-            style: TextStyle(color: AppColors.textPrimary, fontSize: 16),
+            style: TextStyle(color: ClientColors.textPrimary, fontSize: 16),
           ),
           onTap: () {
             controller.countryCode.value = codes[i];

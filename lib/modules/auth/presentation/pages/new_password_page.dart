@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:zuru/config/colors.dart';
+import 'package:zuru/config/client_colors.dart';
 import 'package:zuru/core/utils/extensions.dart';
 import 'package:zuru/core/utils/size.util.dart';
 import 'package:zuru/modules/auth/presentation/controllers/reset_password_controller.dart';
@@ -35,7 +35,7 @@ class NewPasswordPage extends GetView<ResetPasswordController> {
                 Text(
                   'New Password',
                   style: TextStyle(
-                    color: AppColors.textPrimary,
+                    color: ClientColors.textPrimary,
                     fontSize: 34,
                     fontWeight: FontWeight.w800,
                   ),
@@ -44,7 +44,7 @@ class NewPasswordPage extends GetView<ResetPasswordController> {
                 Text(
                   'Choose a strong password for your UnSeen account.',
                   style: TextStyle(
-                    color: AppColors.textSecondary,
+                    color: ClientColors.textSecondary,
                     fontSize: 15,
                     height: 1.5,
                   ),
@@ -60,7 +60,7 @@ class NewPasswordPage extends GetView<ResetPasswordController> {
                     obscureText: controller.obscureNewPass.value,
                     prefixIcon: Icon(
                       Icons.lock_outline,
-                      color: AppColors.iconColor,
+                      color: ClientColors.iconColor,
                       size: 20,
                     ),
                     suffixIcon: GestureDetector(
@@ -71,7 +71,7 @@ class NewPasswordPage extends GetView<ResetPasswordController> {
                           controller.obscureNewPass.value
                               ? Icons.visibility_outlined
                               : Icons.visibility_off_outlined,
-                          color: AppColors.iconColor,
+                          color: ClientColors.iconColor,
                           size: 20,
                         ),
                       ),
@@ -99,7 +99,7 @@ class NewPasswordPage extends GetView<ResetPasswordController> {
                     obscureText: controller.obscureConfirmPass.value,
                     prefixIcon: Icon(
                       Icons.lock_outline,
-                      color: AppColors.iconColor,
+                      color: ClientColors.iconColor,
                       size: 20,
                     ),
                     suffixIcon: GestureDetector(
@@ -110,7 +110,7 @@ class NewPasswordPage extends GetView<ResetPasswordController> {
                           controller.obscureConfirmPass.value
                               ? Icons.visibility_outlined
                               : Icons.visibility_off_outlined,
-                          color: AppColors.iconColor,
+                          color: ClientColors.iconColor,
                           size: 20,
                         ),
                       ),
@@ -151,12 +151,12 @@ class _BackToLoginButton extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(Icons.chevron_left, color: AppColors.textPrimary, size: 18),
+          Icon(Icons.chevron_left, color: ClientColors.textPrimary, size: 18),
           SizedBox(width: 4),
           Text(
             'BACK TO LOGIN',
             style: TextStyle(
-              color: AppColors.textPrimary,
+              color: ClientColors.textPrimary,
               fontSize: 12,
               fontWeight: FontWeight.w600,
               letterSpacing: 1.1,

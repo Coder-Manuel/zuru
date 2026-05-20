@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pinput/pinput.dart';
-import 'package:zuru/config/colors.dart';
+import 'package:zuru/config/client_colors.dart';
 import 'package:zuru/core/utils/size.util.dart';
 import 'package:zuru/modules/auth/presentation/controllers/register_controller.dart';
 import 'package:zuru/modules/auth/presentation/widgets/auth_widgets.dart';
@@ -26,14 +26,14 @@ class VerifyPage extends GetView<RegisterController> {
                 width: 80,
                 height: 80,
                 decoration: BoxDecoration(
-                  color: AppColors.biometricBg,
+                  color: ClientColors.surface,
                   shape: BoxShape.circle,
                 ),
                 child: Icon(
                   isEmailVerification
                       ? Icons.mail_outline
                       : Icons.phone_in_talk_outlined,
-                  color: AppColors.primary,
+                  color: ClientColors.primary,
                   size: 36,
                 ),
               ),
@@ -41,7 +41,7 @@ class VerifyPage extends GetView<RegisterController> {
               Text(
                 'Verify ${isEmailVerification ? 'Email' : 'Phone'}',
                 style: TextStyle(
-                  color: AppColors.textPrimary,
+                  color: ClientColors.textPrimary,
                   fontSize: 30,
                   fontWeight: FontWeight.bold,
                 ),
@@ -51,7 +51,7 @@ class VerifyPage extends GetView<RegisterController> {
                 "We've sent a 6-digit code to ${isEmailVerification ? controller.emailCTRL.text : controller.phoneCTRL.text}.",
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                  color: AppColors.textSecondary,
+                  color: ClientColors.textSecondary,
                   fontSize: 15,
                 ),
               ),
@@ -83,7 +83,7 @@ class VerifyPage extends GetView<RegisterController> {
                 child: Text(
                   'Resend Code',
                   style: TextStyle(
-                    color: AppColors.primary,
+                    color: ClientColors.primary,
                     fontSize: 15,
                     fontWeight: FontWeight.w600,
                   ),
@@ -127,7 +127,7 @@ class OtpInputField extends StatelessWidget {
     ),
   );
   PinTheme get focusedPinTheme => defaultPinTheme.copyDecorationWith(
-    border: Border.all(color: AppColors.primary),
+    border: Border.all(color: ClientColors.primary),
     borderRadius: BorderRadius.circular(8),
   );
 }

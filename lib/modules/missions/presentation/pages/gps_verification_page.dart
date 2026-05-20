@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
-import 'package:zuru/config/colors.dart';
+import 'package:zuru/config/scout_colors.dart';
 import 'package:zuru/core/services/location_service/location_service.dart';
 import 'package:zuru/core/utils/size.util.dart';
 import 'package:zuru/modules/missions/domain/entities/mission.entity.dart';
@@ -191,15 +191,15 @@ class _GpsVerificationPageState extends State<GpsVerificationPage>
   // ── Helpers ───────────────────────────────────────────────────────────────
 
   Color get _accentColor => _state == _GpsState.tooFar
-      ? AppColors.scoutMarker // orange for error
-      : AppColors.primary; // green for locating / verified
+      ? ScoutColors.scoutMarker // orange for error
+      : ScoutColors.primary; // green for locating / verified
 
   // ── Build ─────────────────────────────────────────────────────────────────
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: ScoutColors.background,
       body: SafeArea(
         child: Column(
           children: [
@@ -255,8 +255,8 @@ class _GpsVerificationPageState extends State<GpsVerificationPage>
       title,
       style: TextStyle(
         color: _state == _GpsState.tooFar
-            ? AppColors.scoutMarker
-            : AppColors.textPrimary,
+            ? ScoutColors.scoutMarker
+            : ScoutColors.textPrimary,
         fontSize: 28,
         fontWeight: FontWeight.w700,
         fontStyle: FontStyle.italic,
@@ -289,7 +289,7 @@ class _GpsVerificationPageState extends State<GpsVerificationPage>
         subtitle,
         textAlign: TextAlign.center,
         style: TextStyle(
-          color: AppColors.textSecondary,
+          color: ScoutColors.textSecondary,
           fontSize: 14,
           height: 1.6,
         ),
@@ -316,7 +316,7 @@ class _GpsVerificationPageState extends State<GpsVerificationPage>
                   height: 3,
                   width: double.infinity,
                   decoration: BoxDecoration(
-                    color: AppColors.surface,
+                    color: ScoutColors.surface,
                     borderRadius: BorderRadius.circular(2),
                   ),
                 ),
@@ -339,8 +339,8 @@ class _GpsVerificationPageState extends State<GpsVerificationPage>
             duration: const Duration(milliseconds: 300),
             style: TextStyle(
               color: _state == _GpsState.verified
-                  ? AppColors.primary
-                  : AppColors.textSecondary,
+                  ? ScoutColors.primary
+                  : ScoutColors.textSecondary,
               fontSize: 11,
               fontWeight: FontWeight.w600,
               letterSpacing: 1.4,
@@ -361,8 +361,8 @@ class _GpsVerificationPageState extends State<GpsVerificationPage>
           child: ElevatedButton(
             onPressed: _onBeginStream,
             style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.primary,
-              foregroundColor: AppColors.background,
+              backgroundColor: ScoutColors.primary,
+              foregroundColor: ScoutColors.background,
               minimumSize: const Size.fromHeight(56),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(16),
@@ -393,12 +393,12 @@ class _GpsVerificationPageState extends State<GpsVerificationPage>
           child: OutlinedButton(
             onPressed: _onRetry,
             style: OutlinedButton.styleFrom(
-              foregroundColor: AppColors.textSecondary,
+              foregroundColor: ScoutColors.textSecondary,
               minimumSize: const Size.fromHeight(52),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(16),
               ),
-              side: BorderSide(color: AppColors.divider),
+              side: BorderSide(color: ScoutColors.divider),
             ),
             child: const Text(
               'Check Again',

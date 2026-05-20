@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:get/get.dart';
-import 'package:zuru/config/colors.dart';
+import 'package:zuru/config/client_colors.dart';
 import 'package:zuru/modules/home/presentation/controllers/splash_controller.dart';
 
 class SplashPage extends GetView<SplashController> {
@@ -24,7 +24,7 @@ class SplashPage extends GetView<SplashController> {
                         child: Text(
                           'Zuru World',
                           style: TextStyle(
-                            color: AppColors.textPrimary,
+                            color: ClientColors.textPrimary,
                             fontSize: 48,
                             fontWeight: FontWeight.bold,
                             fontStyle: FontStyle.italic,
@@ -35,7 +35,7 @@ class SplashPage extends GetView<SplashController> {
                     .animate(onPlay: (ctrl) => ctrl.repeat())
                     .shimmer(
                       duration: const Duration(seconds: 2),
-                      color: AppColors.primary,
+                      color: ClientColors.primary,
                     )
                     .animate()
                     .fadeIn(duration: const Duration(seconds: 2)),

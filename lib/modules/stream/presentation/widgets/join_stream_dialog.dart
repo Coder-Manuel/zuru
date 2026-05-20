@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:zuru/config/colors.dart';
+import 'package:zuru/config/client_colors.dart';
 import 'package:zuru/modules/missions/domain/entities/mission.entity.dart';
 import 'package:zuru/modules/stream/presentation/pages/join_stream_page.dart';
 
@@ -12,7 +12,7 @@ class JoinStreamDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Dialog(
-      backgroundColor: AppColors.surface,
+      backgroundColor: ClientColors.surface,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       child: Padding(
         padding: const EdgeInsets.all(24),
@@ -24,12 +24,12 @@ class JoinStreamDialog extends StatelessWidget {
               width: 64,
               height: 64,
               decoration: BoxDecoration(
-                color: AppColors.primary.withAlpha(30),
+                color: ClientColors.primary.withAlpha(30),
                 shape: BoxShape.circle,
               ),
               child: Icon(
                 Icons.videocam_rounded,
-                color: AppColors.primary,
+                color: ClientColors.primary,
                 size: 32,
               ),
             ),
@@ -40,7 +40,7 @@ class JoinStreamDialog extends StatelessWidget {
             Text(
               'Scout ${mission.scout?.firstName ?? ''} is Live!',
               style: TextStyle(
-                color: AppColors.textPrimary,
+                color: ClientColors.textPrimary,
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
               ),
@@ -53,7 +53,7 @@ class JoinStreamDialog extends StatelessWidget {
               mission.address,
               textAlign: TextAlign.center,
               style: TextStyle(
-                color: AppColors.textSecondary,
+                color: ClientColors.textSecondary,
                 fontSize: 13,
               ),
               maxLines: 1,
@@ -67,7 +67,7 @@ class JoinStreamDialog extends StatelessWidget {
               'Your scout has started streaming. Join now to watch the live feed.',
               textAlign: TextAlign.center,
               style: TextStyle(
-                color: AppColors.textSecondary,
+                color: ClientColors.textSecondary,
                 fontSize: 13,
                 height: 1.5,
               ),
@@ -83,8 +83,8 @@ class JoinStreamDialog extends StatelessWidget {
                   child: OutlinedButton(
                     onPressed: Get.back,
                     style: OutlinedButton.styleFrom(
-                      foregroundColor: AppColors.textSecondary,
-                      side: BorderSide(color: AppColors.divider),
+                      foregroundColor: ClientColors.textSecondary,
+                      side: BorderSide(color: ClientColors.divider),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
@@ -107,7 +107,7 @@ class JoinStreamDialog extends StatelessWidget {
                       Get.toNamed(JoinStreamPage.route, arguments: mission);
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.primary,
+                      backgroundColor: ClientColors.primary,
                       foregroundColor: Colors.black,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),

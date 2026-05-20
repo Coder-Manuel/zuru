@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:livekit_client/livekit_client.dart';
-import 'package:zuru/config/colors.dart';
+import 'package:zuru/config/client_colors.dart';
 import 'package:zuru/core/utils/size.util.dart';
 import 'package:zuru/modules/missions/domain/entities/mission.entity.dart';
 import 'package:zuru/modules/stream/presentation/controllers/live_stream_controller.dart';
@@ -91,14 +91,14 @@ class _CameraFeed extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 CircularProgressIndicator(
-                  color: AppColors.primary,
+                  color: ClientColors.primary,
                   strokeWidth: 2,
                 ),
                 16.verticalSpace,
                 Text(
                   'Starting stream…',
                   style: TextStyle(
-                    color: AppColors.textSecondary,
+                    color: ClientColors.textSecondary,
                     fontSize: 14,
                   ),
                 ),
@@ -118,14 +118,14 @@ class _CameraFeed extends StatelessWidget {
               children: [
                 Icon(
                   Icons.videocam_off_outlined,
-                  color: AppColors.scoutMarker,
+                  color: ClientColors.scoutMarker,
                   size: 52,
                 ),
                 20.verticalSpace,
                 Text(
                   'Failed to start stream.',
                   style: TextStyle(
-                    color: AppColors.textSecondary,
+                    color: ClientColors.textSecondary,
                     fontSize: 15,
                   ),
                 ),
@@ -133,7 +133,7 @@ class _CameraFeed extends StatelessWidget {
                 Text(
                   'Check your connection and try again.',
                   style: TextStyle(
-                    color: AppColors.textSecondary,
+                    color: ClientColors.textSecondary,
                     fontSize: 13,
                   ),
                 ),
@@ -143,7 +143,7 @@ class _CameraFeed extends StatelessWidget {
                   child: Text(
                     'Go Back',
                     style: TextStyle(
-                      color: AppColors.primary,
+                      color: ClientColors.primary,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
@@ -190,7 +190,7 @@ class _TopOverlay extends StatelessWidget {
                 Text(
                   'Live Feed',
                   style: TextStyle(
-                    color: AppColors.textPrimary,
+                    color: ClientColors.textPrimary,
                     fontSize: 15,
                     fontWeight: FontWeight.w600,
                   ),
@@ -289,7 +289,7 @@ class _BottomSection extends StatelessWidget {
                           Text(
                             ctrl.mission.client?.displayName ?? 'Scout',
                             style: TextStyle(
-                              color: AppColors.textPrimary,
+                              color: ClientColors.textPrimary,
                               fontSize: 16,
                               fontWeight: FontWeight.w700,
                             ),
@@ -512,9 +512,9 @@ class _ClientStatusText extends StatelessWidget {
     final (label, color) = switch (state) {
       ClientStreamState.waiting => (
         'Waiting for client to join…',
-        AppColors.textSecondary,
+        ClientColors.textSecondary,
       ),
-      ClientStreamState.joined => ('Client is watching', AppColors.textAccent),
+      ClientStreamState.joined => ('Client is watching', ClientColors.textAccent),
       ClientStreamState.disconnected => (
         'Client disconnected — reconnecting…',
         Color(0xFFF5A020),
@@ -523,7 +523,7 @@ class _ClientStatusText extends StatelessWidget {
         'Client left the stream',
         Color(0xFFF5A020),
       ),
-      ClientStreamState.terminated => ('Stream ended', AppColors.textSecondary),
+      ClientStreamState.terminated => ('Stream ended', ClientColors.textSecondary),
     };
 
     return AnimatedSwitcher(
@@ -551,8 +551,8 @@ class _ScoutAvatar extends StatelessWidget {
     return Obx(() {
       final state = ctrl.clientState.value;
       final ringColor = switch (state) {
-        ClientStreamState.joined => AppColors.primary,
-        ClientStreamState.waiting => AppColors.textSecondary,
+        ClientStreamState.joined => ClientColors.primary,
+        ClientStreamState.waiting => ClientColors.textSecondary,
         ClientStreamState.disconnected ||
         ClientStreamState.droppedOff => const Color(0xFFF5A020),
         ClientStreamState.terminated => Colors.white24,
@@ -575,7 +575,7 @@ class _ScoutAvatar extends StatelessWidget {
               ),
               child: ClipOval(
                 child: Container(
-                  color: AppColors.surface,
+                  color: ClientColors.surface,
                   child: Center(
                     child: Text(
                       initial,
@@ -626,9 +626,9 @@ class _GpsBadge extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: ClientColors.surface,
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: AppColors.primary.withAlpha(40)),
+        border: Border.all(color: ClientColors.primary.withAlpha(40)),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -638,7 +638,7 @@ class _GpsBadge extends StatelessWidget {
           Text(
             'GPS ✓ ',
             style: TextStyle(
-              color: AppColors.primary,
+              color: ClientColors.primary,
               fontSize: 11,
               fontWeight: FontWeight.w700,
             ),
@@ -646,7 +646,7 @@ class _GpsBadge extends StatelessWidget {
           Flexible(
             child: Text(
               address.isNotEmpty ? address : 'On Location',
-              style: TextStyle(color: AppColors.primary, fontSize: 11),
+              style: TextStyle(color: ClientColors.primary, fontSize: 11),
               overflow: TextOverflow.ellipsis,
             ),
           ),
@@ -711,12 +711,12 @@ class _EndMissionButton extends StatelessWidget {
   void _confirm() {
     Get.dialog(
       AlertDialog(
-        backgroundColor: AppColors.surface,
+        backgroundColor: ClientColors.surface,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         title: Text(
           'End Mission?',
           style: TextStyle(
-            color: AppColors.textPrimary,
+            color: ClientColors.textPrimary,
             fontSize: 18,
             fontWeight: FontWeight.w700,
           ),
@@ -724,7 +724,7 @@ class _EndMissionButton extends StatelessWidget {
         content: Text(
           'This will stop your stream and mark the mission as complete.',
           style: TextStyle(
-            color: AppColors.textSecondary,
+            color: ClientColors.textSecondary,
             fontSize: 14,
             height: 1.5,
           ),
@@ -734,7 +734,7 @@ class _EndMissionButton extends StatelessWidget {
             onPressed: Get.back,
             child: Text(
               'Cancel',
-              style: TextStyle(color: AppColors.textSecondary),
+              style: TextStyle(color: ClientColors.textSecondary),
             ),
           ),
           TextButton(

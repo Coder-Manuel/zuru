@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:zuru/config/colors.dart';
+import 'package:zuru/config/scout_colors.dart';
 import 'package:zuru/core/utils/size.util.dart';
 import 'package:zuru/modules/missions/domain/entities/mission.entity.dart';
 import 'package:zuru/modules/rating/presentation/controllers/rating.controller.dart';
@@ -16,7 +16,7 @@ class RateClientPage extends GetView<RatingController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: ScoutColors.background,
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -28,7 +28,7 @@ class RateClientPage extends GetView<RatingController> {
               Text(
                 'Mission Complete!',
                 style: TextStyle(
-                  color: AppColors.textPrimary,
+                  color: ScoutColors.textPrimary,
                   fontSize: 32,
                   fontWeight: FontWeight.w900,
                   fontStyle: FontStyle.italic,
@@ -47,7 +47,7 @@ class RateClientPage extends GetView<RatingController> {
                   height: 100,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: AppColors.primary,
+                    color: ScoutColors.primary,
                   ),
                   child: const Icon(
                     Icons.check_circle_outline_rounded,
@@ -62,7 +62,7 @@ class RateClientPage extends GetView<RatingController> {
               Text(
                 'How was your mission?',
                 style: TextStyle(
-                  color: AppColors.textPrimary,
+                  color: ScoutColors.textPrimary,
                   fontSize: 22,
                   fontWeight: FontWeight.w700,
                 ),
@@ -72,7 +72,7 @@ class RateClientPage extends GetView<RatingController> {
               Text(
                 'Rate your experience with ${controller.clientName}',
                 style: TextStyle(
-                  color: AppColors.textSecondary,
+                  color: ScoutColors.textSecondary,
                   fontSize: 14,
                   height: 1.5,
                 ),
@@ -97,7 +97,7 @@ class RateClientPage extends GetView<RatingController> {
                               : Icons.star_outline_rounded,
                           color: filled
                               ? const Color(0xFFFFD700)
-                              : AppColors.textSecondary,
+                              : ScoutColors.textSecondary,
                           size: 44,
                         ),
                       ),
@@ -112,9 +112,9 @@ class RateClientPage extends GetView<RatingController> {
                       ? null
                       : controller.createRating,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.primary,
-                    foregroundColor: AppColors.background,
-                    disabledBackgroundColor: AppColors.primary.withAlpha(80),
+                    backgroundColor: ScoutColors.primary,
+                    foregroundColor: ScoutColors.background,
+                    disabledBackgroundColor: ScoutColors.primary.withAlpha(80),
                     minimumSize: const Size.fromHeight(56),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(14),
@@ -134,7 +134,7 @@ class RateClientPage extends GetView<RatingController> {
                 onPressed: controller.onContinue,
                 child: Text(
                   'Skip',
-                  style: TextStyle(color: AppColors.textSecondary),
+                  style: TextStyle(color: ScoutColors.textSecondary),
                 ),
               ),
 

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pinput/pinput.dart';
-import 'package:zuru/config/colors.dart';
+import 'package:zuru/config/client_colors.dart';
 import 'package:zuru/core/utils/size.util.dart';
 import 'package:zuru/modules/auth/presentation/controllers/reset_password_controller.dart';
 import 'package:zuru/modules/auth/presentation/widgets/auth_widgets.dart';
@@ -33,12 +33,12 @@ class ResetOtpPage extends GetView<ResetPasswordController> {
                   width: 80,
                   height: 80,
                   decoration: BoxDecoration(
-                    color: AppColors.primary.withAlpha(40),
+                    color: ClientColors.primary.withAlpha(40),
                     shape: BoxShape.circle,
                   ),
                   child: Icon(
                     Icons.verified_user_outlined,
-                    color: AppColors.primary,
+                    color: ClientColors.primary,
                     size: 36,
                   ),
                 ),
@@ -51,7 +51,7 @@ class ResetOtpPage extends GetView<ResetPasswordController> {
                 child: Text(
                   'Security Code',
                   style: TextStyle(
-                    color: AppColors.textPrimary,
+                    color: ClientColors.textPrimary,
                     fontSize: 30,
                     fontWeight: FontWeight.bold,
                   ),
@@ -63,7 +63,7 @@ class ResetOtpPage extends GetView<ResetPasswordController> {
                   'Enter the 6-digit code sent to\n${controller.emailCTRL.text.trim()}',
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                    color: AppColors.textSecondary,
+                    color: ClientColors.textSecondary,
                     fontSize: 15,
                     height: 1.5,
                   ),
@@ -98,7 +98,7 @@ class ResetOtpPage extends GetView<ResetPasswordController> {
                   child: Text(
                     'Resend Code',
                     style: TextStyle(
-                      color: AppColors.primary,
+                      color: ClientColors.primary,
                       fontSize: 15,
                       fontWeight: FontWeight.w600,
                     ),
@@ -129,12 +129,12 @@ class _ResetOtpField extends StatelessWidget {
       width: 52,
       height: 60,
       textStyle: TextStyle(
-        color: AppColors.textPrimary,
+        color: ClientColors.textPrimary,
         fontSize: 22,
         fontWeight: FontWeight.w600,
       ),
       decoration: BoxDecoration(
-        color: AppColors.inputBg,
+        color: ClientColors.inputBg,
         borderRadius: BorderRadius.all(Radius.circular(12)),
       ),
     );
@@ -147,7 +147,7 @@ class _ResetOtpField extends StatelessWidget {
       defaultPinTheme: defaultTheme,
       focusedPinTheme: defaultTheme.copyWith(
         decoration: defaultTheme.decoration!.copyWith(
-          border: Border.all(color: AppColors.primary, width: 1.5),
+          border: Border.all(color: ClientColors.primary, width: 1.5),
         ),
       ),
       submittedPinTheme: defaultTheme,
@@ -167,12 +167,12 @@ class _BackToLoginButton extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(Icons.chevron_left, color: AppColors.textPrimary, size: 18),
+          Icon(Icons.chevron_left, color: ClientColors.textPrimary, size: 18),
           SizedBox(width: 4),
           Text(
             'BACK TO LOGIN',
             style: TextStyle(
-              color: AppColors.textPrimary,
+              color: ClientColors.textPrimary,
               fontSize: 12,
               fontWeight: FontWeight.w600,
               letterSpacing: 1.1,

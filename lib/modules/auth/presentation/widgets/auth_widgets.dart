@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:zuru/config/colors.dart';
+import 'package:zuru/config/client_colors.dart';
 
 class AuthTextField extends StatelessWidget {
   final TextEditingController controller;
@@ -28,13 +28,13 @@ class AuthTextField extends StatelessWidget {
       controller: controller,
       obscureText: obscureText,
       keyboardType: keyboardType,
-      style: TextStyle(color: AppColors.textPrimary),
+      style: TextStyle(color: ClientColors.textPrimary),
       validator: validator,
       decoration: InputDecoration(
         hintText: hint,
-        hintStyle: TextStyle(color: AppColors.textSecondary),
+        hintStyle: TextStyle(color: ClientColors.textSecondary),
         filled: true,
-        fillColor: AppColors.inputBg,
+        fillColor: ClientColors.inputBg,
         prefixIcon: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 14),
           child: prefixIcon,
@@ -54,7 +54,7 @@ class AuthTextField extends StatelessWidget {
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: AppColors.primary, width: 1.5),
+          borderSide: BorderSide(color: ClientColors.primary, width: 1.5),
         ),
         contentPadding: const EdgeInsets.symmetric(
           horizontal: 16,
@@ -83,7 +83,7 @@ class PrimaryButton extends StatelessWidget {
       child: ElevatedButton(
         onPressed: onPressed,
         style: ElevatedButton.styleFrom(
-          backgroundColor: AppColors.primary,
+          backgroundColor: ClientColors.primary,
           foregroundColor: Colors.black,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(50),
@@ -112,8 +112,8 @@ class GoogleButton extends StatelessWidget {
       child: OutlinedButton(
         onPressed: onPressed,
         style: OutlinedButton.styleFrom(
-          backgroundColor: AppColors.googleBg,
-          foregroundColor: AppColors.googleText,
+          backgroundColor: ClientColors.googleBg,
+          foregroundColor: ClientColors.googleText,
           side: BorderSide.none,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(50),
@@ -132,7 +132,7 @@ class GoogleButton extends StatelessWidget {
             Text(
               label,
               style: TextStyle(
-                color: AppColors.googleText,
+                color: ClientColors.googleText,
                 fontSize: 16,
                 fontWeight: FontWeight.w700,
               ),
@@ -152,18 +152,18 @@ class AuthDivider extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        Expanded(child: Divider(color: AppColors.divider)),
+        Expanded(child: Divider(color: ClientColors.divider)),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16),
           child: Text(
             text,
             style: TextStyle(
-              color: AppColors.textSecondary,
+              color: ClientColors.textSecondary,
               fontSize: 14,
             ),
           ),
         ),
-        Expanded(child: Divider(color: AppColors.divider)),
+        Expanded(child: Divider(color: ClientColors.divider)),
       ],
     );
   }

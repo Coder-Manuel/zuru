@@ -2,7 +2,7 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:zuru/config/colors.dart';
+import 'package:zuru/config/client_colors.dart';
 import 'package:zuru/core/utils/extensions.dart';
 import 'package:zuru/modules/missions/domain/entities/nearby_scout.entity.dart';
 import 'package:zuru/modules/missions/presentation/controllers/finding_scouts_controller.dart';
@@ -29,7 +29,7 @@ class FindingScoutsPage extends GetView<FindingScoutsController> {
                   Text(
                     'Finding Scouts',
                     style: TextStyle(
-                      color: AppColors.textPrimary,
+                      color: ClientColors.textPrimary,
                       fontSize: 22,
                       fontWeight: FontWeight.w800,
                     ),
@@ -170,16 +170,16 @@ class _NoScoutsFallbackState extends State<_NoScoutsFallback>
               width: 88,
               height: 88,
               decoration: BoxDecoration(
-                color: AppColors.primary.withAlpha(20),
+                color: ClientColors.primary.withAlpha(20),
                 shape: BoxShape.circle,
                 border: Border.all(
-                  color: AppColors.primary.withAlpha(80),
+                  color: ClientColors.primary.withAlpha(80),
                   width: 1.5,
                 ),
               ),
               child: Icon(
                 Icons.sensors,
-                color: AppColors.primary,
+                color: ClientColors.primary,
                 size: 40,
               ),
             ),
@@ -191,7 +191,7 @@ class _NoScoutsFallbackState extends State<_NoScoutsFallback>
             'No scouts nearby right now',
             textAlign: TextAlign.center,
             style: TextStyle(
-              color: AppColors.textPrimary,
+              color: ClientColors.textPrimary,
               fontSize: 20,
               fontWeight: FontWeight.w800,
             ),
@@ -203,7 +203,7 @@ class _NoScoutsFallbackState extends State<_NoScoutsFallback>
             'Your mission has been posted and will be accepted by the next available scout.',
             textAlign: TextAlign.center,
             style: TextStyle(
-              color: AppColors.textSecondary,
+              color: ClientColors.textSecondary,
               fontSize: 14,
               height: 1.55,
             ),
@@ -214,10 +214,10 @@ class _NoScoutsFallbackState extends State<_NoScoutsFallback>
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
             decoration: BoxDecoration(
-              color: AppColors.surface,
+              color: ClientColors.surface,
               borderRadius: BorderRadius.circular(50),
               border: Border.all(
-                color: AppColors.divider.withAlpha(60),
+                color: ClientColors.divider.withAlpha(60),
                 width: 0.5,
               ),
             ),
@@ -226,14 +226,14 @@ class _NoScoutsFallbackState extends State<_NoScoutsFallback>
               children: [
                 Icon(
                   Icons.home_outlined,
-                  color: AppColors.textSecondary,
+                  color: ClientColors.textSecondary,
                   size: 16,
                 ),
                 const SizedBox(width: 8),
                 Text(
                   'Returning to home in ${widget.countdown}s…',
                   style: TextStyle(
-                    color: AppColors.textSecondary,
+                    color: ClientColors.textSecondary,
                     fontSize: 13,
                     fontWeight: FontWeight.w600,
                   ),
@@ -313,7 +313,7 @@ class _RadarPainter extends CustomPainter {
 
     final ringRadii = [0.28, 0.48, 0.68, 0.88, 1.0];
     for (int i = 0; i < ringRadii.length; i++) {
-      ringPaint.color = AppColors.primary.withAlpha((50 - i * 8).clamp(10, 60));
+      ringPaint.color = ClientColors.primary.withAlpha((50 - i * 8).clamp(10, 60));
       canvas.drawCircle(center, maxRadius * ringRadii[i], ringPaint);
     }
 
@@ -337,8 +337,8 @@ class _RadarPainter extends CustomPainter {
         startAngle: sweepStart,
         endAngle: sweepAngle,
         colors: [
-          AppColors.primary.withAlpha(0),
-          AppColors.primary.withAlpha(80),
+          ClientColors.primary.withAlpha(0),
+          ClientColors.primary.withAlpha(80),
         ],
       ).createShader(Rect.fromCircle(center: center, radius: maxRadius));
 
@@ -346,7 +346,7 @@ class _RadarPainter extends CustomPainter {
 
     // ── Sweep leading edge line ────────────────────────────────────────────
     final edgePaint = Paint()
-      ..color = AppColors.primary.withAlpha(180)
+      ..color = ClientColors.primary.withAlpha(180)
       ..strokeWidth = 1.5
       ..style = PaintingStyle.stroke;
 
@@ -385,12 +385,12 @@ class _RadarPainter extends CustomPainter {
       center.dx + maxRadius * 0.18,
       center.dy + maxRadius * 0.08,
     );
-    canvas.drawCircle(refPos, 7, Paint()..color = AppColors.primary);
+    canvas.drawCircle(refPos, 7, Paint()..color = ClientColors.primary);
     canvas.drawCircle(
       refPos,
       12,
       Paint()
-        ..color = AppColors.primary.withAlpha(60)
+        ..color = ClientColors.primary.withAlpha(60)
         ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 4),
     );
   }
@@ -464,9 +464,9 @@ class _ScoutCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: ClientColors.surface,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.divider.withAlpha(60), width: 0.5),
+        border: Border.all(color: ClientColors.divider.withAlpha(60), width: 0.5),
       ),
       child: Row(
         children: [
@@ -482,7 +482,7 @@ class _ScoutCard extends StatelessWidget {
                 Text(
                   scout.user.displayName,
                   style: TextStyle(
-                    color: AppColors.textPrimary,
+                    color: ClientColors.textPrimary,
                     fontSize: 15,
                     fontWeight: FontWeight.w700,
                   ),
@@ -491,7 +491,7 @@ class _ScoutCard extends StatelessWidget {
                 Text(
                   '${scout.distanceMeters.formatDistance} · ${scout.user.totalReviews ?? 0} missions',
                   style: TextStyle(
-                    color: AppColors.textSecondary,
+                    color: ClientColors.textSecondary,
                     fontSize: 12,
                   ),
                 ),
@@ -509,13 +509,13 @@ class _ScoutCard extends StatelessWidget {
                   Text(
                     scout.user.rating?.toStringAsFixed(1) ?? '–',
                     style: TextStyle(
-                      color: AppColors.primary,
+                      color: ClientColors.primary,
                       fontSize: 15,
                       fontWeight: FontWeight.w700,
                     ),
                   ),
                   const SizedBox(width: 3),
-                  Icon(Icons.star, color: AppColors.primary, size: 15),
+                  Icon(Icons.star, color: ClientColors.primary, size: 15),
                 ],
               ),
               const SizedBox(height: 6),
@@ -555,7 +555,7 @@ class _InitialsAvatar extends StatelessWidget {
         child: Text(
           _initials,
           style: TextStyle(
-            color: AppColors.primary,
+            color: ClientColors.primary,
             fontSize: 16,
             fontWeight: FontWeight.w800,
           ),
@@ -582,7 +582,7 @@ class _OnlineBadge extends StatelessWidget {
       child: Text(
         isOnline ? 'Available' : 'Offline',
         style: TextStyle(
-          color: isOnline ? Color(0xFF22C55E) : AppColors.textSecondary,
+          color: isOnline ? Color(0xFF22C55E) : ClientColors.textSecondary,
           fontSize: 11,
           fontWeight: FontWeight.w700,
         ),
@@ -602,12 +602,12 @@ class _CircleBackButton extends StatelessWidget {
         width: 42,
         height: 42,
         decoration: BoxDecoration(
-          color: AppColors.surface,
+          color: ClientColors.surface,
           shape: BoxShape.circle,
         ),
         child: Icon(
           Icons.arrow_back,
-          color: AppColors.textPrimary,
+          color: ClientColors.textPrimary,
           size: 20,
         ),
       ),

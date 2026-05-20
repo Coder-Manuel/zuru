@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:zuru/config/colors.dart';
+import 'package:zuru/config/client_colors.dart';
 import 'package:zuru/core/utils/size.util.dart';
 import 'package:zuru/modules/auth/presentation/controllers/login_controller.dart';
 import 'package:zuru/modules/auth/presentation/pages/forgot_password_page.dart';
@@ -29,7 +29,7 @@ class LoginPage extends GetView<LoginController> {
                 Text(
                   'UnSeen',
                   style: TextStyle(
-                    color: AppColors.textPrimary,
+                    color: ClientColors.textPrimary,
                     fontSize: 48,
                     fontWeight: FontWeight.bold,
                     fontStyle: FontStyle.italic,
@@ -39,7 +39,7 @@ class LoginPage extends GetView<LoginController> {
                 Text(
                   'See anywhere. Know everything.',
                   style: TextStyle(
-                    color: AppColors.textSecondary,
+                    color: ClientColors.textSecondary,
                     fontSize: 15,
                   ),
                 ),
@@ -50,7 +50,7 @@ class LoginPage extends GetView<LoginController> {
                   keyboardType: TextInputType.emailAddress,
                   prefixIcon: Icon(
                     Icons.mail_outline,
-                    color: AppColors.iconColor,
+                    color: ClientColors.iconColor,
                     size: 20,
                   ),
                   validator: (v) {
@@ -67,7 +67,7 @@ class LoginPage extends GetView<LoginController> {
                     obscureText: controller.obscurePass.value,
                     prefixIcon: Icon(
                       Icons.lock_outline,
-                      color: AppColors.iconColor,
+                      color: ClientColors.iconColor,
                       size: 20,
                     ),
                     suffixIcon: GestureDetector(
@@ -78,7 +78,7 @@ class LoginPage extends GetView<LoginController> {
                           controller.obscurePass.value
                               ? Icons.visibility_outlined
                               : Icons.visibility_off_outlined,
-                          color: AppColors.iconColor,
+                          color: ClientColors.iconColor,
                           size: 20,
                         ),
                       ),
@@ -97,7 +97,7 @@ class LoginPage extends GetView<LoginController> {
                     child: Text(
                       'Forgot Password?',
                       style: TextStyle(
-                        color: AppColors.primary,
+                        color: ClientColors.primary,
                         fontSize: 14,
                         fontWeight: FontWeight.w600,
                       ),
@@ -121,12 +121,12 @@ class LoginPage extends GetView<LoginController> {
                           width: 65,
                           height: 55,
                           decoration: BoxDecoration(
-                            color: AppColors.biometricBg,
+                            color: ClientColors.surface,
                             borderRadius: BorderRadius.circular(18),
                           ),
                           child: Icon(
                             Icons.fingerprint,
-                            color: AppColors.primary,
+                            color: ClientColors.primary,
                             size: 36,
                           ),
                         ),
@@ -149,14 +149,14 @@ class LoginPage extends GetView<LoginController> {
                     text: TextSpan(
                       text: "Don't have an account? ",
                       style: TextStyle(
-                        color: AppColors.textSecondary,
+                        color: ClientColors.textSecondary,
                         fontSize: 15,
                       ),
                       children: [
                         TextSpan(
                           text: 'Sign Up',
                           style: TextStyle(
-                            color: AppColors.primary,
+                            color: ClientColors.primary,
                             fontWeight: FontWeight.w700,
                             fontSize: 15,
                           ),

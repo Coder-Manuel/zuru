@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:zuru/config/colors.dart';
+import 'package:zuru/config/client_colors.dart';
 import 'package:zuru/core/utils/size.util.dart';
 import 'package:zuru/modules/missions/domain/entities/mission.entity.dart';
 import 'package:zuru/modules/rating/presentation/controllers/rating.controller.dart';
@@ -15,7 +15,7 @@ class RateScoutPage extends GetView<RatingController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: ClientColors.background,
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 28),
@@ -31,7 +31,7 @@ class RateScoutPage extends GetView<RatingController> {
                   height: 100,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: AppColors.primary,
+                    color: ClientColors.primary,
                   ),
                   child: const Icon(
                     Icons.check_circle_outline_rounded,
@@ -47,7 +47,7 @@ class RateScoutPage extends GetView<RatingController> {
               Text(
                 'Mission Complete!',
                 style: TextStyle(
-                  color: AppColors.textPrimary,
+                  color: ClientColors.textPrimary,
                   fontSize: 32,
                   fontWeight: FontWeight.w900,
                   fontStyle: FontStyle.italic,
@@ -62,7 +62,7 @@ class RateScoutPage extends GetView<RatingController> {
               Text(
                 controller.paymentText,
                 style: TextStyle(
-                  color: AppColors.textSecondary,
+                  color: ClientColors.textSecondary,
                   fontSize: 15,
                   height: 1.5,
                 ),
@@ -90,7 +90,7 @@ class RateScoutPage extends GetView<RatingController> {
                   return ElevatedButton(
                     onPressed: controller.createRating,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.primary,
+                      backgroundColor: ClientColors.primary,
                       foregroundColor: Colors.black,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(50),
@@ -138,9 +138,9 @@ class _RatingCard extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.symmetric(vertical: 28, horizontal: 24),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: ClientColors.surface,
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: AppColors.divider.withAlpha(60), width: 1),
+        border: Border.all(color: ClientColors.divider.withAlpha(60), width: 1),
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -148,7 +148,7 @@ class _RatingCard extends StatelessWidget {
           Text(
             'RATE ${scoutName.toUpperCase()}',
             style: TextStyle(
-              color: AppColors.textSecondary,
+              color: ClientColors.textSecondary,
               fontSize: 12,
               fontWeight: FontWeight.w700,
               letterSpacing: 1.4,
@@ -171,8 +171,8 @@ class _RatingCard extends StatelessWidget {
                       filled ? Icons.star_rounded : Icons.star_outline_rounded,
                       key: ValueKey(filled),
                       color: filled
-                          ? AppColors.primary
-                          : AppColors.textSecondary.withAlpha(120),
+                          ? ClientColors.primary
+                          : ClientColors.textSecondary.withAlpha(120),
                       size: 38,
                     ),
                   ),

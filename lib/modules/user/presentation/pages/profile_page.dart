@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:get/get.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:zuru/config/colors.dart';
+import 'package:zuru/config/client_colors.dart';
+import 'package:zuru/core/utils/extensions.dart';
 import 'package:zuru/core/utils/size.util.dart';
 import 'package:zuru/modules/payments/presentation/pages/statements_page.dart';
 import 'package:zuru/modules/user/presentation/controllers/profile_controller.dart';
@@ -14,7 +15,7 @@ class ProfilePage extends GetView<ProfileController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: ClientColors.background,
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -165,7 +166,7 @@ class ProfilePage extends GetView<ProfileController> {
               Text(
                 'SCOUT APP V1.0.4',
                 style: TextStyle(
-                  color: AppColors.textSecondary,
+                  color: ClientColors.textSecondary,
                   fontSize: 11,
                   fontWeight: FontWeight.w600,
                   letterSpacing: 1.6,
@@ -203,10 +204,10 @@ class _ProfileHeader extends StatelessWidget {
             height: 100,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              border: Border.all(color: AppColors.primary, width: 3),
+              border: Border.all(color: ClientColors.primary, width: 3),
               boxShadow: [
                 BoxShadow(
-                  color: AppColors.primary.withAlpha(50),
+                  color: ClientColors.primary.withAlpha(50),
                   blurRadius: 24,
                   spreadRadius: 2,
                 ),
@@ -214,12 +215,12 @@ class _ProfileHeader extends StatelessWidget {
             ),
             child: ClipOval(
               child: Container(
-                color: AppColors.surface,
+                color: ClientColors.surface,
                 child: Center(
                   child: Text(
                     initial,
                     style: TextStyle(
-                      color: AppColors.textPrimary,
+                      color: ClientColors.textPrimary,
                       fontSize: 36,
                       fontWeight: FontWeight.w700,
                     ),
@@ -235,7 +236,7 @@ class _ProfileHeader extends StatelessWidget {
           Text(
             name.isNotEmpty ? name : 'Scout',
             style: TextStyle(
-              color: AppColors.textPrimary,
+              color: ClientColors.textPrimary,
               fontSize: 28,
               fontWeight: FontWeight.w700,
               fontStyle: FontStyle.italic,
@@ -250,16 +251,16 @@ class _ProfileHeader extends StatelessWidget {
             children: [
               Text(
                 'Scout',
-                style: TextStyle(color: AppColors.textSecondary, fontSize: 14),
+                style: TextStyle(color: ClientColors.textSecondary, fontSize: 14),
               ),
               Text(
                 ' · ',
-                style: TextStyle(color: AppColors.textSecondary, fontSize: 14),
+                style: TextStyle(color: ClientColors.textSecondary, fontSize: 14),
               ),
               Text(
                 rating,
                 style: TextStyle(
-                  color: AppColors.textSecondary,
+                  color: ClientColors.textSecondary,
                   fontSize: 14,
                 ),
               ),
@@ -298,7 +299,7 @@ class _ToggleRow extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: AppColors.surface.setOpacity(0.7),
+        color: ClientColors.surface.setOpacity(0.7),
         borderRadius: BorderRadius.circular(14),
       ),
       child: Padding(
@@ -314,7 +315,7 @@ class _ToggleRow extends StatelessWidget {
                   Text(
                     title,
                     style: TextStyle(
-                      color: AppColors.textPrimary,
+                      color: ClientColors.textPrimary,
                       fontSize: 15,
                       fontWeight: FontWeight.w600,
                     ),
@@ -323,7 +324,7 @@ class _ToggleRow extends StatelessWidget {
                   Text(
                     subtitle,
                     style: TextStyle(
-                      color: AppColors.textSecondary,
+                      color: ClientColors.textSecondary,
                       fontSize: 12,
                     ),
                   ),
@@ -334,10 +335,10 @@ class _ToggleRow extends StatelessWidget {
               () => Switch.adaptive(
                 value: valueObs.value,
                 onChanged: onChanged,
-                activeThumbColor: AppColors.background,
-                activeTrackColor: AppColors.primary,
-                inactiveThumbColor: AppColors.textSecondary,
-                inactiveTrackColor: AppColors.divider,
+                activeThumbColor: ClientColors.background,
+                activeTrackColor: ClientColors.primary,
+                inactiveThumbColor: ClientColors.textSecondary,
+                inactiveTrackColor: ClientColors.divider,
               ),
             ),
           ],
@@ -362,7 +363,7 @@ class _NavRow extends StatelessWidget {
       onTap: onTap,
       child: Container(
         decoration: BoxDecoration(
-          color: AppColors.surface.setOpacity(0.7),
+          color: ClientColors.surface.setOpacity(0.7),
           borderRadius: BorderRadius.circular(14),
         ),
         child: Padding(
@@ -375,7 +376,7 @@ class _NavRow extends StatelessWidget {
                 child: Text(
                   title,
                   style: TextStyle(
-                    color: AppColors.textPrimary,
+                    color: ClientColors.textPrimary,
                     fontSize: 15,
                     fontWeight: FontWeight.w600,
                   ),
@@ -383,7 +384,7 @@ class _NavRow extends StatelessWidget {
               ),
               Icon(
                 Icons.chevron_right_rounded,
-                color: AppColors.textSecondary,
+                color: ClientColors.textSecondary,
                 size: 22,
               ),
             ],
@@ -414,27 +415,27 @@ class _LinkRow extends StatelessWidget {
       onTap: _launch,
       child: Container(
         decoration: BoxDecoration(
-          color: AppColors.surface.setOpacity(0.7),
+          color: ClientColors.surface.setOpacity(0.7),
           borderRadius: BorderRadius.circular(14),
         ),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
           child: Row(
             children: [
-              Icon(icon, color: AppColors.textSecondary, size: 22),
+              Icon(icon, color: ClientColors.textSecondary, size: 22),
               14.horizontalSpace,
               Expanded(
                 child: Text(
                   title,
                   style: TextStyle(
-                    color: AppColors.textPrimary,
+                    color: ClientColors.textPrimary,
                     fontSize: 15,
                   ),
                 ),
               ),
               Icon(
                 Icons.link_rounded,
-                color: AppColors.primary,
+                color: ClientColors.primary,
                 size: 22,
               ),
             ],
@@ -457,10 +458,10 @@ class _IconBox extends StatelessWidget {
       width: 40,
       height: 40,
       decoration: BoxDecoration(
-        color: AppColors.primaryGlow.setOpacity(0.1),
+        color: ClientColors.primaryGlow.setOpacity(0.1),
         borderRadius: BorderRadius.circular(10),
       ),
-      child: Icon(icon, color: AppColors.primary, size: 20),
+      child: Icon(icon, color: ClientColors.primary, size: 20),
     );
   }
 }

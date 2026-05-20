@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:zuru/config/colors.dart';
+import 'package:zuru/config/client_colors.dart';
 import 'package:zuru/core/utils/extensions.dart';
 import 'package:zuru/core/utils/size.util.dart';
 import 'package:zuru/modules/auth/presentation/controllers/register_controller.dart';
@@ -32,13 +32,13 @@ class SignupPage extends GetView<RegisterController> {
                     children: [
                       Icon(
                         Icons.chevron_left,
-                        color: AppColors.textPrimary,
+                        color: ClientColors.textPrimary,
                         size: 22,
                       ),
                       Text(
                         'Back to Login',
                         style: TextStyle(
-                          color: AppColors.textPrimary,
+                          color: ClientColors.textPrimary,
                           fontSize: 15,
                         ),
                       ),
@@ -49,7 +49,7 @@ class SignupPage extends GetView<RegisterController> {
                 Text(
                   'Create Account',
                   style: TextStyle(
-                    color: AppColors.textPrimary,
+                    color: ClientColors.textPrimary,
                     fontSize: 30,
                     fontWeight: FontWeight.bold,
                   ),
@@ -58,7 +58,7 @@ class SignupPage extends GetView<RegisterController> {
                 Text(
                   'Join the network of scouts and clients.',
                   style: TextStyle(
-                    color: AppColors.textSecondary,
+                    color: ClientColors.textSecondary,
                     fontSize: 15,
                   ),
                 ),
@@ -69,7 +69,7 @@ class SignupPage extends GetView<RegisterController> {
                   keyboardType: TextInputType.emailAddress,
                   prefixIcon: Icon(
                     Icons.mail_outline,
-                    color: AppColors.iconColor,
+                    color: ClientColors.iconColor,
                     size: 20,
                   ),
                   validator: (v) {
@@ -86,7 +86,7 @@ class SignupPage extends GetView<RegisterController> {
                     obscureText: controller.obscurePass.value,
                     prefixIcon: Icon(
                       Icons.lock_outline,
-                      color: AppColors.iconColor,
+                      color: ClientColors.iconColor,
                       size: 20,
                     ),
                     suffixIcon: GestureDetector(
@@ -97,7 +97,7 @@ class SignupPage extends GetView<RegisterController> {
                           controller.obscurePass.value
                               ? Icons.visibility_outlined
                               : Icons.visibility_off_outlined,
-                          color: AppColors.iconColor,
+                          color: ClientColors.iconColor,
                           size: 20,
                         ),
                       ),
@@ -120,7 +120,7 @@ class SignupPage extends GetView<RegisterController> {
                     obscureText: controller.obscureConfirmPass.value,
                     prefixIcon: Icon(
                       Icons.lock_outline,
-                      color: AppColors.iconColor,
+                      color: ClientColors.iconColor,
                       size: 20,
                     ),
                     suffixIcon: GestureDetector(
@@ -131,7 +131,7 @@ class SignupPage extends GetView<RegisterController> {
                           controller.obscureConfirmPass.value
                               ? Icons.visibility_outlined
                               : Icons.visibility_off_outlined,
-                          color: AppColors.iconColor,
+                          color: ClientColors.iconColor,
                           size: 20,
                         ),
                       ),

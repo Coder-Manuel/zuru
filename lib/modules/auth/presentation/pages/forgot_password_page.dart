@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:zuru/config/colors.dart';
+import 'package:zuru/config/client_colors.dart';
 import 'package:zuru/core/utils/size.util.dart';
 import 'package:zuru/modules/auth/presentation/controllers/reset_password_controller.dart';
 import 'package:zuru/modules/auth/presentation/widgets/auth_widgets.dart';
@@ -34,7 +34,7 @@ class ForgotPasswordPage extends GetView<ResetPasswordController> {
                 Text(
                   'Reset Password',
                   style: TextStyle(
-                    color: AppColors.textPrimary,
+                    color: ClientColors.textPrimary,
                     fontSize: 36,
                     fontWeight: FontWeight.w700,
                     fontStyle: FontStyle.italic,
@@ -44,7 +44,7 @@ class ForgotPasswordPage extends GetView<ResetPasswordController> {
                 Text(
                   'Enter your email address below to\nreceive a password reset code.',
                   style: TextStyle(
-                    color: AppColors.textSecondary,
+                    color: ClientColors.textSecondary,
                     fontSize: 15,
                     height: 1.5,
                   ),
@@ -59,7 +59,7 @@ class ForgotPasswordPage extends GetView<ResetPasswordController> {
                   keyboardType: TextInputType.emailAddress,
                   prefixIcon: Icon(
                     Icons.mail_outline,
-                    color: AppColors.iconColor,
+                    color: ClientColors.iconColor,
                     size: 20,
                   ),
                   validator: (v) {
@@ -95,12 +95,12 @@ class _BackToLoginButton extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(Icons.chevron_left, color: AppColors.textPrimary, size: 18),
+          Icon(Icons.chevron_left, color: ClientColors.textPrimary, size: 18),
           SizedBox(width: 4),
           Text(
             'BACK TO LOGIN',
             style: TextStyle(
-              color: AppColors.textPrimary,
+              color: ClientColors.textPrimary,
               fontSize: 12,
               fontWeight: FontWeight.w600,
               letterSpacing: 1.1,
