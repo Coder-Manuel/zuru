@@ -1,7 +1,13 @@
 import 'package:get/get.dart';
+import 'package:zuru/modules/home/presentation/controllers/home_controller.dart';
+import 'package:zuru/modules/home/presentation/controllers/maps_tab_controller.dart';
+import 'package:zuru/modules/home/presentation/controllers/splash_controller.dart';
 
-// TODO(Phase 2): Populate with HomeController, SplashController, MapsTabController
 class HomeBindings extends Bindings {
   @override
-  void dependencies() {}
+  void dependencies() {
+    Get.lazyPut<HomeController>(() => HomeController(), fenix: true);
+    Get.lazyPut<SplashController>(() => SplashController(), fenix: true);
+    Get.lazyPut<MapsTabController>(() => MapsTabController(), fenix: true);
+  }
 }
