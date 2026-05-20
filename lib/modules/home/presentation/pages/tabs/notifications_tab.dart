@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:zuru/config/colors.dart';
+import 'package:zuru/config/client_colors.dart';
 
 class NotificationsTab extends StatelessWidget {
   const NotificationsTab({super.key});
@@ -20,7 +20,7 @@ class NotificationsTab extends StatelessWidget {
                   const Text(
                     'Notifications',
                     style: TextStyle(
-                      color: AppColors.textPrimary,
+                      color: ClientColors.textPrimary,
                       fontSize: 28,
                       fontWeight: FontWeight.bold,
                     ),
@@ -30,7 +30,7 @@ class NotificationsTab extends StatelessWidget {
                     child: const Text(
                       'Mark all read',
                       style: TextStyle(
-                        color: AppColors.primary,
+                        color: ClientColors.primary,
                         fontSize: 13,
                         fontWeight: FontWeight.w600,
                       ),
@@ -51,7 +51,7 @@ class NotificationsTab extends StatelessWidget {
                       Text(
                         group.date,
                         style: const TextStyle(
-                          color: AppColors.textSecondary,
+                          color: ClientColors.textSecondary,
                           fontSize: 12,
                           fontWeight: FontWeight.w600,
                           letterSpacing: 0.5,
@@ -82,10 +82,10 @@ class _NotificationItem extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 10),
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: item.unread ? AppColors.surface : AppColors.background,
+        color: item.unread ? ClientColors.surface : ClientColors.background,
         borderRadius: BorderRadius.circular(14),
         border: item.unread
-            ? Border.all(color: AppColors.divider, width: 0.5)
+            ? Border.all(color: ClientColors.divider, width: 0.5)
             : null,
       ),
       child: Row(
@@ -108,7 +108,7 @@ class _NotificationItem extends StatelessWidget {
                 Text(
                   item.title,
                   style: TextStyle(
-                    color: AppColors.textPrimary,
+                    color: ClientColors.textPrimary,
                     fontSize: 14,
                     fontWeight:
                         item.unread ? FontWeight.w700 : FontWeight.w500,
@@ -118,7 +118,7 @@ class _NotificationItem extends StatelessWidget {
                 Text(
                   item.body,
                   style: const TextStyle(
-                    color: AppColors.textSecondary,
+                    color: ClientColors.textSecondary,
                     fontSize: 12,
                   ),
                 ),
@@ -130,7 +130,7 @@ class _NotificationItem extends StatelessWidget {
               Text(
                 item.time,
                 style: const TextStyle(
-                    color: AppColors.textSecondary, fontSize: 11),
+                    color: ClientColors.textSecondary, fontSize: 11),
               ),
               if (item.unread) ...[
                 const SizedBox(height: 6),
@@ -138,7 +138,7 @@ class _NotificationItem extends StatelessWidget {
                   width: 8,
                   height: 8,
                   decoration: const BoxDecoration(
-                    color: AppColors.primary,
+                    color: ClientColors.primary,
                     shape: BoxShape.circle,
                   ),
                 ),
@@ -197,7 +197,7 @@ const _notifications = [
         unread: true,
         icon: Icons.message_outlined,
         iconBg: Color(0xFF1A2535),
-        iconColor: AppColors.primary,
+        iconColor: ClientColors.primary,
       ),
     ],
   ),
@@ -220,7 +220,7 @@ const _notifications = [
         unread: false,
         icon: Icons.person_outline,
         iconBg: Color(0xFF1A2535),
-        iconColor: AppColors.textSecondary,
+        iconColor: ClientColors.textSecondary,
       ),
     ],
   ),

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:zuru/config/colors.dart';
+import 'package:zuru/config/client_colors.dart';
 import 'package:zuru/modules/home/presentation/pages/tabs/maps_tab.dart';
 import 'package:zuru/modules/missions/presentation/pages/missions_tab.dart';
 import 'package:zuru/modules/home/presentation/pages/tabs/notifications_tab.dart';
@@ -29,17 +29,17 @@ class HomePage extends GetView<HomeController> {
       bottomNavigationBar: Obx(
         () => Container(
           decoration: const BoxDecoration(
-            color: AppColors.surface,
+            color: ClientColors.surface,
             border: Border(
-              top: BorderSide(color: AppColors.divider, width: 0.5),
+              top: BorderSide(color: ClientColors.divider, width: 0.5),
             ),
           ),
           child: BottomNavigationBar(
             currentIndex: controller.currentIndex.value,
             onTap: controller.changePage,
-            backgroundColor: AppColors.surface,
-            selectedItemColor: AppColors.primary,
-            unselectedItemColor: AppColors.textSecondary,
+            backgroundColor: ClientColors.surface,
+            selectedItemColor: ClientColors.primary,
+            unselectedItemColor: ClientColors.textSecondary,
             type: BottomNavigationBarType.fixed,
             showSelectedLabels: true,
             showUnselectedLabels: true,

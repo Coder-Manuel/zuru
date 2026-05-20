@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:get/get.dart';
 import 'package:shimmer/shimmer.dart';
-import 'package:zuru/config/colors.dart';
+import 'package:zuru/config/scout_colors.dart';
 import 'package:zuru/core/utils/extensions.dart';
 import 'package:zuru/modules/missions/data/models/enum.dart';
 import 'package:zuru/modules/missions/domain/entities/mission.entity.dart';
@@ -28,7 +28,7 @@ class ScoutMissionsTab extends GetView<MissionsController> {
                   const Text(
                     'Missions',
                     style: TextStyle(
-                      color: AppColors.textPrimary,
+                      color: ScoutColors.textPrimary,
                       fontSize: 28,
                       fontWeight: FontWeight.bold,
                     ),
@@ -60,8 +60,8 @@ class ScoutMissionsTab extends GetView<MissionsController> {
                 }
 
                 return RefreshIndicator(
-                  color: AppColors.primary,
-                  backgroundColor: AppColors.surface,
+                  color: ScoutColors.primary,
+                  backgroundColor: ScoutColors.surface,
                   onRefresh: controller.fetchMissions,
                   child: ListView.separated(
                     padding: const EdgeInsets.fromLTRB(24, 8, 24, 32),
@@ -115,13 +115,13 @@ class _FilterRow extends StatelessWidget {
               duration: const Duration(milliseconds: 200),
               padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 8),
               decoration: BoxDecoration(
-                color: selected ? AppColors.primary : AppColors.surface,
+                color: selected ? ScoutColors.primary : ScoutColors.surface,
                 borderRadius: BorderRadius.circular(20),
               ),
               child: Text(
                 _labels[filter]!,
                 style: TextStyle(
-                  color: selected ? Colors.black : AppColors.textSecondary,
+                  color: selected ? Colors.black : ScoutColors.textSecondary,
                   fontWeight: FontWeight.w600,
                   fontSize: 13,
                 ),
@@ -157,10 +157,10 @@ class _MissionCard extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: AppColors.surface.setOpacity(0.75),
+          color: ScoutColors.surface.setOpacity(0.75),
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
-            color: AppColors.divider.withAlpha(40),
+            color: ScoutColors.divider.withAlpha(40),
             width: 0.5,
           ),
         ),
@@ -176,7 +176,7 @@ class _MissionCard extends StatelessWidget {
                   child: Text(
                     '${mission.type?.label}\n${mission.address}',
                     style: const TextStyle(
-                      color: AppColors.textPrimary,
+                      color: ScoutColors.textPrimary,
                       fontSize: 15,
                       fontWeight: FontWeight.w700,
                     ),
@@ -192,7 +192,7 @@ class _MissionCard extends StatelessWidget {
             Text(
               mission.description,
               style: const TextStyle(
-                color: AppColors.textSecondary,
+                color: ScoutColors.textSecondary,
                 fontSize: 13,
                 height: 1.4,
               ),
@@ -205,7 +205,7 @@ class _MissionCard extends StatelessWidget {
                 // Duration
                 const Icon(
                       Icons.timer_outlined,
-                      color: AppColors.scoutMarker,
+                      color: ScoutColors.scoutMarker,
                       size: 14,
                     )
                     .animate(onPlay: (c) => c.repeat(reverse: true))
@@ -219,7 +219,7 @@ class _MissionCard extends StatelessWidget {
                 Text(
                   mission.durationLabel,
                   style: const TextStyle(
-                    color: AppColors.textSecondary,
+                    color: ScoutColors.textSecondary,
                     fontSize: 12,
                   ),
                 ),
@@ -229,7 +229,7 @@ class _MissionCard extends StatelessWidget {
                 Text(
                   '${mission.currency} ${mission.price.toStringAsFixed(0)}',
                   style: const TextStyle(
-                    color: AppColors.primary,
+                    color: ScoutColors.primary,
                     fontSize: 12,
                     fontWeight: FontWeight.w600,
                   ),
@@ -238,14 +238,14 @@ class _MissionCard extends StatelessWidget {
                 // Time ago
                 const Icon(
                   Icons.access_time,
-                  color: AppColors.scoutMarker,
+                  color: ScoutColors.scoutMarker,
                   size: 13,
                 ),
                 const SizedBox(width: 3),
                 Text(
                   createdAt.timeAgo,
                   style: const TextStyle(
-                    color: AppColors.textSecondary,
+                    color: ScoutColors.textSecondary,
                     fontSize: 12,
                   ),
                 ),
@@ -274,7 +274,7 @@ class _MissionCard extends StatelessWidget {
                   ),
                   style: ElevatedButton.styleFrom(
                     minimumSize: const Size(double.infinity, 30),
-                    backgroundColor: AppColors.primaryDark,
+                    backgroundColor: ScoutColors.primaryDark,
                     foregroundColor: Colors.white,
                     padding: const EdgeInsets.symmetric(vertical: 10),
                     shape: RoundedRectangleBorder(
@@ -302,13 +302,13 @@ class _StatusBadge extends StatelessWidget {
   Widget build(BuildContext context) {
     final (label, color) = switch (status) {
       MissionStatus.live => ('Live', const Color(0xFF22C55E)),
-      MissionStatus.accepted => ('Accepted', AppColors.scoutMarker),
+      MissionStatus.accepted => ('Accepted', ScoutColors.scoutMarker),
       MissionStatus.enroute => (
         'EnRoute',
         const Color.fromARGB(255, 42, 142, 248),
       ),
-      MissionStatus.open => ('Pending', AppColors.primary),
-      MissionStatus.completed => ('Completed', AppColors.textSecondary),
+      MissionStatus.open => ('Pending', ScoutColors.primary),
+      MissionStatus.completed => ('Completed', ScoutColors.textSecondary),
       MissionStatus.cancelled => ('Cancelled', const Color(0xFFEF4444)),
     };
 
@@ -338,7 +338,7 @@ class _ShimmerList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Shimmer.fromColors(
-      baseColor: AppColors.surface,
+      baseColor: ScoutColors.surface,
       highlightColor: const Color(0xFF2A3547),
       child: ListView.separated(
         padding: const EdgeInsets.fromLTRB(24, 8, 24, 32),
@@ -359,7 +359,7 @@ class _ShimmerCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: ScoutColors.surface,
         borderRadius: BorderRadius.circular(16),
       ),
       child: Column(
@@ -444,12 +444,12 @@ class _EmptyState extends StatelessWidget {
               width: 72,
               height: 72,
               decoration: const BoxDecoration(
-                color: AppColors.surface,
+                color: ScoutColors.surface,
                 shape: BoxShape.circle,
               ),
               child: const Icon(
                 Icons.radar_outlined,
-                color: AppColors.primary,
+                color: ScoutColors.primary,
                 size: 34,
               ),
             ),
@@ -458,7 +458,7 @@ class _EmptyState extends StatelessWidget {
               _message,
               textAlign: TextAlign.center,
               style: const TextStyle(
-                color: AppColors.textSecondary,
+                color: ScoutColors.textSecondary,
                 fontSize: 14,
                 height: 1.5,
               ),

@@ -1,6 +1,6 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
-import 'package:zuru/config/colors.dart';
+import 'package:zuru/config/scout_colors.dart';
 
 class RadarSweepPainter extends CustomPainter {
   final double rotation; // 0 → 2π
@@ -43,7 +43,7 @@ class RadarSweepPainter extends CustomPainter {
         sliceStart,
         sliceSpan,
         true, // useCenter → filled pie slice
-        paint..color = AppColors.primary.withAlpha(alpha),
+        paint..color = ScoutColors.primary.withAlpha(alpha),
       );
     }
 
@@ -52,7 +52,7 @@ class RadarSweepPainter extends CustomPainter {
       Offset.zero,
       Offset(radius, 0),
       Paint()
-        ..color = AppColors.primary.withAlpha(40)
+        ..color = ScoutColors.primary.withAlpha(40)
         ..strokeWidth = 1.6
         ..style = PaintingStyle.stroke,
     );

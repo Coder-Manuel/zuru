@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:zuru/config/colors.dart';
+import 'package:zuru/config/scout_colors.dart';
 import 'package:zuru/core/utils/size.util.dart';
 import 'package:zuru/modules/missions/data/models/mission.model.dart';
 
@@ -14,7 +14,7 @@ class MissionCompletePage extends StatelessWidget {
     final mission = Get.arguments as MissionModel;
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: ScoutColors.background,
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -31,7 +31,7 @@ class MissionCompletePage extends StatelessWidget {
               const Text(
                 'Mission Complete!',
                 style: TextStyle(
-                  color: AppColors.textPrimary,
+                  color: ScoutColors.textPrimary,
                   fontSize: 34,
                   fontWeight: FontWeight.w700,
                   fontStyle: FontStyle.italic,
@@ -44,7 +44,7 @@ class MissionCompletePage extends StatelessWidget {
               Text(
                 '${mission.formattedPrice} will be disbursed to your payment method.',
                 style: const TextStyle(
-                  color: AppColors.textSecondary,
+                  color: ScoutColors.textSecondary,
                   fontSize: 15,
                   height: 1.5,
                 ),
@@ -62,8 +62,8 @@ class MissionCompletePage extends StatelessWidget {
               ElevatedButton(
                 onPressed: () => Get.until((page) => page.isFirst),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.primary,
-                  foregroundColor: AppColors.background,
+                  backgroundColor: ScoutColors.primary,
+                  foregroundColor: ScoutColors.background,
                   minimumSize: const Size.fromHeight(56),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(14),
@@ -94,10 +94,10 @@ class _SuccessIcon extends StatelessWidget {
       height: 88,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        color: AppColors.primary,
+        color: ScoutColors.primary,
         boxShadow: [
           BoxShadow(
-            color: AppColors.primary.withAlpha(80),
+            color: ScoutColors.primary.withAlpha(80),
             blurRadius: 32,
             spreadRadius: 4,
           ),
@@ -105,7 +105,7 @@ class _SuccessIcon extends StatelessWidget {
       ),
       child: const Icon(
         Icons.check_circle_outline_rounded,
-        color: AppColors.background,
+        color: ScoutColors.background,
         size: 48,
       ),
     );
@@ -123,7 +123,7 @@ class _StatsCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: ScoutColors.surface,
         borderRadius: BorderRadius.circular(16),
       ),
       child: Column(
@@ -132,7 +132,7 @@ class _StatsCard extends StatelessWidget {
           const Text(
             'MISSION STATS',
             style: TextStyle(
-              color: AppColors.textSecondary,
+              color: ScoutColors.textSecondary,
               fontSize: 11,
               fontWeight: FontWeight.w700,
               letterSpacing: 1.4,
@@ -151,7 +151,7 @@ class _StatsCard extends StatelessWidget {
           _StatRow(
             label: 'Total',
             value: '+ KES ${mission.formattedPrice}',
-            valueColor: AppColors.textAccent,
+            valueColor: ScoutColors.textAccent,
             valueBold: true,
           ),
         ],
@@ -183,14 +183,14 @@ class _StatRow extends StatelessWidget {
           Text(
             label,
             style: const TextStyle(
-              color: AppColors.textSecondary,
+              color: ScoutColors.textSecondary,
               fontSize: 14.5,
             ),
           ),
           Text(
             value,
             style: TextStyle(
-              color: valueColor ?? AppColors.textPrimary,
+              color: valueColor ?? ScoutColors.textPrimary,
               fontSize: 14.5,
               fontWeight: valueBold ? FontWeight.w700 : FontWeight.w500,
             ),
@@ -204,6 +204,6 @@ class _StatRow extends StatelessWidget {
 class _StatDivider extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return const Divider(color: AppColors.divider, height: 1, thickness: 1);
+    return const Divider(color: ScoutColors.divider, height: 1, thickness: 1);
   }
 }

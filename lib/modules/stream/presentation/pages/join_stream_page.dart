@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:livekit_client/livekit_client.dart';
-import 'package:zuru/config/colors.dart';
+import 'package:zuru/config/client_colors.dart';
 import 'package:zuru/core/utils/size.util.dart';
 import 'package:zuru/modules/missions/domain/entities/mission.entity.dart';
 import 'package:zuru/modules/stream/presentation/controllers/join_stream_controller.dart';
@@ -77,13 +77,13 @@ class _RemoteFeed extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               const CircularProgressIndicator(
-                color: AppColors.primary,
+                color: ClientColors.primary,
                 strokeWidth: 2,
               ),
               16.verticalSpace,
               const Text(
                 'Joining stream…',
-                style: TextStyle(color: AppColors.textSecondary, fontSize: 14),
+                style: TextStyle(color: ClientColors.textSecondary, fontSize: 14),
               ),
             ],
           ),
@@ -98,18 +98,18 @@ class _RemoteFeed extends StatelessWidget {
             children: [
               const Icon(
                 Icons.videocam_off_outlined,
-                color: AppColors.primary,
+                color: ClientColors.primary,
                 size: 52,
               ),
               20.verticalSpace,
               const Text(
                 'Failed to join stream.',
-                style: TextStyle(color: AppColors.textSecondary, fontSize: 15),
+                style: TextStyle(color: ClientColors.textSecondary, fontSize: 15),
               ),
               4.verticalSpace,
               const Text(
                 'Check your connection and try again.',
-                style: TextStyle(color: AppColors.textSecondary, fontSize: 13),
+                style: TextStyle(color: ClientColors.textSecondary, fontSize: 13),
               ),
               24.verticalSpace,
               TextButton(
@@ -117,7 +117,7 @@ class _RemoteFeed extends StatelessWidget {
                 child: const Text(
                   'Go Back',
                   style: TextStyle(
-                    color: AppColors.primary,
+                    color: ClientColors.primary,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
@@ -181,7 +181,7 @@ class _RemoteFeed extends StatelessWidget {
             16.verticalSpace,
             const Text(
               'Waiting for scout to stream…',
-              style: TextStyle(color: AppColors.textSecondary, fontSize: 14),
+              style: TextStyle(color: ClientColors.textSecondary, fontSize: 14),
             ),
           ],
         ),
@@ -322,7 +322,7 @@ class _BottomSection extends StatelessWidget {
                           Text(
                             ctrl.mission.scout?.displayName ?? 'Scout',
                             style: const TextStyle(
-                              color: AppColors.textPrimary,
+                              color: ClientColors.textPrimary,
                               fontSize: 16,
                               fontWeight: FontWeight.w700,
                             ),
@@ -371,7 +371,7 @@ class _StatusBadge extends StatelessWidget {
         label: 'WATCHING',
       ),
       ScoutStatus.waiting => _badge(
-        color: AppColors.primary,
+        color: ClientColors.primary,
         dot: true,
         label: 'WAITING',
       ),
@@ -585,7 +585,7 @@ class _ScoutAvatarState extends State<_ScoutAvatar>
   }
 
   Color get _ringColor => switch (widget.status) {
-    ScoutStatus.waiting => AppColors.primary,
+    ScoutStatus.waiting => ClientColors.primary,
     ScoutStatus.streaming => const Color(0xFF3B82F6),
     ScoutStatus.muted => const Color(0xFFEF4444),
     ScoutStatus.disconnected => Colors.grey,
@@ -614,7 +614,7 @@ class _ScoutAvatarState extends State<_ScoutAvatar>
           duration: const Duration(milliseconds: 300),
           opacity: widget.status == ScoutStatus.disconnected ? 0.4 : 1.0,
           child: Container(
-            color: AppColors.surface,
+            color: ClientColors.surface,
             alignment: Alignment.center,
             child: Text(
               initial,
@@ -642,9 +642,9 @@ class _GpsBadge extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: ClientColors.surface,
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: AppColors.primary.withAlpha(40)),
+        border: Border.all(color: ClientColors.primary.withAlpha(40)),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -654,7 +654,7 @@ class _GpsBadge extends StatelessWidget {
           const Text(
             'GPS ✓ ',
             style: TextStyle(
-              color: AppColors.primary,
+              color: ClientColors.primary,
               fontSize: 11,
               fontWeight: FontWeight.w700,
             ),
@@ -662,7 +662,7 @@ class _GpsBadge extends StatelessWidget {
           Flexible(
             child: Text(
               address.isNotEmpty ? address : 'On Location',
-              style: const TextStyle(color: AppColors.primary, fontSize: 11),
+              style: const TextStyle(color: ClientColors.primary, fontSize: 11),
               overflow: TextOverflow.ellipsis,
             ),
           ),
@@ -843,7 +843,7 @@ class _PulsingIconState extends State<_PulsingIcon>
       opacity: _opacity,
       child: const Icon(
         Icons.videocam_outlined,
-        color: AppColors.primary,
+        color: ClientColors.primary,
         size: 52,
       ),
     );

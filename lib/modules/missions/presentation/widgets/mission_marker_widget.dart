@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:zuru/config/colors.dart';
+import 'package:zuru/config/scout_colors.dart';
 
 class MissionMarkerWidget extends StatefulWidget {
   final String price;
@@ -46,14 +46,14 @@ class _MissionMarkerWidgetState extends State<MissionMarkerWidget>
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
           decoration: BoxDecoration(
-            color: AppColors.surface,
+            color: ScoutColors.surface,
             borderRadius: BorderRadius.circular(8),
-            border: Border.all(color: AppColors.divider, width: 0.8),
+            border: Border.all(color: ScoutColors.divider, width: 0.8),
           ),
           child: Text(
             widget.price,
             style: const TextStyle(
-              color: AppColors.textPrimary,
+              color: ScoutColors.textPrimary,
               fontWeight: FontWeight.w600,
               fontSize: 11.5,
               letterSpacing: 0.2,
@@ -85,7 +85,7 @@ class _RippleDotPainter extends CustomPainter {
         center,
         radius,
         Paint()
-          ..color = AppColors.primary.withAlpha((opacity * 255).round())
+          ..color = ScoutColors.primary.withAlpha((opacity * 255).round())
           ..style = PaintingStyle.stroke
           ..strokeWidth = 1.4,
       );
@@ -96,10 +96,10 @@ class _RippleDotPainter extends CustomPainter {
       center,
       6.5,
       Paint()
-        ..color = AppColors.primary
+        ..color = ScoutColors.primary
         ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 3),
     );
-    canvas.drawCircle(center, 5.0, Paint()..color = AppColors.primary);
+    canvas.drawCircle(center, 5.0, Paint()..color = ScoutColors.primary);
   }
 
   @override

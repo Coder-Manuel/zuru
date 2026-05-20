@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:zuru/config/colors.dart';
+import 'package:zuru/config/scout_colors.dart';
 
 class RadarGridPainter extends CustomPainter {
   const RadarGridPainter();
@@ -7,7 +7,7 @@ class RadarGridPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = AppColors.mapGrid
+      ..color = ScoutColors.mapGrid
       ..strokeWidth = 0.6;
 
     const cellSize = 52.0;

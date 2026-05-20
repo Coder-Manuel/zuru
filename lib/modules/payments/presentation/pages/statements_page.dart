@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:shimmer/shimmer.dart';
-import 'package:zuru/config/colors.dart';
+import 'package:zuru/config/scout_colors.dart';
 import 'package:zuru/core/utils/size.util.dart';
 import 'package:zuru/modules/payments/domain/entities/statement.entity.dart';
 import 'package:zuru/modules/payments/presentation/controllers/statements_controller.dart';
@@ -14,7 +14,7 @@ class StatementsPage extends GetView<StatementsController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: ScoutColors.background,
       body: SafeArea(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -30,12 +30,12 @@ class StatementsPage extends GetView<StatementsController> {
                       width: 40,
                       height: 40,
                       decoration: BoxDecoration(
-                        color: AppColors.surface,
+                        color: ScoutColors.surface,
                         shape: BoxShape.circle,
                       ),
                       child: const Icon(
                         Icons.chevron_left_rounded,
-                        color: AppColors.textPrimary,
+                        color: ScoutColors.textPrimary,
                         size: 26,
                       ),
                     ),
@@ -44,7 +44,7 @@ class StatementsPage extends GetView<StatementsController> {
                   const Text(
                     'Statements',
                     style: TextStyle(
-                      color: AppColors.textPrimary,
+                      color: ScoutColors.textPrimary,
                       fontSize: 28,
                       fontWeight: FontWeight.w700,
                       fontStyle: FontStyle.italic,
@@ -169,7 +169,7 @@ class _StatementCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final (statusLabel, statusColor) = switch (statement.status) {
-      StatementStatus.disbursed => ('DISBURSED', AppColors.textAccent),
+      StatementStatus.disbursed => ('DISBURSED', ScoutColors.textAccent),
       StatementStatus.pending => ('PENDING', const Color(0xFFF5A020)),
       StatementStatus.failed => ('FAILED', const Color(0xFFCC1E1E)),
     };
@@ -178,9 +178,9 @@ class _StatementCard extends StatelessWidget {
 
     return Container(
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: ScoutColors.surface,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.divider),
+        border: Border.all(color: ScoutColors.divider),
       ),
       child: Padding(
         padding: const EdgeInsets.fromLTRB(18, 16, 18, 0),
@@ -198,7 +198,7 @@ class _StatementCard extends StatelessWidget {
                       Text(
                         dateLabel,
                         style: const TextStyle(
-                          color: AppColors.textSecondary,
+                          color: ScoutColors.textSecondary,
                           fontSize: 11,
                           fontWeight: FontWeight.w600,
                           letterSpacing: 0.8,
@@ -208,7 +208,7 @@ class _StatementCard extends StatelessWidget {
                       Text(
                         '${statement.missionTitle} · ${statement.location}',
                         style: const TextStyle(
-                          color: AppColors.textPrimary,
+                          color: ScoutColors.textPrimary,
                           fontSize: 15,
                           fontWeight: FontWeight.w700,
                         ),
@@ -223,7 +223,7 @@ class _StatementCard extends StatelessWidget {
                     Text(
                       statement.formattedAmount,
                       style: const TextStyle(
-                        color: AppColors.textAccent,
+                        color: ScoutColors.textAccent,
                         fontSize: 18,
                         fontWeight: FontWeight.w800,
                       ),
@@ -248,7 +248,7 @@ class _StatementCard extends StatelessWidget {
             // ── Channel row ─────────────────────────────────────────────────
             Container(
               height: 1,
-              color: AppColors.divider,
+              color: ScoutColors.divider,
             ),
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 14),
@@ -258,7 +258,7 @@ class _StatementCard extends StatelessWidget {
                   const Text(
                     'CHANNEL',
                     style: TextStyle(
-                      color: AppColors.textSecondary,
+                      color: ScoutColors.textSecondary,
                       fontSize: 11,
                       fontWeight: FontWeight.w700,
                       letterSpacing: 1.2,
@@ -267,7 +267,7 @@ class _StatementCard extends StatelessWidget {
                   Text(
                     statement.channel,
                     style: const TextStyle(
-                      color: AppColors.textPrimary,
+                      color: ScoutColors.textPrimary,
                       fontSize: 13,
                       fontWeight: FontWeight.w500,
                     ),
@@ -305,7 +305,7 @@ class _StatementsShimmer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Shimmer.fromColors(
-      baseColor: AppColors.surface,
+      baseColor: ScoutColors.surface,
       highlightColor: const Color(0xFF1C2E1E),
       child: ListView.separated(
         padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -324,7 +324,7 @@ class _ShimmerCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: ScoutColors.surface,
         borderRadius: BorderRadius.circular(16),
       ),
       padding: const EdgeInsets.fromLTRB(18, 16, 18, 0),
@@ -356,7 +356,7 @@ class _ShimmerCard extends StatelessWidget {
             ],
           ),
           18.verticalSpace,
-          Container(height: 1, color: AppColors.divider),
+          Container(height: 1, color: ScoutColors.divider),
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 14),
             child: Row(
@@ -404,13 +404,13 @@ class _EmptyView extends StatelessWidget {
         children: [
           Icon(
             Icons.receipt_long_outlined,
-            color: AppColors.textSecondary,
+            color: ScoutColors.textSecondary,
             size: 52,
           ),
           20.verticalSpace,
           const Text(
             'No statements yet.',
-            style: TextStyle(color: AppColors.textSecondary, fontSize: 15),
+            style: TextStyle(color: ScoutColors.textSecondary, fontSize: 15),
           ),
         ],
       ),
@@ -430,20 +430,20 @@ class _ErrorView extends StatelessWidget {
         children: [
           const Icon(
             Icons.error_outline_rounded,
-            color: AppColors.scoutMarker,
+            color: ScoutColors.scoutMarker,
             size: 48,
           ),
           20.verticalSpace,
           const Text(
             'Failed to load statements.',
-            style: TextStyle(color: AppColors.textSecondary, fontSize: 15),
+            style: TextStyle(color: ScoutColors.textSecondary, fontSize: 15),
           ),
           16.verticalSpace,
           TextButton(
             onPressed: onRetry,
             child: const Text(
               'Retry',
-              style: TextStyle(color: AppColors.primary, fontWeight: FontWeight.w700),
+              style: TextStyle(color: ScoutColors.primary, fontWeight: FontWeight.w700),
             ),
           ),
         ],

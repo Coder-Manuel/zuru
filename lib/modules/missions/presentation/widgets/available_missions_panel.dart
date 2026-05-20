@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:zuru/config/colors.dart';
+import 'package:zuru/config/scout_colors.dart';
 import 'package:zuru/core/utils/extensions.dart';
 import 'package:zuru/core/utils/size.util.dart';
 import 'package:zuru/core/widgets/location_listener.builder.dart';
@@ -14,7 +14,7 @@ class MissionsPanel extends GetView<RadarController> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: AppColors.background,
+      color: ScoutColors.background,
       child: GetBuilder<RadarController>(
         id: controller.missionsBuilder,
         builder: (_) {
@@ -34,7 +34,7 @@ class MissionsPanel extends GetView<RadarController> {
                       ? 'NO ACTIVE MISSIONS NEARBY'
                       : '$count ACTIVE MISSION${count == 1 ? '' : 'S'} NEARBY',
                   style: const TextStyle(
-                    color: AppColors.textAccent,
+                    color: ScoutColors.textAccent,
                     fontSize: 12,
                     fontWeight: FontWeight.w700,
                     letterSpacing: 1.2,
@@ -82,11 +82,11 @@ class _NoMissionsPlaceholder extends StatelessWidget {
             height: 56,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: AppColors.surface,
+              color: ScoutColors.surface,
             ),
             child: const Icon(
               Icons.radar_outlined,
-              color: AppColors.textSecondary,
+              color: ScoutColors.textSecondary,
               size: 28,
             ),
           ),
@@ -94,7 +94,7 @@ class _NoMissionsPlaceholder extends StatelessWidget {
           const Text(
             'No missions nearby',
             style: TextStyle(
-              color: AppColors.textPrimary,
+              color: ScoutColors.textPrimary,
               fontSize: 15,
               fontWeight: FontWeight.w600,
             ),
@@ -103,7 +103,7 @@ class _NoMissionsPlaceholder extends StatelessWidget {
           const Text(
             'New missions will appear here\nas they become available.',
             style: TextStyle(
-              color: AppColors.textSecondary,
+              color: ScoutColors.textSecondary,
               fontSize: 13,
               height: 1.5,
             ),
@@ -128,7 +128,7 @@ class _LoadingShimmer extends StatelessWidget {
       itemBuilder: (_, _) => Container(
         height: 72,
         decoration: BoxDecoration(
-          color: AppColors.surface,
+          color: ScoutColors.surface,
           borderRadius: BorderRadius.circular(14),
         ),
       ),
@@ -149,7 +149,7 @@ class _MissionCard extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
         decoration: BoxDecoration(
-          color: AppColors.surface,
+          color: ScoutColors.surface,
           borderRadius: BorderRadius.circular(14),
         ),
         child: Row(
@@ -161,7 +161,7 @@ class _MissionCard extends StatelessWidget {
                   Text(
                     '${mission.type?.label} \n${mission.address}',
                     style: const TextStyle(
-                      color: AppColors.textPrimary,
+                      color: ScoutColors.textPrimary,
                       fontWeight: FontWeight.w600,
                       fontSize: 15,
                     ),
@@ -175,13 +175,13 @@ class _MissionCard extends StatelessWidget {
                           Icon(
                             Icons.timer_outlined,
                             size: 15,
-                            color: AppColors.primary,
+                            color: ScoutColors.primary,
                           ),
                           5.horizontalSpace,
                           Text(
                             '${((mission.durationInSec / 60).round())}min',
                             style: const TextStyle(
-                              color: AppColors.textSecondary,
+                              color: ScoutColors.textSecondary,
                               fontSize: 13,
                             ),
                           ),
@@ -195,7 +195,7 @@ class _MissionCard extends StatelessWidget {
                           return Text(
                             '${distance?.formatDistance} away',
                             style: const TextStyle(
-                              color: AppColors.textSecondary,
+                              color: ScoutColors.textSecondary,
                               fontSize: 13,
                             ),
                           );
@@ -210,7 +210,7 @@ class _MissionCard extends StatelessWidget {
             Text(
               mission.formattedPrice,
               style: const TextStyle(
-                color: AppColors.textAccent,
+                color: ScoutColors.textAccent,
                 fontWeight: FontWeight.w700,
                 fontSize: 16,
               ),

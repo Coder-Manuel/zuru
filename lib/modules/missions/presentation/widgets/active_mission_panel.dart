@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:zuru/config/colors.dart';
+import 'package:zuru/config/scout_colors.dart';
 import 'package:zuru/core/utils/extensions.dart';
 import 'package:zuru/core/utils/size.util.dart';
 import 'package:zuru/core/widgets/location_listener.builder.dart';
@@ -14,7 +14,7 @@ class ActiveMissionPanel extends GetView<RadarController> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: AppColors.background,
+      color: ScoutColors.background,
       child: Obx(() {
         final mission = controller.activeMission.value;
         if (mission == null) return const SizedBox.shrink();
@@ -32,7 +32,7 @@ class ActiveMissionPanel extends GetView<RadarController> {
                   const Text(
                     'MISSION IN ACTION',
                     style: TextStyle(
-                      color: AppColors.scoutMarker,
+                      color: ScoutColors.scoutMarker,
                       fontSize: 12,
                       fontWeight: FontWeight.w700,
                       letterSpacing: 1.2,
@@ -72,9 +72,9 @@ class ActiveMissionPanel extends GetView<RadarController> {
                             ? null
                             : controller.completeMission,
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColors.primary,
-                          foregroundColor: AppColors.background,
-                          disabledBackgroundColor: AppColors.primary.withAlpha(
+                          backgroundColor: ScoutColors.primary,
+                          foregroundColor: ScoutColors.background,
+                          disabledBackgroundColor: ScoutColors.primary.withAlpha(
                             100,
                           ),
                           minimumSize: const Size.fromHeight(54),
@@ -89,7 +89,7 @@ class ActiveMissionPanel extends GetView<RadarController> {
                                 height: 20,
                                 child: CircularProgressIndicator(
                                   strokeWidth: 2,
-                                  color: AppColors.background,
+                                  color: ScoutColors.background,
                                 ),
                               )
                             : const Text(
@@ -144,12 +144,12 @@ class ActiveMissionPanel extends GetView<RadarController> {
     showDialog<void>(
       context: context,
       builder: (_) => AlertDialog(
-        backgroundColor: AppColors.surface,
+        backgroundColor: ScoutColors.surface,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         title: const Text(
           'Abandon Mission?',
           style: TextStyle(
-            color: AppColors.textPrimary,
+            color: ScoutColors.textPrimary,
             fontWeight: FontWeight.w700,
             fontSize: 18,
           ),
@@ -157,7 +157,7 @@ class ActiveMissionPanel extends GetView<RadarController> {
         content: const Text(
           'This mission will be released back to the pool. This action cannot be undone.',
           style: TextStyle(
-            color: AppColors.textSecondary,
+            color: ScoutColors.textSecondary,
             fontSize: 14,
             height: 1.5,
           ),
@@ -167,7 +167,7 @@ class ActiveMissionPanel extends GetView<RadarController> {
             onPressed: () => Get.back(),
             child: const Text(
               'Cancel',
-              style: TextStyle(color: AppColors.textSecondary),
+              style: TextStyle(color: ScoutColors.textSecondary),
             ),
           ),
           TextButton(
@@ -200,10 +200,10 @@ class _ActiveMissionCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: ScoutColors.surface,
         borderRadius: BorderRadius.circular(14),
         border: Border.all(
-          color: AppColors.scoutMarker.withAlpha(60),
+          color: ScoutColors.scoutMarker.withAlpha(60),
           width: 1,
         ),
       ),
@@ -214,7 +214,7 @@ class _ActiveMissionCard extends StatelessWidget {
           Text(
             '${mission.type?.label}\n${mission.address}',
             style: const TextStyle(
-              color: AppColors.textPrimary,
+              color: ScoutColors.textPrimary,
               fontWeight: FontWeight.w600,
               fontSize: 15,
               height: 1.4,
@@ -246,7 +246,7 @@ class _ActiveMissionCard extends StatelessWidget {
 
           14.verticalSpace,
 
-          const Divider(color: AppColors.divider, height: 1, thickness: 1),
+          const Divider(color: ScoutColors.divider, height: 1, thickness: 1),
 
           14.verticalSpace,
 
@@ -257,7 +257,7 @@ class _ActiveMissionCard extends StatelessWidget {
               const Text(
                 'PAYOUT',
                 style: TextStyle(
-                  color: AppColors.textSecondary,
+                  color: ScoutColors.textSecondary,
                   fontSize: 11,
                   fontWeight: FontWeight.w600,
                   letterSpacing: 0.8,
@@ -266,7 +266,7 @@ class _ActiveMissionCard extends StatelessWidget {
               Text(
                 mission.formattedPrice,
                 style: const TextStyle(
-                  color: AppColors.textAccent,
+                  color: ScoutColors.textAccent,
                   fontWeight: FontWeight.w700,
                   fontSize: 18,
                 ),
@@ -289,11 +289,11 @@ class _MetaChip extends StatelessWidget {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Icon(icon, size: 14, color: AppColors.primary),
+        Icon(icon, size: 14, color: ScoutColors.primary),
         5.horizontalSpace,
         Text(
           label,
-          style: const TextStyle(color: AppColors.textSecondary, fontSize: 13),
+          style: const TextStyle(color: ScoutColors.textSecondary, fontSize: 13),
         ),
       ],
     );
@@ -311,7 +311,7 @@ class _CountdownCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: ScoutColors.surface,
         borderRadius: BorderRadius.circular(14),
       ),
       child: Row(
@@ -323,7 +323,7 @@ class _CountdownCard extends StatelessWidget {
               const Text(
                 'EXPIRES IN',
                 style: TextStyle(
-                  color: AppColors.textSecondary,
+                  color: ScoutColors.textSecondary,
                   fontSize: 11,
                   fontWeight: FontWeight.w600,
                   letterSpacing: 0.8,
@@ -333,7 +333,7 @@ class _CountdownCard extends StatelessWidget {
               const Text(
                 'Mission removed after 48 hours',
                 style: TextStyle(
-                  color: AppColors.textSecondary,
+                  color: ScoutColors.textSecondary,
                   fontSize: 12,
                   height: 1.3,
                 ),
@@ -343,17 +343,17 @@ class _CountdownCard extends StatelessWidget {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
             decoration: BoxDecoration(
-              color: AppColors.background,
+              color: ScoutColors.background,
               borderRadius: BorderRadius.circular(10),
               border: Border.all(
-                color: AppColors.scoutMarker.withAlpha(80),
+                color: ScoutColors.scoutMarker.withAlpha(80),
                 width: 1,
               ),
             ),
             child: Text(
               countdown,
               style: const TextStyle(
-                color: AppColors.scoutMarker,
+                color: ScoutColors.scoutMarker,
                 fontSize: 20,
                 fontWeight: FontWeight.w700,
                 fontFeatures: [FontFeature.tabularFigures()],
@@ -407,7 +407,7 @@ class _PulsingDotState extends State<_PulsingDot>
         height: 9,
         decoration: const BoxDecoration(
           shape: BoxShape.circle,
-          color: AppColors.scoutMarker,
+          color: ScoutColors.scoutMarker,
         ),
       ),
     );

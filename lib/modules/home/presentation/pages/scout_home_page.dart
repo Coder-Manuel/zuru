@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:zuru/config/colors.dart';
+import 'package:zuru/config/scout_colors.dart';
 import 'package:zuru/modules/home/presentation/controllers/home_controller.dart';
 import 'package:zuru/modules/missions/presentation/pages/scout_missions_tab.dart';
 import 'package:zuru/modules/missions/presentation/pages/radar_page.dart';
@@ -14,7 +14,7 @@ class ScoutHomePage extends GetView<HomeController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: ScoutColors.background,
       body: Obx(
         () => IndexedStack(
           index: controller.currentIndex.value,
@@ -44,8 +44,8 @@ class _BottomNav extends StatelessWidget {
 
       return Container(
         decoration: const BoxDecoration(
-          color: AppColors.background,
-          border: Border(top: BorderSide(color: AppColors.divider, width: 1)),
+          color: ScoutColors.background,
+          border: Border(top: BorderSide(color: ScoutColors.divider, width: 1)),
         ),
         child: SafeArea(
           top: false,
@@ -102,7 +102,7 @@ class _NavItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color = active ? AppColors.primary : AppColors.iconColor;
+    final color = active ? ScoutColors.primary : ScoutColors.iconColor;
 
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
@@ -142,7 +142,7 @@ class _PlaceholderPage extends StatelessWidget {
       child: Text(
         label,
         style: const TextStyle(
-          color: AppColors.textSecondary,
+          color: ScoutColors.textSecondary,
           fontSize: 20,
           fontWeight: FontWeight.w700,
           letterSpacing: 2,
