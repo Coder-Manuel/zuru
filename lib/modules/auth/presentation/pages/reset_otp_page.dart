@@ -36,7 +36,7 @@ class ResetOtpPage extends GetView<ResetPasswordController> {
                     color: AppColors.primary.withAlpha(40),
                     shape: BoxShape.circle,
                   ),
-                  child: const Icon(
+                  child: Icon(
                     Icons.verified_user_outlined,
                     color: AppColors.primary,
                     size: 36,
@@ -47,7 +47,7 @@ class ResetOtpPage extends GetView<ResetPasswordController> {
               28.verticalSpace,
 
               // ── Heading ─────────────────────────────────────────────────
-              const Center(
+              Center(
                 child: Text(
                   'Security Code',
                   style: TextStyle(
@@ -62,7 +62,7 @@ class ResetOtpPage extends GetView<ResetPasswordController> {
                 child: Text(
                   'Enter the 6-digit code sent to\n${controller.emailCTRL.text.trim()}',
                   textAlign: TextAlign.center,
-                  style: const TextStyle(
+                  style: TextStyle(
                     color: AppColors.textSecondary,
                     fontSize: 15,
                     height: 1.5,
@@ -95,7 +95,7 @@ class ResetOtpPage extends GetView<ResetPasswordController> {
                 child: GestureDetector(
                   onTap: () =>
                       controller.sendResetCode(GlobalKey<FormState>()),
-                  child: const Text(
+                  child: Text(
                     'Resend Code',
                     style: TextStyle(
                       color: AppColors.primary,
@@ -125,7 +125,7 @@ class _ResetOtpField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const defaultTheme = PinTheme(
+    final defaultTheme = PinTheme(
       width: 52,
       height: 60,
       textStyle: TextStyle(
@@ -164,7 +164,7 @@ class _BackToLoginButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () => Get.back(),
-      child: const Row(
+      child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
           Icon(Icons.chevron_left, color: AppColors.textPrimary, size: 18),

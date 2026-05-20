@@ -31,7 +31,7 @@ class ForgotPasswordPage extends GetView<ResetPasswordController> {
                 80.verticalSpace,
 
                 // ── Heading ───────────────────────────────────────────────
-                const Text(
+                Text(
                   'Reset Password',
                   style: TextStyle(
                     color: AppColors.textPrimary,
@@ -41,7 +41,7 @@ class ForgotPasswordPage extends GetView<ResetPasswordController> {
                   ),
                 ),
                 16.verticalSpace,
-                const Text(
+                Text(
                   'Enter your email address below to\nreceive a password reset code.',
                   style: TextStyle(
                     color: AppColors.textSecondary,
@@ -57,7 +57,7 @@ class ForgotPasswordPage extends GetView<ResetPasswordController> {
                   controller: controller.emailCTRL,
                   hint: 'Email Address',
                   keyboardType: TextInputType.emailAddress,
-                  prefixIcon: const Icon(
+                  prefixIcon: Icon(
                     Icons.mail_outline,
                     color: AppColors.iconColor,
                     size: 20,
@@ -92,7 +92,7 @@ class _BackToLoginButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () => Get.back(),
-      child: const Row(
+      child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
           Icon(Icons.chevron_left, color: AppColors.textPrimary, size: 18),

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:zuru/config/scout_colors.dart';
+import 'package:zuru/config/colors.dart';
 import 'package:zuru/core/utils/extensions.dart';
 import 'package:zuru/core/utils/size.util.dart';
 import 'package:zuru/core/widgets/location_listener.builder.dart';
@@ -19,7 +19,7 @@ class MissionDetailsPage extends GetView<RadarController> {
     final mission = Get.arguments as MissionEntity;
 
     return Scaffold(
-      backgroundColor: ScoutColors.background,
+      backgroundColor: AppColors.background,
       body: SafeArea(
         child: Column(
           children: [
@@ -30,10 +30,10 @@ class MissionDetailsPage extends GetView<RadarController> {
                 children: [
                   _BackButton(),
                   20.horizontalSpace,
-                  const Text(
+                  Text(
                     'Mission Details',
                     style: TextStyle(
-                      color: ScoutColors.textPrimary,
+                      color: AppColors.textPrimary,
                       fontSize: 26,
                       fontWeight: FontWeight.w700,
                       fontStyle: FontStyle.italic,
@@ -77,7 +77,7 @@ class MissionDetailsPage extends GetView<RadarController> {
                         _DetailRow(
                           label: 'PRICE',
                           value: mission.formattedPrice,
-                          valueColor: ScoutColors.textAccent,
+                          valueColor: AppColors.textAccent,
                         ),
                         _Divider(),
                         _DetailRow(
@@ -115,8 +115,8 @@ class MissionDetailsPage extends GetView<RadarController> {
                           ),
                         ),
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: ScoutColors.primary,
-                          foregroundColor: ScoutColors.background,
+                          backgroundColor: AppColors.primary,
+                          foregroundColor: AppColors.background,
                           minimumSize: const Size.fromHeight(56),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(14),
@@ -132,9 +132,9 @@ class MissionDetailsPage extends GetView<RadarController> {
                               ? null
                               : () => controller.acceptMission(mission.id!),
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: ScoutColors.primary,
-                            foregroundColor: ScoutColors.background,
-                            disabledBackgroundColor: ScoutColors.primary
+                            backgroundColor: AppColors.primary,
+                            foregroundColor: AppColors.background,
+                            disabledBackgroundColor: AppColors.primary
                                 .withAlpha(100),
                             minimumSize: const Size.fromHeight(56),
                             shape: RoundedRectangleBorder(
@@ -143,12 +143,12 @@ class MissionDetailsPage extends GetView<RadarController> {
                             elevation: 0,
                           ),
                           child: controller.isAccepting.value
-                              ? const SizedBox(
+                              ? SizedBox(
                                   width: 22,
                                   height: 22,
                                   child: CircularProgressIndicator(
                                     strokeWidth: 2.5,
-                                    color: ScoutColors.background,
+                                    color: AppColors.background,
                                   ),
                                 )
                               : const Text(
@@ -166,9 +166,9 @@ class MissionDetailsPage extends GetView<RadarController> {
                       OutlinedButton(
                         onPressed: () => Get.back(),
                         style: OutlinedButton.styleFrom(
-                          foregroundColor: ScoutColors.textSecondary,
-                          side: const BorderSide(
-                            color: ScoutColors.divider,
+                          foregroundColor: AppColors.textSecondary,
+                          side: BorderSide(
+                            color: AppColors.divider,
                             width: 1.2,
                           ),
                           minimumSize: const Size.fromHeight(56),
@@ -208,12 +208,12 @@ class _BackButton extends StatelessWidget {
         width: 42,
         height: 42,
         decoration: BoxDecoration(
-          color: ScoutColors.surface,
+          color: AppColors.surface,
           shape: BoxShape.circle,
         ),
-        child: const Icon(
+        child: Icon(
           Icons.chevron_left,
-          color: ScoutColors.textPrimary,
+          color: AppColors.textPrimary,
           size: 24,
         ),
       ),
@@ -232,18 +232,18 @@ class _DistanceBadge extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 20),
       decoration: BoxDecoration(
-        color: ScoutColors.surface,
+        color: AppColors.surface,
         borderRadius: BorderRadius.circular(14),
       ),
       child: Column(
         children: [
-          Icon(Icons.location_on, color: ScoutColors.scoutMarker, size: 36),
+          Icon(Icons.location_on, color: AppColors.scoutMarker, size: 36),
           10.verticalSpace,
           Text(
             label,
             textAlign: TextAlign.center,
-            style: const TextStyle(
-              color: ScoutColors.scoutMarker,
+            style: TextStyle(
+              color: AppColors.scoutMarker,
               fontSize: 13,
               fontWeight: FontWeight.w700,
               letterSpacing: 1.0,
@@ -265,7 +265,7 @@ class _DetailCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: ScoutColors.surface,
+        color: AppColors.surface,
         borderRadius: BorderRadius.circular(14),
       ),
       child: Column(
@@ -279,8 +279,8 @@ class _DetailCard extends StatelessWidget {
 class _Divider extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return const Divider(
-      color: ScoutColors.divider,
+    return Divider(
+      color: AppColors.divider,
       height: 1,
       thickness: 1,
       indent: 18,
@@ -306,8 +306,8 @@ class _DetailRow extends StatelessWidget {
         children: [
           Text(
             label,
-            style: const TextStyle(
-              color: ScoutColors.textSecondary,
+            style: TextStyle(
+              color: AppColors.textSecondary,
               fontSize: 11,
               fontWeight: FontWeight.w600,
               letterSpacing: 0.8,
@@ -316,7 +316,7 @@ class _DetailRow extends StatelessWidget {
           Text(
             value,
             style: TextStyle(
-              color: valueColor ?? ScoutColors.textPrimary,
+              color: valueColor ?? AppColors.textPrimary,
               fontSize: 15,
               fontWeight: FontWeight.w600,
             ),
@@ -340,10 +340,10 @@ class _InstructionsRow extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
+          Text(
             'INSTRUCTIONS',
             style: TextStyle(
-              color: ScoutColors.textSecondary,
+              color: AppColors.textSecondary,
               fontSize: 11,
               fontWeight: FontWeight.w600,
               letterSpacing: 0.8,
@@ -352,8 +352,8 @@ class _InstructionsRow extends StatelessWidget {
           10.verticalSpace,
           Text(
             text,
-            style: const TextStyle(
-              color: ScoutColors.textPrimary,
+            style: TextStyle(
+              color: AppColors.textPrimary,
               fontSize: 14.5,
               height: 1.5,
             ),
@@ -383,10 +383,10 @@ class _ClientRow extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          const Text(
+          Text(
             'CLIENT',
             style: TextStyle(
-              color: ScoutColors.textSecondary,
+              color: AppColors.textSecondary,
               fontSize: 11,
               fontWeight: FontWeight.w600,
               letterSpacing: 0.8,
@@ -396,19 +396,19 @@ class _ClientRow extends StatelessWidget {
             children: [
               Text(
                 name,
-                style: const TextStyle(
-                  color: ScoutColors.textPrimary,
+                style: TextStyle(
+                  color: AppColors.textPrimary,
                   fontSize: 15,
                   fontWeight: FontWeight.w600,
                 ),
               ),
               const SizedBox(width: 6),
-              const Icon(Icons.star, color: ScoutColors.primary, size: 14),
+              Icon(Icons.star, color: AppColors.primary, size: 14),
               const SizedBox(width: 3),
               Text(
                 '$rating',
-                style: const TextStyle(
-                  color: ScoutColors.textAccent,
+                style: TextStyle(
+                  color: AppColors.textAccent,
                   fontSize: 13,
                 ),
               ),

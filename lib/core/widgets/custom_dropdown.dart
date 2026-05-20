@@ -43,7 +43,7 @@ class CustomDropDown<T> extends StatelessWidget {
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: AppColors.primary, width: 1.5),
+          borderSide: BorderSide(color: AppColors.primary, width: 1.5),
         ),
         errorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
@@ -62,7 +62,7 @@ class CustomDropDown<T> extends StatelessWidget {
           ],
           Text(
             hint,
-            style: const TextStyle(color: AppColors.textSecondary, fontSize: 15),
+            style: TextStyle(color: AppColors.textSecondary, fontSize: 15),
           ),
         ],
       ),
@@ -79,7 +79,7 @@ class CustomDropDown<T> extends StatelessWidget {
                 ],
                 Text(
                   itemLabel(item),
-                  style: const TextStyle(
+                  style: TextStyle(
                     color: AppColors.textPrimary,
                     fontSize: 15,
                     fontWeight: FontWeight.w600,
@@ -96,12 +96,12 @@ class CustomDropDown<T> extends StatelessWidget {
               value: item,
               child: Text(
                 itemLabel(item),
-                style: const TextStyle(color: AppColors.textPrimary, fontSize: 15),
+                style: TextStyle(color: AppColors.textPrimary, fontSize: 15),
               ),
             ),
           )
           .toList(),
-      iconStyleData: const IconStyleData(
+      iconStyleData: IconStyleData(
         icon: Icon(Icons.keyboard_arrow_down_rounded),
         iconSize: 20,
         iconEnabledColor: AppColors.textSecondary,

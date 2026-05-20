@@ -19,7 +19,7 @@ class Toast {
       snackPosition: SnackPosition.TOP,
       backgroundColor: isError
           ? const Color(0xFF940000)
-          : (color ?? ColorPallete.primaryColor),
+          : (color ?? AppColors.primary),
       colorText: Colors.white,
       margin: const EdgeInsets.only(top: 20, left: 20, right: 20),
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),

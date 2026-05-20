@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:zuru/config/client_colors.dart';
+import 'package:zuru/config/colors.dart';
 
 class NotificationsTab extends StatelessWidget {
   const NotificationsTab({super.key});
@@ -17,20 +17,20 @@ class NotificationsTab extends StatelessWidget {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Text(
+                  Text(
                     'Notifications',
                     style: TextStyle(
-                      color: ClientColors.textPrimary,
+                      color: AppColors.textPrimary,
                       fontSize: 28,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                   GestureDetector(
                     onTap: () {},
-                    child: const Text(
+                    child: Text(
                       'Mark all read',
                       style: TextStyle(
-                        color: ClientColors.primary,
+                        color: AppColors.primary,
                         fontSize: 13,
                         fontWeight: FontWeight.w600,
                       ),
@@ -50,8 +50,8 @@ class NotificationsTab extends StatelessWidget {
                     children: [
                       Text(
                         group.date,
-                        style: const TextStyle(
-                          color: ClientColors.textSecondary,
+                        style: TextStyle(
+                          color: AppColors.textSecondary,
                           fontSize: 12,
                           fontWeight: FontWeight.w600,
                           letterSpacing: 0.5,
@@ -82,10 +82,10 @@ class _NotificationItem extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 10),
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: item.unread ? ClientColors.surface : ClientColors.background,
+        color: item.unread ? AppColors.surface : AppColors.background,
         borderRadius: BorderRadius.circular(14),
         border: item.unread
-            ? Border.all(color: ClientColors.divider, width: 0.5)
+            ? Border.all(color: AppColors.divider, width: 0.5)
             : null,
       ),
       child: Row(
@@ -108,7 +108,7 @@ class _NotificationItem extends StatelessWidget {
                 Text(
                   item.title,
                   style: TextStyle(
-                    color: ClientColors.textPrimary,
+                    color: AppColors.textPrimary,
                     fontSize: 14,
                     fontWeight:
                         item.unread ? FontWeight.w700 : FontWeight.w500,
@@ -117,8 +117,8 @@ class _NotificationItem extends StatelessWidget {
                 const SizedBox(height: 4),
                 Text(
                   item.body,
-                  style: const TextStyle(
-                    color: ClientColors.textSecondary,
+                  style: TextStyle(
+                    color: AppColors.textSecondary,
                     fontSize: 12,
                   ),
                 ),
@@ -129,16 +129,16 @@ class _NotificationItem extends StatelessWidget {
             children: [
               Text(
                 item.time,
-                style: const TextStyle(
-                    color: ClientColors.textSecondary, fontSize: 11),
+                style: TextStyle(
+                    color: AppColors.textSecondary, fontSize: 11),
               ),
               if (item.unread) ...[
                 const SizedBox(height: 6),
                 Container(
                   width: 8,
                   height: 8,
-                  decoration: const BoxDecoration(
-                    color: ClientColors.primary,
+                  decoration: BoxDecoration(
+                    color: AppColors.primary,
                     shape: BoxShape.circle,
                   ),
                 ),
@@ -177,7 +177,7 @@ class _NotificationData {
   });
 }
 
-const _notifications = [
+final _notifications = [
   _NotificationGroup(
     date: 'TODAY',
     items: [
@@ -197,7 +197,7 @@ const _notifications = [
         unread: true,
         icon: Icons.message_outlined,
         iconBg: Color(0xFF1A2535),
-        iconColor: ClientColors.primary,
+        iconColor: AppColors.primary,
       ),
     ],
   ),
@@ -220,7 +220,7 @@ const _notifications = [
         unread: false,
         icon: Icons.person_outline,
         iconBg: Color(0xFF1A2535),
-        iconColor: ClientColors.textSecondary,
+        iconColor: AppColors.textSecondary,
       ),
     ],
   ),

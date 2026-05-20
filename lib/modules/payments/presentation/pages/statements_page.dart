@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:shimmer/shimmer.dart';
-import 'package:zuru/config/scout_colors.dart';
+import 'package:zuru/config/colors.dart';
 import 'package:zuru/core/utils/size.util.dart';
 import 'package:zuru/modules/payments/domain/entities/statement.entity.dart';
 import 'package:zuru/modules/payments/presentation/controllers/statements_controller.dart';
@@ -14,7 +14,7 @@ class StatementsPage extends GetView<StatementsController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: ScoutColors.background,
+      backgroundColor: AppColors.background,
       body: SafeArea(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -30,21 +30,21 @@ class StatementsPage extends GetView<StatementsController> {
                       width: 40,
                       height: 40,
                       decoration: BoxDecoration(
-                        color: ScoutColors.surface,
+                        color: AppColors.surface,
                         shape: BoxShape.circle,
                       ),
-                      child: const Icon(
+                      child: Icon(
                         Icons.chevron_left_rounded,
-                        color: ScoutColors.textPrimary,
+                        color: AppColors.textPrimary,
                         size: 26,
                       ),
                     ),
                   ),
                   20.horizontalSpace,
-                  const Text(
+                  Text(
                     'Statements',
                     style: TextStyle(
-                      color: ScoutColors.textPrimary,
+                      color: AppColors.textPrimary,
                       fontSize: 28,
                       fontWeight: FontWeight.w700,
                       fontStyle: FontStyle.italic,
@@ -169,7 +169,7 @@ class _StatementCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final (statusLabel, statusColor) = switch (statement.status) {
-      StatementStatus.disbursed => ('DISBURSED', ScoutColors.textAccent),
+      StatementStatus.disbursed => ('DISBURSED', AppColors.textAccent),
       StatementStatus.pending => ('PENDING', const Color(0xFFF5A020)),
       StatementStatus.failed => ('FAILED', const Color(0xFFCC1E1E)),
     };
@@ -178,9 +178,9 @@ class _StatementCard extends StatelessWidget {
 
     return Container(
       decoration: BoxDecoration(
-        color: ScoutColors.surface,
+        color: AppColors.surface,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: ScoutColors.divider),
+        border: Border.all(color: AppColors.divider),
       ),
       child: Padding(
         padding: const EdgeInsets.fromLTRB(18, 16, 18, 0),
@@ -197,8 +197,8 @@ class _StatementCard extends StatelessWidget {
                     children: [
                       Text(
                         dateLabel,
-                        style: const TextStyle(
-                          color: ScoutColors.textSecondary,
+                        style: TextStyle(
+                          color: AppColors.textSecondary,
                           fontSize: 11,
                           fontWeight: FontWeight.w600,
                           letterSpacing: 0.8,
@@ -207,8 +207,8 @@ class _StatementCard extends StatelessWidget {
                       8.verticalSpace,
                       Text(
                         '${statement.missionTitle} · ${statement.location}',
-                        style: const TextStyle(
-                          color: ScoutColors.textPrimary,
+                        style: TextStyle(
+                          color: AppColors.textPrimary,
                           fontSize: 15,
                           fontWeight: FontWeight.w700,
                         ),
@@ -222,8 +222,8 @@ class _StatementCard extends StatelessWidget {
                   children: [
                     Text(
                       statement.formattedAmount,
-                      style: const TextStyle(
-                        color: ScoutColors.textAccent,
+                      style: TextStyle(
+                        color: AppColors.textAccent,
                         fontSize: 18,
                         fontWeight: FontWeight.w800,
                       ),
@@ -248,17 +248,17 @@ class _StatementCard extends StatelessWidget {
             // ── Channel row ─────────────────────────────────────────────────
             Container(
               height: 1,
-              color: ScoutColors.divider,
+              color: AppColors.divider,
             ),
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 14),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Text(
+                  Text(
                     'CHANNEL',
                     style: TextStyle(
-                      color: ScoutColors.textSecondary,
+                      color: AppColors.textSecondary,
                       fontSize: 11,
                       fontWeight: FontWeight.w700,
                       letterSpacing: 1.2,
@@ -266,8 +266,8 @@ class _StatementCard extends StatelessWidget {
                   ),
                   Text(
                     statement.channel,
-                    style: const TextStyle(
-                      color: ScoutColors.textPrimary,
+                    style: TextStyle(
+                      color: AppColors.textPrimary,
                       fontSize: 13,
                       fontWeight: FontWeight.w500,
                     ),
@@ -305,7 +305,7 @@ class _StatementsShimmer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Shimmer.fromColors(
-      baseColor: ScoutColors.surface,
+      baseColor: AppColors.surface,
       highlightColor: const Color(0xFF1C2E1E),
       child: ListView.separated(
         padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -324,7 +324,7 @@ class _ShimmerCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: ScoutColors.surface,
+        color: AppColors.surface,
         borderRadius: BorderRadius.circular(16),
       ),
       padding: const EdgeInsets.fromLTRB(18, 16, 18, 0),
@@ -356,7 +356,7 @@ class _ShimmerCard extends StatelessWidget {
             ],
           ),
           18.verticalSpace,
-          Container(height: 1, color: ScoutColors.divider),
+          Container(height: 1, color: AppColors.divider),
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 14),
             child: Row(
@@ -404,13 +404,13 @@ class _EmptyView extends StatelessWidget {
         children: [
           Icon(
             Icons.receipt_long_outlined,
-            color: ScoutColors.textSecondary,
+            color: AppColors.textSecondary,
             size: 52,
           ),
           20.verticalSpace,
-          const Text(
+          Text(
             'No statements yet.',
-            style: TextStyle(color: ScoutColors.textSecondary, fontSize: 15),
+            style: TextStyle(color: AppColors.textSecondary, fontSize: 15),
           ),
         ],
       ),
@@ -428,22 +428,22 @@ class _ErrorView extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Icon(
+          Icon(
             Icons.error_outline_rounded,
-            color: ScoutColors.scoutMarker,
+            color: AppColors.scoutMarker,
             size: 48,
           ),
           20.verticalSpace,
-          const Text(
+          Text(
             'Failed to load statements.',
-            style: TextStyle(color: ScoutColors.textSecondary, fontSize: 15),
+            style: TextStyle(color: AppColors.textSecondary, fontSize: 15),
           ),
           16.verticalSpace,
           TextButton(
             onPressed: onRetry,
-            child: const Text(
+            child: Text(
               'Retry',
-              style: TextStyle(color: ScoutColors.primary, fontWeight: FontWeight.w700),
+              style: TextStyle(color: AppColors.primary, fontWeight: FontWeight.w700),
             ),
           ),
         ],

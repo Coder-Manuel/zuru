@@ -27,18 +27,18 @@ class NamesSetupPage extends GetView<RegisterController> {
                 Container(
                   width: 80,
                   height: 80,
-                  decoration: const BoxDecoration(
+                  decoration: BoxDecoration(
                     color: AppColors.biometricBg,
                     shape: BoxShape.circle,
                   ),
-                  child: const Icon(
+                  child: Icon(
                     Icons.person_outline,
                     color: AppColors.primary,
                     size: 36,
                   ),
                 ),
                 28.verticalSpace,
-                const Align(
+                Align(
                   alignment: Alignment.centerLeft,
                   child: Text(
                     'Personal Details',
@@ -50,7 +50,7 @@ class NamesSetupPage extends GetView<RegisterController> {
                   ),
                 ),
                 10.verticalSpace,
-                const Align(
+                Align(
                   alignment: Alignment.centerLeft,
                   child: Text(
                     'How should we address you?',

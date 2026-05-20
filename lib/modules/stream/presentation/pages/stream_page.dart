@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:livekit_client/livekit_client.dart';
-import 'package:zuru/config/scout_colors.dart';
+import 'package:zuru/config/colors.dart';
 import 'package:zuru/core/utils/size.util.dart';
 import 'package:zuru/modules/missions/domain/entities/mission.entity.dart';
 import 'package:zuru/modules/stream/presentation/controllers/live_stream_controller.dart';
@@ -90,15 +90,15 @@ class _CameraFeed extends StatelessWidget {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const CircularProgressIndicator(
-                  color: ScoutColors.primary,
+                CircularProgressIndicator(
+                  color: AppColors.primary,
                   strokeWidth: 2,
                 ),
                 16.verticalSpace,
-                const Text(
+                Text(
                   'Starting stream…',
                   style: TextStyle(
-                    color: ScoutColors.textSecondary,
+                    color: AppColors.textSecondary,
                     fontSize: 14,
                   ),
                 ),
@@ -116,34 +116,34 @@ class _CameraFeed extends StatelessWidget {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Icon(
+                Icon(
                   Icons.videocam_off_outlined,
-                  color: ScoutColors.scoutMarker,
+                  color: AppColors.scoutMarker,
                   size: 52,
                 ),
                 20.verticalSpace,
-                const Text(
+                Text(
                   'Failed to start stream.',
                   style: TextStyle(
-                    color: ScoutColors.textSecondary,
+                    color: AppColors.textSecondary,
                     fontSize: 15,
                   ),
                 ),
                 4.verticalSpace,
-                const Text(
+                Text(
                   'Check your connection and try again.',
                   style: TextStyle(
-                    color: ScoutColors.textSecondary,
+                    color: AppColors.textSecondary,
                     fontSize: 13,
                   ),
                 ),
                 24.verticalSpace,
                 TextButton(
                   onPressed: Get.back,
-                  child: const Text(
+                  child: Text(
                     'Go Back',
                     style: TextStyle(
-                      color: ScoutColors.primary,
+                      color: AppColors.primary,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
@@ -187,10 +187,10 @@ class _TopOverlay extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Text(
+                Text(
                   'Live Feed',
                   style: TextStyle(
-                    color: ScoutColors.textPrimary,
+                    color: AppColors.textPrimary,
                     fontSize: 15,
                     fontWeight: FontWeight.w600,
                   ),
@@ -288,8 +288,8 @@ class _BottomSection extends StatelessWidget {
                         children: [
                           Text(
                             ctrl.mission.client?.displayName ?? 'Scout',
-                            style: const TextStyle(
-                              color: ScoutColors.textPrimary,
+                            style: TextStyle(
+                              color: AppColors.textPrimary,
                               fontSize: 16,
                               fontWeight: FontWeight.w700,
                             ),
@@ -512,9 +512,9 @@ class _ClientStatusText extends StatelessWidget {
     final (label, color) = switch (state) {
       ClientStreamState.waiting => (
         'Waiting for client to join…',
-        ScoutColors.textSecondary,
+        AppColors.textSecondary,
       ),
-      ClientStreamState.joined => ('Client is watching', ScoutColors.textAccent),
+      ClientStreamState.joined => ('Client is watching', AppColors.textAccent),
       ClientStreamState.disconnected => (
         'Client disconnected — reconnecting…',
         Color(0xFFF5A020),
@@ -523,7 +523,7 @@ class _ClientStatusText extends StatelessWidget {
         'Client left the stream',
         Color(0xFFF5A020),
       ),
-      ClientStreamState.terminated => ('Stream ended', ScoutColors.textSecondary),
+      ClientStreamState.terminated => ('Stream ended', AppColors.textSecondary),
     };
 
     return AnimatedSwitcher(
@@ -551,8 +551,8 @@ class _ScoutAvatar extends StatelessWidget {
     return Obx(() {
       final state = ctrl.clientState.value;
       final ringColor = switch (state) {
-        ClientStreamState.joined => ScoutColors.primary,
-        ClientStreamState.waiting => ScoutColors.textSecondary,
+        ClientStreamState.joined => AppColors.primary,
+        ClientStreamState.waiting => AppColors.textSecondary,
         ClientStreamState.disconnected ||
         ClientStreamState.droppedOff => const Color(0xFFF5A020),
         ClientStreamState.terminated => Colors.white24,
@@ -575,7 +575,7 @@ class _ScoutAvatar extends StatelessWidget {
               ),
               child: ClipOval(
                 child: Container(
-                  color: ScoutColors.surface,
+                  color: AppColors.surface,
                   child: Center(
                     child: Text(
                       initial,
@@ -626,19 +626,19 @@ class _GpsBadge extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
       decoration: BoxDecoration(
-        color: ScoutColors.surface,
+        color: AppColors.surface,
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: ScoutColors.primary.withAlpha(40)),
+        border: Border.all(color: AppColors.primary.withAlpha(40)),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
           const Icon(Icons.location_pin, color: Colors.redAccent, size: 13),
           const SizedBox(width: 4),
-          const Text(
+          Text(
             'GPS ✓ ',
             style: TextStyle(
-              color: ScoutColors.primary,
+              color: AppColors.primary,
               fontSize: 11,
               fontWeight: FontWeight.w700,
             ),
@@ -646,7 +646,7 @@ class _GpsBadge extends StatelessWidget {
           Flexible(
             child: Text(
               address.isNotEmpty ? address : 'On Location',
-              style: const TextStyle(color: ScoutColors.primary, fontSize: 11),
+              style: TextStyle(color: AppColors.primary, fontSize: 11),
               overflow: TextOverflow.ellipsis,
             ),
           ),
@@ -711,20 +711,20 @@ class _EndMissionButton extends StatelessWidget {
   void _confirm() {
     Get.dialog(
       AlertDialog(
-        backgroundColor: ScoutColors.surface,
+        backgroundColor: AppColors.surface,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: const Text(
+        title: Text(
           'End Mission?',
           style: TextStyle(
-            color: ScoutColors.textPrimary,
+            color: AppColors.textPrimary,
             fontSize: 18,
             fontWeight: FontWeight.w700,
           ),
         ),
-        content: const Text(
+        content: Text(
           'This will stop your stream and mark the mission as complete.',
           style: TextStyle(
-            color: ScoutColors.textSecondary,
+            color: AppColors.textSecondary,
             fontSize: 14,
             height: 1.5,
           ),
@@ -732,9 +732,9 @@ class _EndMissionButton extends StatelessWidget {
         actions: [
           TextButton(
             onPressed: Get.back,
-            child: const Text(
+            child: Text(
               'Cancel',
-              style: TextStyle(color: ScoutColors.textSecondary),
+              style: TextStyle(color: AppColors.textSecondary),
             ),
           ),
           TextButton(

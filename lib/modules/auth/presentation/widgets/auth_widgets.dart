@@ -28,11 +28,11 @@ class AuthTextField extends StatelessWidget {
       controller: controller,
       obscureText: obscureText,
       keyboardType: keyboardType,
-      style: const TextStyle(color: AppColors.textPrimary),
+      style: TextStyle(color: AppColors.textPrimary),
       validator: validator,
       decoration: InputDecoration(
         hintText: hint,
-        hintStyle: const TextStyle(color: AppColors.textSecondary),
+        hintStyle: TextStyle(color: AppColors.textSecondary),
         filled: true,
         fillColor: AppColors.inputBg,
         prefixIcon: Padding(
@@ -54,7 +54,7 @@ class AuthTextField extends StatelessWidget {
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: AppColors.primary, width: 1.5),
+          borderSide: BorderSide(color: AppColors.primary, width: 1.5),
         ),
         contentPadding: const EdgeInsets.symmetric(
           horizontal: 16,
@@ -131,7 +131,7 @@ class GoogleButton extends StatelessWidget {
             const SizedBox(width: 12),
             Text(
               label,
-              style: const TextStyle(
+              style: TextStyle(
                 color: AppColors.googleText,
                 fontSize: 16,
                 fontWeight: FontWeight.w700,
@@ -152,18 +152,18 @@ class AuthDivider extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        const Expanded(child: Divider(color: AppColors.divider)),
+        Expanded(child: Divider(color: AppColors.divider)),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16),
           child: Text(
             text,
-            style: const TextStyle(
+            style: TextStyle(
               color: AppColors.textSecondary,
               fontSize: 14,
             ),
           ),
         ),
-        const Expanded(child: Divider(color: AppColors.divider)),
+        Expanded(child: Divider(color: AppColors.divider)),
       ],
     );
   }

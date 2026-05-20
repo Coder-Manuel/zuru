@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:zuru/config/client_colors.dart';
+import 'package:zuru/config/colors.dart';
 import 'package:zuru/core/utils/size.util.dart';
 import 'package:zuru/core/widgets/custom_dropdown.dart';
 import 'package:zuru/modules/missions/data/models/enum.dart';
@@ -26,10 +26,10 @@ class PostMissionPage extends GetView<PostMissionController> {
                 children: [
                   _CircleBackButton(),
                   const SizedBox(width: 14),
-                  const Text(
+                  Text(
                     'Post a Mission',
                     style: TextStyle(
-                      color: ClientColors.textPrimary,
+                      color: AppColors.textPrimary,
                       fontSize: 22,
                       fontWeight: FontWeight.w800,
                     ),
@@ -142,7 +142,7 @@ class PostMissionPage extends GetView<PostMissionController> {
                         child: ElevatedButton(
                           onPressed: () => controller.postMission(formKey),
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: ClientColors.primary,
+                            backgroundColor: AppColors.primary,
                             foregroundColor: Colors.black,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(50),
@@ -192,12 +192,12 @@ class _GpsBanner extends StatelessWidget {
         width: double.infinity,
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         decoration: BoxDecoration(
-          color: hasLocation ? const Color(0xFF1E1A0E) : ClientColors.inputBg,
+          color: hasLocation ? Color(0xFF1E1A0E) : AppColors.inputBg,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
             color: hasLocation
-                ? ClientColors.primary.withAlpha(60)
-                : ClientColors.divider.withAlpha(80),
+                ? AppColors.primary.withAlpha(60)
+                : AppColors.divider.withAlpha(80),
             width: 1,
           ),
         ),
@@ -215,8 +215,8 @@ class _GpsBanner extends StatelessWidget {
                     : 'Tap to set mission location',
                 style: TextStyle(
                   color: hasLocation
-                      ? ClientColors.primary
-                      : ClientColors.textSecondary,
+                      ? AppColors.primary
+                      : AppColors.textSecondary,
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
                 ),
@@ -226,7 +226,7 @@ class _GpsBanner extends StatelessWidget {
             ),
             Icon(
               Icons.chevron_right,
-              color: hasLocation ? ClientColors.primary : ClientColors.textSecondary,
+              color: hasLocation ? AppColors.primary : AppColors.textSecondary,
               size: 18,
             ),
           ],
@@ -246,8 +246,8 @@ class _FieldLabel extends StatelessWidget {
   Widget build(BuildContext context) {
     return Text(
       label,
-      style: const TextStyle(
-        color: ClientColors.textSecondary,
+      style: TextStyle(
+        color: AppColors.textSecondary,
         fontSize: 11,
         fontWeight: FontWeight.w700,
         letterSpacing: 1.1,
@@ -280,15 +280,15 @@ class _MissionTextField extends StatelessWidget {
       maxLines: maxLines,
       keyboardType: keyboardType,
       validator: validator,
-      style: const TextStyle(color: ClientColors.textPrimary, fontSize: 15),
+      style: TextStyle(color: AppColors.textPrimary, fontSize: 15),
       decoration: InputDecoration(
         hintText: hint,
-        hintStyle: const TextStyle(
-          color: ClientColors.textSecondary,
+        hintStyle: TextStyle(
+          color: AppColors.textSecondary,
           fontSize: 15,
         ),
         filled: true,
-        fillColor: ClientColors.inputBg,
+        fillColor: AppColors.inputBg,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
           borderSide: BorderSide.none,
@@ -299,7 +299,7 @@ class _MissionTextField extends StatelessWidget {
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: ClientColors.primary, width: 1.5),
+          borderSide: BorderSide(color: AppColors.primary, width: 1.5),
         ),
         contentPadding: const EdgeInsets.symmetric(
           horizontal: 16,
@@ -331,10 +331,10 @@ class _PriceChip extends StatelessWidget {
         duration: const Duration(milliseconds: 180),
         height: 48,
         decoration: BoxDecoration(
-          color: selected ? ClientColors.primary.withAlpha(25) : ClientColors.inputBg,
+          color: selected ? AppColors.primary.withAlpha(25) : AppColors.inputBg,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
-            color: selected ? ClientColors.primary : Colors.transparent,
+            color: selected ? AppColors.primary : Colors.transparent,
             width: 1.5,
           ),
         ),
@@ -342,7 +342,7 @@ class _PriceChip extends StatelessWidget {
         child: Text(
           label,
           style: TextStyle(
-            color: selected ? ClientColors.primary : ClientColors.textSecondary,
+            color: selected ? AppColors.primary : AppColors.textSecondary,
             fontSize: 15,
             fontWeight: FontWeight.w700,
           ),
@@ -363,12 +363,12 @@ class _CircleBackButton extends StatelessWidget {
         width: 42,
         height: 42,
         decoration: BoxDecoration(
-          color: ClientColors.surface,
+          color: AppColors.surface,
           shape: BoxShape.circle,
         ),
-        child: const Icon(
+        child: Icon(
           Icons.arrow_back,
-          color: ClientColors.textPrimary,
+          color: AppColors.textPrimary,
           size: 20,
         ),
       ),

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:zuru/config/client_colors.dart';
+import 'package:zuru/config/colors.dart';
 import 'package:zuru/modules/missions/domain/entities/place_suggestion.entity.dart';
 import 'package:zuru/modules/missions/presentation/controllers/location_picker_controller.dart';
 
@@ -13,7 +13,7 @@ class LocationPickerPage extends GetView<LocationPickerController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: ClientColors.background,
+      backgroundColor: AppColors.background,
       body: Stack(
         children: [
           // ── Full-screen map ────────────────────────────────────────────────
@@ -125,11 +125,11 @@ class _CentrePin extends StatelessWidget {
             width: 36,
             height: 36,
             decoration: BoxDecoration(
-              color: ClientColors.primary,
+              color: AppColors.primary,
               shape: BoxShape.circle,
               boxShadow: [
                 BoxShadow(
-                  color: ClientColors.primary.withAlpha(100),
+                  color: AppColors.primary.withAlpha(100),
                   blurRadius: 12,
                   spreadRadius: 2,
                 ),
@@ -138,7 +138,7 @@ class _CentrePin extends StatelessWidget {
             child: const Icon(Icons.location_on, color: Colors.black, size: 20),
           ),
           // Pin stem
-          Container(width: 2, height: 16, color: ClientColors.primary),
+          Container(width: 2, height: 16, color: AppColors.primary),
           // Shadow dot on the map
           Container(
             width: 8,
@@ -167,22 +167,22 @@ class _SearchField extends StatelessWidget {
     return TextField(
       controller: controller,
       onChanged: onChanged,
-      style: const TextStyle(color: ClientColors.textPrimary, fontSize: 15),
+      style: TextStyle(color: AppColors.textPrimary, fontSize: 15),
       decoration: InputDecoration(
         hintText: 'Search address…',
-        hintStyle: const TextStyle(
-          color: ClientColors.textSecondary,
+        hintStyle: TextStyle(
+          color: AppColors.textSecondary,
           fontSize: 15,
         ),
-        prefixIcon: const Icon(
+        prefixIcon: Icon(
           Icons.search,
-          color: ClientColors.textSecondary,
+          color: AppColors.textSecondary,
           size: 20,
         ),
         suffixIcon: IconButton(
-          icon: const Icon(
+          icon: Icon(
             Icons.close,
-            color: ClientColors.textSecondary,
+            color: AppColors.textSecondary,
             size: 18,
           ),
           onPressed: () {
@@ -191,7 +191,7 @@ class _SearchField extends StatelessWidget {
           },
         ),
         filled: true,
-        fillColor: ClientColors.surface,
+        fillColor: AppColors.surface,
         contentPadding: const EdgeInsets.symmetric(
           horizontal: 16,
           vertical: 12,
@@ -203,13 +203,13 @@ class _SearchField extends StatelessWidget {
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(14),
           borderSide: BorderSide(
-            color: ClientColors.divider.withAlpha(80),
+            color: AppColors.divider.withAlpha(80),
             width: 0.5,
           ),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(14),
-          borderSide: const BorderSide(color: ClientColors.primary, width: 1.5),
+          borderSide: BorderSide(color: AppColors.primary, width: 1.5),
         ),
       ),
     );
@@ -229,9 +229,9 @@ class _SuggestionsList extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.fromLTRB(16, 6, 16, 0),
       decoration: BoxDecoration(
-        color: ClientColors.surface,
+        color: AppColors.surface,
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: ClientColors.divider.withAlpha(80), width: 0.5),
+        border: Border.all(color: AppColors.divider.withAlpha(80), width: 0.5),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withAlpha(80),
@@ -278,16 +278,16 @@ class _SuggestionTile extends StatelessWidget {
               ? null
               : Border(
                   bottom: BorderSide(
-                    color: ClientColors.divider.withAlpha(60),
+                    color: AppColors.divider.withAlpha(60),
                     width: 0.5,
                   ),
                 ),
         ),
         child: Row(
           children: [
-            const Icon(
+            Icon(
               Icons.location_on_outlined,
-              color: ClientColors.primary,
+              color: AppColors.primary,
               size: 18,
             ),
             const SizedBox(width: 12),
@@ -297,8 +297,8 @@ class _SuggestionTile extends StatelessWidget {
                 children: [
                   Text(
                     suggestion.mainText,
-                    style: const TextStyle(
-                      color: ClientColors.textPrimary,
+                    style: TextStyle(
+                      color: AppColors.textPrimary,
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
                     ),
@@ -309,8 +309,8 @@ class _SuggestionTile extends StatelessWidget {
                     const SizedBox(height: 2),
                     Text(
                       suggestion.secondaryText,
-                      style: const TextStyle(
-                        color: ClientColors.textSecondary,
+                      style: TextStyle(
+                        color: AppColors.textSecondary,
                         fontSize: 12,
                       ),
                       maxLines: 1,
@@ -344,10 +344,10 @@ class _ConfirmBar extends StatelessWidget {
         16 + MediaQuery.of(context).padding.bottom,
       ),
       decoration: BoxDecoration(
-        color: ClientColors.surface,
+        color: AppColors.surface,
         borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
         border: Border(
-          top: BorderSide(color: ClientColors.divider.withAlpha(80), width: 0.5),
+          top: BorderSide(color: AppColors.divider.withAlpha(80), width: 0.5),
         ),
         boxShadow: [
           BoxShadow(
@@ -368,12 +368,12 @@ class _ConfirmBar extends StatelessWidget {
                 width: 36,
                 height: 36,
                 decoration: BoxDecoration(
-                  color: ClientColors.primary.withAlpha(25),
+                  color: AppColors.primary.withAlpha(25),
                   shape: BoxShape.circle,
                 ),
-                child: const Icon(
+                child: Icon(
                   Icons.location_on,
-                  color: ClientColors.primary,
+                  color: AppColors.primary,
                   size: 18,
                 ),
               ),
@@ -388,8 +388,8 @@ class _ConfirmBar extends StatelessWidget {
                     addr.isEmpty ? 'Move the pin to set a location' : addr,
                     style: TextStyle(
                       color: addr.isEmpty
-                          ? ClientColors.textSecondary
-                          : ClientColors.textPrimary,
+                          ? AppColors.textSecondary
+                          : AppColors.textPrimary,
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
                     ),
@@ -409,7 +409,7 @@ class _ConfirmBar extends StatelessWidget {
             child: ElevatedButton(
               onPressed: controller.confirmLocation,
               style: ElevatedButton.styleFrom(
-                backgroundColor: ClientColors.primary,
+                backgroundColor: AppColors.primary,
                 foregroundColor: Colors.black,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(50),
@@ -466,7 +466,7 @@ class _AddressShimmerState extends State<_AddressShimmer>
         height: 14,
         width: double.infinity,
         decoration: BoxDecoration(
-          color: ClientColors.divider.setOpacity(_anim.value),
+          color: AppColors.divider.setOpacity(_anim.value),
           borderRadius: BorderRadius.circular(6),
         ),
       ),
@@ -497,9 +497,9 @@ class _CircleIconButton extends StatelessWidget {
         width: size,
         height: size,
         decoration: BoxDecoration(
-          color: ClientColors.surface,
+          color: AppColors.surface,
           shape: BoxShape.circle,
-          border: Border.all(color: ClientColors.primary),
+          border: Border.all(color: AppColors.primary),
           boxShadow: [
             BoxShadow(
               color: Colors.black.withAlpha(60),
@@ -509,17 +509,17 @@ class _CircleIconButton extends StatelessWidget {
           ],
         ),
         child: isLoading
-            ? const Center(
+            ? Center(
                 child: SizedBox(
                   width: 18,
                   height: 18,
                   child: CircularProgressIndicator(
                     strokeWidth: 2,
-                    color: ClientColors.primary,
+                    color: AppColors.primary,
                   ),
                 ),
               )
-            : Icon(icon, color: ClientColors.textPrimary, size: 20),
+            : Icon(icon, color: AppColors.textPrimary, size: 20),
       ),
     );
   }

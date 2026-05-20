@@ -2,7 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:zuru/config/scout_colors.dart';
+import 'package:zuru/config/colors.dart';
 import 'package:zuru/core/services/location_service/location_service.dart';
 import 'package:zuru/core/utils/extensions.dart';
 import 'package:zuru/core/utils/size.util.dart';
@@ -197,10 +197,10 @@ class RadarMap extends GetView<RadarController> {
               if (!controller.isLoading.value) return const SizedBox.shrink();
               return Positioned.fill(
                 child: Container(
-                  color: ScoutColors.background.withAlpha(160),
-                  child: const Center(
+                  color: AppColors.background.withAlpha(160),
+                  child: Center(
                     child: CircularProgressIndicator(
-                      color: ScoutColors.primary,
+                      color: AppColors.primary,
                       strokeWidth: 2,
                     ),
                   ),
@@ -214,13 +214,13 @@ class RadarMap extends GetView<RadarController> {
               if (err == null) return const SizedBox.shrink();
               return Positioned.fill(
                 child: Container(
-                  color: ScoutColors.background.withAlpha(200),
+                  color: AppColors.background.withAlpha(200),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const Icon(
+                      Icon(
                         Icons.location_off_outlined,
-                        color: ScoutColors.textSecondary,
+                        color: AppColors.textSecondary,
                         size: 36,
                       ),
                       12.verticalSpace,
@@ -228,8 +228,8 @@ class RadarMap extends GetView<RadarController> {
                         padding: const EdgeInsets.symmetric(horizontal: 32),
                         child: Text(
                           err,
-                          style: const TextStyle(
-                            color: ScoutColors.textSecondary,
+                          style: TextStyle(
+                            color: AppColors.textSecondary,
                             fontSize: 13,
                           ),
                           textAlign: TextAlign.center,
@@ -238,9 +238,9 @@ class RadarMap extends GetView<RadarController> {
                       16.verticalSpace,
                       TextButton(
                         onPressed: _location.retryInit,
-                        child: const Text(
+                        child: Text(
                           'Retry',
-                          style: TextStyle(color: ScoutColors.primary),
+                          style: TextStyle(color: AppColors.primary),
                         ),
                       ),
                     ],
@@ -276,7 +276,7 @@ class _LockedRadarOverlay extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: ScoutColors.background.withAlpha(180),
+      color: AppColors.background.withAlpha(180),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -285,23 +285,23 @@ class _LockedRadarOverlay extends StatelessWidget {
             height: 56,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: ScoutColors.scoutMarker.withAlpha(25),
+              color: AppColors.scoutMarker.withAlpha(25),
               border: Border.all(
-                color: ScoutColors.scoutMarker.withAlpha(100),
+                color: AppColors.scoutMarker.withAlpha(100),
                 width: 1.5,
               ),
             ),
-            child: const Icon(
+            child: Icon(
               Icons.lock_outline_rounded,
-              color: ScoutColors.scoutMarker,
+              color: AppColors.scoutMarker,
               size: 26,
             ),
           ),
           14.verticalSpace,
-          const Text(
+          Text(
             'RADAR LOCKED',
             style: TextStyle(
-              color: ScoutColors.scoutMarker,
+              color: AppColors.scoutMarker,
               fontSize: 13,
               fontWeight: FontWeight.w700,
               letterSpacing: 1.4,
@@ -316,8 +316,8 @@ class _LockedRadarOverlay extends StatelessWidget {
                 mission != null
                     ? 'Mission in progress · ${distance?.formatDistance} away'
                     : 'Complete your current mission\nto scan for new ones.',
-                style: const TextStyle(
-                  color: ScoutColors.textSecondary,
+                style: TextStyle(
+                  color: AppColors.textSecondary,
                   fontSize: 12,
                   height: 1.5,
                 ),
@@ -338,9 +338,9 @@ class _YouAreHereBadge extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
       decoration: BoxDecoration(
-        color: ScoutColors.surface.withAlpha(220),
+        color: AppColors.surface.withAlpha(220),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: ScoutColors.primary.withAlpha(60), width: 1),
+        border: Border.all(color: AppColors.primary.withAlpha(60), width: 1),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -350,10 +350,10 @@ class _YouAreHereBadge extends StatelessWidget {
             height: 15,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: ScoutColors.scoutMarker,
+              color: AppColors.scoutMarker,
               boxShadow: [
                 BoxShadow(
-                  color: ScoutColors.primary.withAlpha(120),
+                  color: AppColors.primary.withAlpha(120),
                   blurRadius: 6,
                   spreadRadius: 1,
                 ),
@@ -361,10 +361,10 @@ class _YouAreHereBadge extends StatelessWidget {
             ),
           ),
           8.horizontalSpace,
-          const Text(
+          Text(
             'YOU',
             style: TextStyle(
-              color: ScoutColors.textPrimary,
+              color: AppColors.textPrimary,
               fontSize: 10,
               fontWeight: FontWeight.w700,
               letterSpacing: 0.8,

@@ -26,7 +26,7 @@ class LoginPage extends GetView<LoginController> {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 50.verticalSpace,
-                const Text(
+                Text(
                   'UnSeen',
                   style: TextStyle(
                     color: AppColors.textPrimary,
@@ -36,7 +36,7 @@ class LoginPage extends GetView<LoginController> {
                   ),
                 ),
                 8.verticalSpace,
-                const Text(
+                Text(
                   'See anywhere. Know everything.',
                   style: TextStyle(
                     color: AppColors.textSecondary,
@@ -48,7 +48,7 @@ class LoginPage extends GetView<LoginController> {
                   controller: controller.emailCTRL,
                   hint: 'Email address',
                   keyboardType: TextInputType.emailAddress,
-                  prefixIcon: const Icon(
+                  prefixIcon: Icon(
                     Icons.mail_outline,
                     color: AppColors.iconColor,
                     size: 20,
@@ -65,7 +65,7 @@ class LoginPage extends GetView<LoginController> {
                     controller: controller.passwordCTRL,
                     hint: 'Password',
                     obscureText: controller.obscurePass.value,
-                    prefixIcon: const Icon(
+                    prefixIcon: Icon(
                       Icons.lock_outline,
                       color: AppColors.iconColor,
                       size: 20,
@@ -94,7 +94,7 @@ class LoginPage extends GetView<LoginController> {
                   alignment: Alignment.centerRight,
                   child: GestureDetector(
                     onTap: () => Get.toNamed(ForgotPasswordPage.route),
-                    child: const Text(
+                    child: Text(
                       'Forgot Password?',
                       style: TextStyle(
                         color: AppColors.primary,
@@ -124,7 +124,7 @@ class LoginPage extends GetView<LoginController> {
                             color: AppColors.biometricBg,
                             borderRadius: BorderRadius.circular(18),
                           ),
-                          child: const Icon(
+                          child: Icon(
                             Icons.fingerprint,
                             color: AppColors.primary,
                             size: 36,
@@ -146,7 +146,7 @@ class LoginPage extends GetView<LoginController> {
                 GestureDetector(
                   onTap: () => Get.toNamed(SignupPage.route),
                   child: RichText(
-                    text: const TextSpan(
+                    text: TextSpan(
                       text: "Don't have an account? ",
                       style: TextStyle(
                         color: AppColors.textSecondary,

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:zuru/config/client_colors.dart';
+import 'package:zuru/config/colors.dart';
 import 'package:zuru/modules/user/presentation/controllers/user_controller.dart';
 
 class SettingsTab extends GetView<UserController> {
@@ -9,7 +9,7 @@ class SettingsTab extends GetView<UserController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: ClientColors.background,
+      backgroundColor: AppColors.background,
       body: SafeArea(
         child: ListView(
           padding: EdgeInsets.zero,
@@ -27,8 +27,8 @@ class SettingsTab extends GetView<UserController> {
                   const SizedBox(height: 16),
                   Text(
                     name,
-                    style: const TextStyle(
-                      color: ClientColors.textPrimary,
+                    style: TextStyle(
+                      color: AppColors.textPrimary,
                       fontSize: 26,
                       fontWeight: FontWeight.w600,
                       fontStyle: FontStyle.italic,
@@ -40,31 +40,31 @@ class SettingsTab extends GetView<UserController> {
                     children: [
                       Text(
                         role,
-                        style: const TextStyle(
-                          color: ClientColors.textSecondary,
+                        style: TextStyle(
+                          color: AppColors.textSecondary,
                           fontSize: 14,
                           fontWeight: FontWeight.w500,
                         ),
                       ),
-                      const Text(
+                      Text(
                         ' · ',
                         style: TextStyle(
-                          color: ClientColors.textSecondary,
+                          color: AppColors.textSecondary,
                           fontSize: 14,
                         ),
                       ),
                       Text(
                         rating,
-                        style: const TextStyle(
-                          color: ClientColors.textSecondary,
+                        style: TextStyle(
+                          color: AppColors.textSecondary,
                           fontSize: 14,
                           fontWeight: FontWeight.w500,
                         ),
                       ),
                       const SizedBox(width: 4),
-                      const Icon(
+                      Icon(
                         Icons.star_rounded,
-                        color: ClientColors.textSecondary,
+                        color: AppColors.textSecondary,
                         size: 16,
                       ),
                     ],
@@ -114,9 +114,9 @@ class SettingsTab extends GetView<UserController> {
                   _SettingsCard(
                     icon: Icons.shield_outlined,
                     title: 'Privacy Policy',
-                    trailing: const Icon(
+                    trailing: Icon(
                       Icons.link_rounded,
-                      color: ClientColors.textSecondary,
+                      color: AppColors.textSecondary,
                       size: 20,
                     ),
                     onTap: () {},
@@ -127,9 +127,9 @@ class SettingsTab extends GetView<UserController> {
                   _SettingsCard(
                     icon: Icons.description_outlined,
                     title: 'Terms & Conditions',
-                    trailing: const Icon(
+                    trailing: Icon(
                       Icons.link_rounded,
-                      color: ClientColors.textSecondary,
+                      color: AppColors.textSecondary,
                       size: 20,
                     ),
                     onTap: () {},
@@ -140,9 +140,9 @@ class SettingsTab extends GetView<UserController> {
                   _SettingsCard(
                     icon: Icons.settings_outlined,
                     title: 'Account Settings',
-                    trailing: const Icon(
+                    trailing: Icon(
                       Icons.chevron_right_rounded,
-                      color: ClientColors.textSecondary,
+                      color: AppColors.textSecondary,
                       size: 22,
                     ),
                     onTap: () {},
@@ -156,10 +156,10 @@ class SettingsTab extends GetView<UserController> {
                   const SizedBox(height: 24),
 
                   // ── Version ───────────────────────────────────────────────
-                  const Text(
+                  Text(
                     'UNSEEN APP VERSION 1.0.4',
                     style: TextStyle(
-                      color: ClientColors.textSecondary,
+                      color: AppColors.textSecondary,
                       fontSize: 11,
                       fontWeight: FontWeight.w500,
                       letterSpacing: 1.2,
@@ -208,14 +208,14 @@ class _ProfileAvatar extends StatelessWidget {
       height: 100,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        border: Border.all(color: ClientColors.primary, width: 3),
-        color: ClientColors.inputBg,
+        border: Border.all(color: AppColors.primary, width: 3),
+        color: AppColors.inputBg,
       ),
       child: Center(
         child: Text(
           _initials,
-          style: const TextStyle(
-            color: ClientColors.primary,
+          style: TextStyle(
+            color: AppColors.primary,
             fontSize: 34,
             fontWeight: FontWeight.w700,
           ),
@@ -245,7 +245,7 @@ class _SettingsCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: ClientColors.inputBg,
+      color: AppColors.inputBg,
       borderRadius: BorderRadius.circular(16),
       child: InkWell(
         onTap: onTap,
@@ -259,10 +259,10 @@ class _SettingsCard extends StatelessWidget {
                 width: 42,
                 height: 42,
                 decoration: BoxDecoration(
-                  color: ClientColors.primary.withAlpha(30),
+                  color: AppColors.primary.withAlpha(30),
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: Icon(icon, color: ClientColors.primary, size: 22),
+                child: Icon(icon, color: AppColors.primary, size: 22),
               ),
               const SizedBox(width: 14),
 
@@ -273,8 +273,8 @@ class _SettingsCard extends StatelessWidget {
                   children: [
                     Text(
                       title,
-                      style: const TextStyle(
-                        color: ClientColors.textPrimary,
+                      style: TextStyle(
+                        color: AppColors.textPrimary,
                         fontSize: 15,
                         fontWeight: FontWeight.w700,
                       ),
@@ -283,8 +283,8 @@ class _SettingsCard extends StatelessWidget {
                       const SizedBox(height: 2),
                       Text(
                         subtitle!,
-                        style: const TextStyle(
-                          color: ClientColors.textSecondary,
+                        style: TextStyle(
+                          color: AppColors.textSecondary,
                           fontSize: 12,
                         ),
                       ),
@@ -315,9 +315,9 @@ class _AppSwitch extends StatelessWidget {
     return Switch(
       value: value,
       onChanged: onChanged,
-      activeThumbColor: ClientColors.primary,
+      activeThumbColor: AppColors.primary,
       activeTrackColor: const Color(0xFF3A3A3A),
-      inactiveThumbColor: ClientColors.textSecondary,
+      inactiveThumbColor: AppColors.textSecondary,
       inactiveTrackColor: const Color(0xFF2A2A2A),
       trackOutlineColor: WidgetStateProperty.all(Colors.transparent),
     );

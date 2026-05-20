@@ -5,7 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mapbox_navigation_plus/flutter_mapbox_navigation_plus.dart';
 import 'package:get/get.dart';
-import 'package:zuru/config/scout_colors.dart';
+import 'package:zuru/config/colors.dart';
 import 'package:zuru/core/services/location_service/location_service.dart';
 import 'package:zuru/core/utils/extensions.dart';
 import 'package:zuru/core/utils/size.util.dart';
@@ -203,7 +203,7 @@ class _NavigationPageState extends State<NavigationPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: ScoutColors.background,
+      backgroundColor: AppColors.background,
       body: SafeArea(
         child: Column(
           children: [
@@ -214,10 +214,10 @@ class _NavigationPageState extends State<NavigationPage> {
                 children: [
                   _CloseButton(onTap: _onClosePressed),
                   20.horizontalSpace,
-                  const Text(
+                  Text(
                     'Navigation',
                     style: TextStyle(
-                      color: ScoutColors.textPrimary,
+                      color: AppColors.textPrimary,
                       fontSize: 26,
                       fontWeight: FontWeight.w700,
                       fontStyle: FontStyle.italic,
@@ -298,15 +298,15 @@ class _PreparingBodyState extends State<_PreparingBody>
             height: 88,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: ScoutColors.primary.withAlpha(20),
+              color: AppColors.primary.withAlpha(20),
               border: Border.all(
-                color: ScoutColors.primary.withAlpha(60),
+                color: AppColors.primary.withAlpha(60),
                 width: 1.5,
               ),
             ),
-            child: const Icon(
+            child: Icon(
               Icons.navigation_rounded,
-              color: ScoutColors.primary,
+              color: AppColors.primary,
               size: 40,
             ),
           ),
@@ -314,10 +314,10 @@ class _PreparingBodyState extends State<_PreparingBody>
 
         32.verticalSpace,
 
-        const Text(
+        Text(
           'Preparing Navigation',
           style: TextStyle(
-            color: ScoutColors.textPrimary,
+            color: AppColors.textPrimary,
             fontSize: 22,
             fontWeight: FontWeight.w700,
           ),
@@ -325,10 +325,10 @@ class _PreparingBodyState extends State<_PreparingBody>
 
         12.verticalSpace,
 
-        const Text(
+        Text(
           'Calculating the best route…',
           style: TextStyle(
-            color: ScoutColors.textSecondary,
+            color: AppColors.textSecondary,
             fontSize: 14,
             height: 1.5,
           ),
@@ -341,15 +341,15 @@ class _PreparingBodyState extends State<_PreparingBody>
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
           margin: const EdgeInsets.symmetric(horizontal: 32),
           decoration: BoxDecoration(
-            color: ScoutColors.surface,
+            color: AppColors.surface,
             borderRadius: BorderRadius.circular(14),
-            border: Border.all(color: ScoutColors.divider),
+            border: Border.all(color: AppColors.divider),
           ),
           child: Row(
             children: [
-              const Icon(
+              Icon(
                 Icons.location_on_outlined,
-                color: ScoutColors.scoutMarker,
+                color: AppColors.scoutMarker,
                 size: 20,
               ),
               12.horizontalSpace,
@@ -357,10 +357,10 @@ class _PreparingBodyState extends State<_PreparingBody>
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
+                    Text(
                       'DESTINATION',
                       style: TextStyle(
-                        color: ScoutColors.textSecondary,
+                        color: AppColors.textSecondary,
                         fontSize: 10,
                         fontWeight: FontWeight.w700,
                         letterSpacing: 0.8,
@@ -371,8 +371,8 @@ class _PreparingBodyState extends State<_PreparingBody>
                       widget.mission.address.isNotEmpty
                           ? widget.mission.address
                           : 'Mission Location',
-                      style: const TextStyle(
-                        color: ScoutColors.textPrimary,
+                      style: TextStyle(
+                        color: AppColors.textPrimary,
                         fontSize: 14,
                         fontWeight: FontWeight.w600,
                       ),
@@ -389,8 +389,8 @@ class _PreparingBodyState extends State<_PreparingBody>
                 builder: (_, distance) {
                   return Text(
                     distance?.formatDistance ?? '--',
-                    style: const TextStyle(
-                      color: ScoutColors.textAccent,
+                    style: TextStyle(
+                      color: AppColors.textAccent,
                       fontWeight: FontWeight.w700,
                       fontSize: 14,
                     ),
@@ -427,21 +427,21 @@ class _ErrorBody extends StatelessWidget {
         Container(
           width: 72,
           height: 72,
-          decoration: const BoxDecoration(
+          decoration: BoxDecoration(
             shape: BoxShape.circle,
-            color: ScoutColors.surface,
+            color: AppColors.surface,
           ),
-          child: const Icon(
+          child: Icon(
             Icons.map_outlined,
-            color: ScoutColors.textSecondary,
+            color: AppColors.textSecondary,
             size: 32,
           ),
         ),
         20.verticalSpace,
         Text(
           message,
-          style: const TextStyle(
-            color: ScoutColors.textSecondary,
+          style: TextStyle(
+            color: AppColors.textSecondary,
             fontSize: 14,
             height: 1.6,
           ),
@@ -453,8 +453,8 @@ class _ErrorBody extends StatelessWidget {
           child: ElevatedButton(
             onPressed: onRetry,
             style: ElevatedButton.styleFrom(
-              backgroundColor: ScoutColors.primary,
-              foregroundColor: ScoutColors.background,
+              backgroundColor: AppColors.primary,
+              foregroundColor: AppColors.background,
               minimumSize: const Size.fromHeight(52),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(14),
@@ -519,8 +519,8 @@ class _LoadingDotsState extends State<_LoadingDots>
           decoration: BoxDecoration(
             shape: BoxShape.circle,
             color: i == _activeDot
-                ? ScoutColors.primary
-                : ScoutColors.primary.withAlpha(60),
+                ? AppColors.primary
+                : AppColors.primary.withAlpha(60),
           ),
         );
       }),
@@ -541,13 +541,13 @@ class _CloseButton extends StatelessWidget {
       child: Container(
         width: 42,
         height: 42,
-        decoration: const BoxDecoration(
-          color: ScoutColors.surface,
+        decoration: BoxDecoration(
+          color: AppColors.surface,
           shape: BoxShape.circle,
         ),
-        child: const Icon(
+        child: Icon(
           Icons.chevron_left,
-          color: ScoutColors.textPrimary,
+          color: AppColors.textPrimary,
           size: 24,
         ),
       ),

@@ -32,7 +32,7 @@ class NewPasswordPage extends GetView<ResetPasswordController> {
                 60.verticalSpace,
 
                 // ── Heading ─────────────────────────────────────────────────
-                const Text(
+                Text(
                   'New Password',
                   style: TextStyle(
                     color: AppColors.textPrimary,
@@ -41,7 +41,7 @@ class NewPasswordPage extends GetView<ResetPasswordController> {
                   ),
                 ),
                 14.verticalSpace,
-                const Text(
+                Text(
                   'Choose a strong password for your UnSeen account.',
                   style: TextStyle(
                     color: AppColors.textSecondary,
@@ -58,7 +58,7 @@ class NewPasswordPage extends GetView<ResetPasswordController> {
                     controller: controller.newPasswordCTRL,
                     hint: 'New Password',
                     obscureText: controller.obscureNewPass.value,
-                    prefixIcon: const Icon(
+                    prefixIcon: Icon(
                       Icons.lock_outline,
                       color: AppColors.iconColor,
                       size: 20,
@@ -97,7 +97,7 @@ class NewPasswordPage extends GetView<ResetPasswordController> {
                     controller: controller.confirmPasswordCTRL,
                     hint: 'Confirm New Password',
                     obscureText: controller.obscureConfirmPass.value,
-                    prefixIcon: const Icon(
+                    prefixIcon: Icon(
                       Icons.lock_outline,
                       color: AppColors.iconColor,
                       size: 20,
@@ -148,7 +148,7 @@ class _BackToLoginButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () => Get.back(),
-      child: const Row(
+      child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
           Icon(Icons.chevron_left, color: AppColors.textPrimary, size: 18),

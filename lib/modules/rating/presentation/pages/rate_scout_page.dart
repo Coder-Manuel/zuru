@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:zuru/config/client_colors.dart';
+import 'package:zuru/config/colors.dart';
 import 'package:zuru/core/utils/size.util.dart';
 import 'package:zuru/modules/missions/domain/entities/mission.entity.dart';
 import 'package:zuru/modules/rating/presentation/controllers/rating.controller.dart';
@@ -15,7 +15,7 @@ class RateScoutPage extends GetView<RatingController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: ClientColors.background,
+      backgroundColor: AppColors.background,
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 28),
@@ -29,9 +29,9 @@ class RateScoutPage extends GetView<RatingController> {
                 child: Container(
                   width: 100,
                   height: 100,
-                  decoration: const BoxDecoration(
+                  decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: ClientColors.primary,
+                    color: AppColors.primary,
                   ),
                   child: const Icon(
                     Icons.check_circle_outline_rounded,
@@ -44,10 +44,10 @@ class RateScoutPage extends GetView<RatingController> {
               28.verticalSpace,
 
               // ── Mission complete title ─────────────────────────────────
-              const Text(
+              Text(
                 'Mission Complete!',
                 style: TextStyle(
-                  color: ClientColors.textPrimary,
+                  color: AppColors.textPrimary,
                   fontSize: 32,
                   fontWeight: FontWeight.w900,
                   fontStyle: FontStyle.italic,
@@ -61,8 +61,8 @@ class RateScoutPage extends GetView<RatingController> {
               // ── Payment confirmation ───────────────────────────────────
               Text(
                 controller.paymentText,
-                style: const TextStyle(
-                  color: ClientColors.textSecondary,
+                style: TextStyle(
+                  color: AppColors.textSecondary,
                   fontSize: 15,
                   height: 1.5,
                 ),
@@ -90,7 +90,7 @@ class RateScoutPage extends GetView<RatingController> {
                   return ElevatedButton(
                     onPressed: controller.createRating,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: ClientColors.primary,
+                      backgroundColor: AppColors.primary,
                       foregroundColor: Colors.black,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(50),
@@ -138,17 +138,17 @@ class _RatingCard extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.symmetric(vertical: 28, horizontal: 24),
       decoration: BoxDecoration(
-        color: ClientColors.surface,
+        color: AppColors.surface,
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: ClientColors.divider.withAlpha(60), width: 1),
+        border: Border.all(color: AppColors.divider.withAlpha(60), width: 1),
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           Text(
             'RATE ${scoutName.toUpperCase()}',
-            style: const TextStyle(
-              color: ClientColors.textSecondary,
+            style: TextStyle(
+              color: AppColors.textSecondary,
               fontSize: 12,
               fontWeight: FontWeight.w700,
               letterSpacing: 1.4,
@@ -171,8 +171,8 @@ class _RatingCard extends StatelessWidget {
                       filled ? Icons.star_rounded : Icons.star_outline_rounded,
                       key: ValueKey(filled),
                       color: filled
-                          ? ClientColors.primary
-                          : ClientColors.textSecondary.withAlpha(120),
+                          ? AppColors.primary
+                          : AppColors.textSecondary.withAlpha(120),
                       size: 38,
                     ),
                   ),

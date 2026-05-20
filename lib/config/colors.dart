@@ -1,43 +1,67 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:zuru/config/client_colors.dart';
+import 'package:zuru/config/scout_colors.dart';
+import 'package:zuru/core/services/theme_service/theme_service.dart';
 
+/// Role-aware color accessor.
+///
+/// Every getter delegates to [ScoutColors] when the active role is scout,
+/// otherwise to [ClientColors]. Only those two files ever need editing;
+/// AppColors is purely a routing layer.
+///
+/// Usage is unchanged from before — `AppColors.primary` just works, and
+/// automatically returns the right color for whichever role is active.
 class AppColors {
-  // ── Backgrounds ──────────────────────────────────────────
-  static const Color background = Color.fromARGB(255, 0, 0, 0);
-  static const Color surface = Color(0xFF0E1A10);
-  static const Color inputBg = Color(0xFF111D13);
-  static const Color biometricBg = Color(0xFF152017);
+  static bool get _isScout =>
+      Get.isRegistered<ThemeService>() && ThemeService.to.isScout;
 
-  // ── Primary Accent ────────────────────────────────────────
-  static const Color primary = Color(0xFF3DFF6B);
-  static const Color primaryDark = Color.fromARGB(255, 0, 180, 42);
-  static const Color primaryGlow = Color(0x333DFF6B);
+  // ── Backgrounds ──────────────────────────────────────────────────────────
+  static Color get background =>
+      _isScout ? ScoutColors.background : ClientColors.background;
+  static Color get surface =>
+      _isScout ? ScoutColors.surface : ClientColors.surface;
+  static Color get inputBg =>
+      _isScout ? ScoutColors.inputBg : ClientColors.inputBg;
+  // Scout-only token — only scout pages reference this.
+  static Color get biometricBg => ScoutColors.biometricBg;
 
-  // ── Scout / Map Markers ───────────────────────────────────
-  static const Color scoutMarker = Color(0xFFF5A020);
-  static const Color missionMarker = Color(0xFF3DFF6B);
+  // ── Primary Accent ────────────────────────────────────────────────────────
+  static Color get primary =>
+      _isScout ? ScoutColors.primary : ClientColors.primary;
+  static Color get primaryDark =>
+      _isScout ? ScoutColors.primaryDark : ClientColors.primaryDark;
+  static Color get primaryGlow =>
+      _isScout ? ScoutColors.primaryGlow : ClientColors.primaryGlow;
 
-  // ── Text ──────────────────────────────────────────────────
-  static const Color textPrimary = Color(0xFFFFFFFF);
-  static const Color textSecondary = Color(0xFF6B7A6D);
-  static const Color textAccent = Color(0xFF3DFF6B);
+  // ── Text ──────────────────────────────────────────────────────────────────
+  static Color get textPrimary =>
+      _isScout ? ScoutColors.textPrimary : ClientColors.textPrimary;
+  static Color get textSecondary =>
+      _isScout ? ScoutColors.textSecondary : ClientColors.textSecondary;
+  static Color get textAccent =>
+      _isScout ? ScoutColors.textAccent : ClientColors.textAccent;
 
-  // ── Chrome ────────────────────────────────────────────────
-  static const Color divider = Color(0xFF1A2B1C);
-  static const Color iconColor = Color(0xFF6B7A6D);
-  static const Color otpBoxBg = Color(0xFF111D13);
+  // ── Chrome ────────────────────────────────────────────────────────────────
+  static Color get divider =>
+      _isScout ? ScoutColors.divider : ClientColors.divider;
+  static Color get iconColor =>
+      _isScout ? ScoutColors.iconColor : ClientColors.iconColor;
+  // Scout-only token.
+  static Color get otpBoxBg => ScoutColors.otpBoxBg;
 
-  // ── Google / OAuth ────────────────────────────────────────
-  static const Color googleBg = Colors.white;
-  static const Color googleText = Color(0xFF1F2937);
+  // ── Markers ───────────────────────────────────────────────────────────────
+  static Color get scoutMarker =>
+      _isScout ? ScoutColors.scoutMarker : ClientColors.scoutMarker;
+  // Scout-only token.
+  static Color get missionMarker => ScoutColors.missionMarker;
 
-  // ── Map Grid ──────────────────────────────────────────────
-  static const Color mapGrid = Color(0xFF0D1A0F);
-}
+  // ── Map Grid (scout-only) ─────────────────────────────────────────────────
+  static Color get mapGrid => ScoutColors.mapGrid;
 
-// Kept for backward compatibility
-class ColorPallete {
-  static const Color primaryColor = AppColors.primary;
-  static const Color textPrimary = AppColors.textPrimary;
+  // ── Google / OAuth ────────────────────────────────────────────────────────
+  static Color get googleBg => Colors.white;
+  static Color get googleText => const Color(0xFF1F2937);
 }
 
 extension ColorExt on Color {

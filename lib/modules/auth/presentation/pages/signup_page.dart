@@ -27,7 +27,7 @@ class SignupPage extends GetView<RegisterController> {
                 24.verticalSpace,
                 GestureDetector(
                   onTap: () => Get.back(),
-                  child: const Row(
+                  child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Icon(
@@ -46,7 +46,7 @@ class SignupPage extends GetView<RegisterController> {
                   ),
                 ),
                 40.verticalSpace,
-                const Text(
+                Text(
                   'Create Account',
                   style: TextStyle(
                     color: AppColors.textPrimary,
@@ -55,7 +55,7 @@ class SignupPage extends GetView<RegisterController> {
                   ),
                 ),
                 10.verticalSpace,
-                const Text(
+                Text(
                   'Join the network of scouts and clients.',
                   style: TextStyle(
                     color: AppColors.textSecondary,
@@ -67,7 +67,7 @@ class SignupPage extends GetView<RegisterController> {
                   controller: controller.emailCTRL,
                   hint: 'Email Address',
                   keyboardType: TextInputType.emailAddress,
-                  prefixIcon: const Icon(
+                  prefixIcon: Icon(
                     Icons.mail_outline,
                     color: AppColors.iconColor,
                     size: 20,
@@ -84,7 +84,7 @@ class SignupPage extends GetView<RegisterController> {
                     controller: controller.passwordCTRL,
                     hint: 'Password',
                     obscureText: controller.obscurePass.value,
-                    prefixIcon: const Icon(
+                    prefixIcon: Icon(
                       Icons.lock_outline,
                       color: AppColors.iconColor,
                       size: 20,
@@ -118,7 +118,7 @@ class SignupPage extends GetView<RegisterController> {
                     controller: controller.confirmPasswordCTRL,
                     hint: 'Confirm Password',
                     obscureText: controller.obscureConfirmPass.value,
-                    prefixIcon: const Icon(
+                    prefixIcon: Icon(
                       Icons.lock_outline,
                       color: AppColors.iconColor,
                       size: 20,

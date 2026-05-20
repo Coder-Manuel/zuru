@@ -2,7 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:zuru/config/client_colors.dart';
+import 'package:zuru/config/colors.dart';
 import 'package:zuru/modules/home/presentation/controllers/maps_tab_controller.dart';
 import 'package:zuru/modules/missions/data/models/enum.dart';
 import 'package:zuru/modules/missions/domain/entities/mission.entity.dart';
@@ -34,7 +34,7 @@ class _MapView extends StatelessWidget {
     final mapHeight = size.height * _mapHeightFraction;
 
     return Scaffold(
-      backgroundColor: ClientColors.background,
+      backgroundColor: AppColors.background,
       body: SafeArea(
         child: Stack(
           children: [
@@ -167,8 +167,8 @@ class _MissionMarkerState extends State<_MissionMarker>
 
   Color get _color => switch (widget.mission.status) {
     MissionStatus.live => const Color(0xFFEF4444),
-    MissionStatus.accepted || MissionStatus.enroute => ClientColors.primaryDark,
-    _ => ClientColors.primary,
+    MissionStatus.accepted || MissionStatus.enroute => AppColors.primaryDark,
+    _ => AppColors.primary,
   };
 
   @override
@@ -250,17 +250,17 @@ class _MissionMarkerState extends State<_MissionMarker>
           constraints: const BoxConstraints(maxWidth: 110),
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
           decoration: BoxDecoration(
-            color: ClientColors.surface.withAlpha(230),
+            color: AppColors.surface.withAlpha(230),
             borderRadius: BorderRadius.circular(8),
             border: Border.all(
-              color: ClientColors.divider.withAlpha(80),
+              color: AppColors.divider.withAlpha(80),
               width: 0.5,
             ),
           ),
           child: Text(
             '${widget.mission.currency} ${widget.mission.price.toInt()}',
-            style: const TextStyle(
-              color: ClientColors.textPrimary,
+            style: TextStyle(
+              color: AppColors.textPrimary,
               fontSize: 11,
               fontWeight: FontWeight.w700,
               letterSpacing: 0.2,
@@ -314,9 +314,9 @@ class _BottomOverlay extends StatelessWidget {
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
           colors: [
-            ClientColors.background.withAlpha(0),
-            ClientColors.background.withAlpha(220),
-            ClientColors.background,
+            AppColors.background.withAlpha(0),
+            AppColors.background.withAlpha(220),
+            AppColors.background,
           ],
           stops: const [0.0, 0.3, 0.6],
         ),
@@ -326,10 +326,10 @@ class _BottomOverlay extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Text(
+          Text(
             'See anywhere.\nKnow everything.',
             style: TextStyle(
-              color: ClientColors.textPrimary,
+              color: AppColors.textPrimary,
               fontSize: 28,
               fontWeight: FontWeight.w900,
               height: 1.15,
@@ -342,8 +342,8 @@ class _BottomOverlay extends StatelessWidget {
               count == 0
                   ? 'Tap map · Long-press to post a mission'
                   : '$count active mission${count == 1 ? '' : 's'} on the map',
-              style: const TextStyle(
-                color: ClientColors.textSecondary,
+              style: TextStyle(
+                color: AppColors.textSecondary,
                 fontSize: 13,
               ),
             );
@@ -355,7 +355,7 @@ class _BottomOverlay extends StatelessWidget {
             child: ElevatedButton(
               onPressed: () => Get.toNamed(PostMissionPage.route),
               style: ElevatedButton.styleFrom(
-                backgroundColor: ClientColors.primary,
+                backgroundColor: AppColors.primary,
                 foregroundColor: Colors.black,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(50),
@@ -380,7 +380,7 @@ class _GridPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = ClientColors.primary.withAlpha(20)
+      ..color = AppColors.primary.withAlpha(20)
       ..strokeWidth = 0.5;
 
     const step = 60.0;

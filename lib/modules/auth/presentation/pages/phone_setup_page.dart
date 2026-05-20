@@ -20,7 +20,7 @@ class PhoneSetupPage extends GetView<RegisterController> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const Spacer(flex: 3),
-              const Text(
+              Text(
                 'Phone Number',
                 style: TextStyle(
                   color: AppColors.textPrimary,
@@ -29,7 +29,7 @@ class PhoneSetupPage extends GetView<RegisterController> {
                 ),
               ),
               12.verticalSpace,
-              const Text(
+              Text(
                 'Required for mission coordination and security.',
                 style: TextStyle(color: AppColors.textSecondary, fontSize: 15),
               ),
@@ -49,7 +49,7 @@ class PhoneSetupPage extends GetView<RegisterController> {
                         alignment: Alignment.center,
                         child: Text(
                           controller.countryCode.value,
-                          style: const TextStyle(
+                          style: TextStyle(
                             color: AppColors.textPrimary,
                             fontSize: 16,
                             fontWeight: FontWeight.w600,
@@ -65,10 +65,10 @@ class PhoneSetupPage extends GetView<RegisterController> {
                       child: TextField(
                         controller: controller.phoneCTRL,
                         keyboardType: TextInputType.phone,
-                        style: const TextStyle(color: AppColors.textPrimary),
+                        style: TextStyle(color: AppColors.textPrimary),
                         decoration: InputDecoration(
                           hintText: '712 345 678',
-                          hintStyle: const TextStyle(
+                          hintStyle: TextStyle(
                             color: AppColors.textSecondary,
                           ),
                           filled: true,
@@ -83,7 +83,7 @@ class PhoneSetupPage extends GetView<RegisterController> {
                           ),
                           focusedBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
-                            borderSide: const BorderSide(
+                            borderSide: BorderSide(
                               color: AppColors.primary,
                               width: 1.5,
                             ),
@@ -123,11 +123,11 @@ class PhoneSetupPage extends GetView<RegisterController> {
         padding: const EdgeInsets.symmetric(vertical: 16),
         itemCount: codes.length,
         separatorBuilder: (_, _) =>
-            const Divider(color: AppColors.divider, height: 1),
+            Divider(color: AppColors.divider, height: 1),
         itemBuilder: (_, i) => ListTile(
           title: Text(
             codes[i],
-            style: const TextStyle(color: AppColors.textPrimary, fontSize: 16),
+            style: TextStyle(color: AppColors.textPrimary, fontSize: 16),
           ),
           onTap: () {
             controller.countryCode.value = codes[i];

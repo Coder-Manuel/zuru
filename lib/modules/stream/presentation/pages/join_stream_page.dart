@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:livekit_client/livekit_client.dart';
-import 'package:zuru/config/client_colors.dart';
+import 'package:zuru/config/colors.dart';
 import 'package:zuru/core/utils/size.util.dart';
 import 'package:zuru/modules/missions/domain/entities/mission.entity.dart';
 import 'package:zuru/modules/stream/presentation/controllers/join_stream_controller.dart';
@@ -76,14 +76,14 @@ class _RemoteFeed extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const CircularProgressIndicator(
-                color: ClientColors.primary,
+              CircularProgressIndicator(
+                color: AppColors.primary,
                 strokeWidth: 2,
               ),
               16.verticalSpace,
-              const Text(
+              Text(
                 'Joining stream…',
-                style: TextStyle(color: ClientColors.textSecondary, fontSize: 14),
+                style: TextStyle(color: AppColors.textSecondary, fontSize: 14),
               ),
             ],
           ),
@@ -96,28 +96,28 @@ class _RemoteFeed extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Icon(
+              Icon(
                 Icons.videocam_off_outlined,
-                color: ClientColors.primary,
+                color: AppColors.primary,
                 size: 52,
               ),
               20.verticalSpace,
-              const Text(
+              Text(
                 'Failed to join stream.',
-                style: TextStyle(color: ClientColors.textSecondary, fontSize: 15),
+                style: TextStyle(color: AppColors.textSecondary, fontSize: 15),
               ),
               4.verticalSpace,
-              const Text(
+              Text(
                 'Check your connection and try again.',
-                style: TextStyle(color: ClientColors.textSecondary, fontSize: 13),
+                style: TextStyle(color: AppColors.textSecondary, fontSize: 13),
               ),
               24.verticalSpace,
               TextButton(
                 onPressed: Get.back,
-                child: const Text(
+                child: Text(
                   'Go Back',
                   style: TextStyle(
-                    color: ClientColors.primary,
+                    color: AppColors.primary,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
@@ -179,9 +179,9 @@ class _RemoteFeed extends StatelessWidget {
           children: [
             const _PulsingIcon(),
             16.verticalSpace,
-            const Text(
+            Text(
               'Waiting for scout to stream…',
-              style: TextStyle(color: ClientColors.textSecondary, fontSize: 14),
+              style: TextStyle(color: AppColors.textSecondary, fontSize: 14),
             ),
           ],
         ),
@@ -321,8 +321,8 @@ class _BottomSection extends StatelessWidget {
                         children: [
                           Text(
                             ctrl.mission.scout?.displayName ?? 'Scout',
-                            style: const TextStyle(
-                              color: ClientColors.textPrimary,
+                            style: TextStyle(
+                              color: AppColors.textPrimary,
                               fontSize: 16,
                               fontWeight: FontWeight.w700,
                             ),
@@ -371,7 +371,7 @@ class _StatusBadge extends StatelessWidget {
         label: 'WATCHING',
       ),
       ScoutStatus.waiting => _badge(
-        color: ClientColors.primary,
+        color: AppColors.primary,
         dot: true,
         label: 'WAITING',
       ),
@@ -585,7 +585,7 @@ class _ScoutAvatarState extends State<_ScoutAvatar>
   }
 
   Color get _ringColor => switch (widget.status) {
-    ScoutStatus.waiting => ClientColors.primary,
+    ScoutStatus.waiting => AppColors.primary,
     ScoutStatus.streaming => const Color(0xFF3B82F6),
     ScoutStatus.muted => const Color(0xFFEF4444),
     ScoutStatus.disconnected => Colors.grey,
@@ -614,7 +614,7 @@ class _ScoutAvatarState extends State<_ScoutAvatar>
           duration: const Duration(milliseconds: 300),
           opacity: widget.status == ScoutStatus.disconnected ? 0.4 : 1.0,
           child: Container(
-            color: ClientColors.surface,
+            color: AppColors.surface,
             alignment: Alignment.center,
             child: Text(
               initial,
@@ -642,19 +642,19 @@ class _GpsBadge extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
       decoration: BoxDecoration(
-        color: ClientColors.surface,
+        color: AppColors.surface,
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: ClientColors.primary.withAlpha(40)),
+        border: Border.all(color: AppColors.primary.withAlpha(40)),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
           const Icon(Icons.location_pin, color: Colors.redAccent, size: 13),
           const SizedBox(width: 4),
-          const Text(
+          Text(
             'GPS ✓ ',
             style: TextStyle(
-              color: ClientColors.primary,
+              color: AppColors.primary,
               fontSize: 11,
               fontWeight: FontWeight.w700,
             ),
@@ -662,7 +662,7 @@ class _GpsBadge extends StatelessWidget {
           Flexible(
             child: Text(
               address.isNotEmpty ? address : 'On Location',
-              style: const TextStyle(color: ClientColors.primary, fontSize: 11),
+              style: TextStyle(color: AppColors.primary, fontSize: 11),
               overflow: TextOverflow.ellipsis,
             ),
           ),
@@ -841,9 +841,9 @@ class _PulsingIconState extends State<_PulsingIcon>
   Widget build(BuildContext context) {
     return FadeTransition(
       opacity: _opacity,
-      child: const Icon(
+      child: Icon(
         Icons.videocam_outlined,
-        color: ClientColors.primary,
+        color: AppColors.primary,
         size: 52,
       ),
     );

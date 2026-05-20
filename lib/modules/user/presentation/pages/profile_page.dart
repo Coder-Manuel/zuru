@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:get/get.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:zuru/config/scout_colors.dart';
+import 'package:zuru/config/colors.dart';
 import 'package:zuru/core/utils/size.util.dart';
 import 'package:zuru/modules/payments/presentation/pages/statements_page.dart';
 import 'package:zuru/modules/user/presentation/controllers/profile_controller.dart';
@@ -14,7 +14,7 @@ class ProfilePage extends GetView<ProfileController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: ScoutColors.background,
+      backgroundColor: AppColors.background,
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -162,10 +162,10 @@ class ProfilePage extends GetView<ProfileController> {
               28.verticalSpace,
 
               // ── Version ────────────────────────────────────────────────────
-              const Text(
+              Text(
                 'SCOUT APP V1.0.4',
                 style: TextStyle(
-                  color: ScoutColors.textSecondary,
+                  color: AppColors.textSecondary,
                   fontSize: 11,
                   fontWeight: FontWeight.w600,
                   letterSpacing: 1.6,
@@ -203,10 +203,10 @@ class _ProfileHeader extends StatelessWidget {
             height: 100,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              border: Border.all(color: ScoutColors.primary, width: 3),
+              border: Border.all(color: AppColors.primary, width: 3),
               boxShadow: [
                 BoxShadow(
-                  color: ScoutColors.primary.withAlpha(50),
+                  color: AppColors.primary.withAlpha(50),
                   blurRadius: 24,
                   spreadRadius: 2,
                 ),
@@ -214,12 +214,12 @@ class _ProfileHeader extends StatelessWidget {
             ),
             child: ClipOval(
               child: Container(
-                color: ScoutColors.surface,
+                color: AppColors.surface,
                 child: Center(
                   child: Text(
                     initial,
-                    style: const TextStyle(
-                      color: ScoutColors.textPrimary,
+                    style: TextStyle(
+                      color: AppColors.textPrimary,
                       fontSize: 36,
                       fontWeight: FontWeight.w700,
                     ),
@@ -234,8 +234,8 @@ class _ProfileHeader extends StatelessWidget {
           // ── Name ────────────────────────────────────────────────────────
           Text(
             name.isNotEmpty ? name : 'Scout',
-            style: const TextStyle(
-              color: ScoutColors.textPrimary,
+            style: TextStyle(
+              color: AppColors.textPrimary,
               fontSize: 28,
               fontWeight: FontWeight.w700,
               fontStyle: FontStyle.italic,
@@ -248,18 +248,18 @@ class _ProfileHeader extends StatelessWidget {
           Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Text(
+              Text(
                 'Scout',
-                style: TextStyle(color: ScoutColors.textSecondary, fontSize: 14),
+                style: TextStyle(color: AppColors.textSecondary, fontSize: 14),
               ),
-              const Text(
+              Text(
                 ' · ',
-                style: TextStyle(color: ScoutColors.textSecondary, fontSize: 14),
+                style: TextStyle(color: AppColors.textSecondary, fontSize: 14),
               ),
               Text(
                 rating,
-                style: const TextStyle(
-                  color: ScoutColors.textSecondary,
+                style: TextStyle(
+                  color: AppColors.textSecondary,
                   fontSize: 14,
                 ),
               ),
@@ -298,7 +298,7 @@ class _ToggleRow extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: ScoutColors.surface.setOpacity(0.7),
+        color: AppColors.surface.setOpacity(0.7),
         borderRadius: BorderRadius.circular(14),
       ),
       child: Padding(
@@ -313,8 +313,8 @@ class _ToggleRow extends StatelessWidget {
                 children: [
                   Text(
                     title,
-                    style: const TextStyle(
-                      color: ScoutColors.textPrimary,
+                    style: TextStyle(
+                      color: AppColors.textPrimary,
                       fontSize: 15,
                       fontWeight: FontWeight.w600,
                     ),
@@ -322,8 +322,8 @@ class _ToggleRow extends StatelessWidget {
                   4.verticalSpace,
                   Text(
                     subtitle,
-                    style: const TextStyle(
-                      color: ScoutColors.textSecondary,
+                    style: TextStyle(
+                      color: AppColors.textSecondary,
                       fontSize: 12,
                     ),
                   ),
@@ -334,10 +334,10 @@ class _ToggleRow extends StatelessWidget {
               () => Switch.adaptive(
                 value: valueObs.value,
                 onChanged: onChanged,
-                activeThumbColor: ScoutColors.background,
-                activeTrackColor: ScoutColors.primary,
-                inactiveThumbColor: ScoutColors.textSecondary,
-                inactiveTrackColor: ScoutColors.divider,
+                activeThumbColor: AppColors.background,
+                activeTrackColor: AppColors.primary,
+                inactiveThumbColor: AppColors.textSecondary,
+                inactiveTrackColor: AppColors.divider,
               ),
             ),
           ],
@@ -362,7 +362,7 @@ class _NavRow extends StatelessWidget {
       onTap: onTap,
       child: Container(
         decoration: BoxDecoration(
-          color: ScoutColors.surface.setOpacity(0.7),
+          color: AppColors.surface.setOpacity(0.7),
           borderRadius: BorderRadius.circular(14),
         ),
         child: Padding(
@@ -374,16 +374,16 @@ class _NavRow extends StatelessWidget {
               Expanded(
                 child: Text(
                   title,
-                  style: const TextStyle(
-                    color: ScoutColors.textPrimary,
+                  style: TextStyle(
+                    color: AppColors.textPrimary,
                     fontSize: 15,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
               ),
-              const Icon(
+              Icon(
                 Icons.chevron_right_rounded,
-                color: ScoutColors.textSecondary,
+                color: AppColors.textSecondary,
                 size: 22,
               ),
             ],
@@ -414,27 +414,27 @@ class _LinkRow extends StatelessWidget {
       onTap: _launch,
       child: Container(
         decoration: BoxDecoration(
-          color: ScoutColors.surface.setOpacity(0.7),
+          color: AppColors.surface.setOpacity(0.7),
           borderRadius: BorderRadius.circular(14),
         ),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
           child: Row(
             children: [
-              Icon(icon, color: ScoutColors.textSecondary, size: 22),
+              Icon(icon, color: AppColors.textSecondary, size: 22),
               14.horizontalSpace,
               Expanded(
                 child: Text(
                   title,
-                  style: const TextStyle(
-                    color: ScoutColors.textPrimary,
+                  style: TextStyle(
+                    color: AppColors.textPrimary,
                     fontSize: 15,
                   ),
                 ),
               ),
-              const Icon(
+              Icon(
                 Icons.link_rounded,
-                color: ScoutColors.primary,
+                color: AppColors.primary,
                 size: 22,
               ),
             ],
@@ -457,10 +457,10 @@ class _IconBox extends StatelessWidget {
       width: 40,
       height: 40,
       decoration: BoxDecoration(
-        color: ScoutColors.primaryGlow.setOpacity(0.1),
+        color: AppColors.primaryGlow.setOpacity(0.1),
         borderRadius: BorderRadius.circular(10),
       ),
-      child: Icon(icon, color: ScoutColors.primary, size: 20),
+      child: Icon(icon, color: AppColors.primary, size: 20),
     );
   }
 }

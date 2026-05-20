@@ -21,7 +21,7 @@ class SplashPage extends GetView<SplashController> {
                 Center(
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(200),
-                        child: const Text(
+                        child: Text(
                           'Zuru World',
                           style: TextStyle(
                             color: AppColors.textPrimary,

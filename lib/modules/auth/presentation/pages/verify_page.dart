@@ -25,7 +25,7 @@ class VerifyPage extends GetView<RegisterController> {
               Container(
                 width: 80,
                 height: 80,
-                decoration: const BoxDecoration(
+                decoration: BoxDecoration(
                   color: AppColors.biometricBg,
                   shape: BoxShape.circle,
                 ),
@@ -50,7 +50,7 @@ class VerifyPage extends GetView<RegisterController> {
               Text(
                 "We've sent a 6-digit code to ${isEmailVerification ? controller.emailCTRL.text : controller.phoneCTRL.text}.",
                 textAlign: TextAlign.center,
-                style: const TextStyle(
+                style: TextStyle(
                   color: AppColors.textSecondary,
                   fontSize: 15,
                 ),
@@ -80,7 +80,7 @@ class VerifyPage extends GetView<RegisterController> {
               20.verticalSpace,
               GestureDetector(
                 onTap: () async {},
-                child: const Text(
+                child: Text(
                   'Resend Code',
                   style: TextStyle(
                     color: AppColors.primary,
