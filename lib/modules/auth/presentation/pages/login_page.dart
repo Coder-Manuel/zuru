@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:zuru/config/client_colors.dart';
+import 'package:zuru/config/scout_colors.dart';
+import 'package:zuru/core/services/theme_service/theme_service.dart';
 import 'package:zuru/core/utils/size.util.dart';
 import 'package:zuru/modules/auth/presentation/controllers/login_controller.dart';
 import 'package:zuru/modules/auth/presentation/pages/forgot_password_page.dart';
@@ -15,6 +17,9 @@ class LoginPage extends GetView<LoginController> {
   @override
   Widget build(BuildContext context) {
     final formKey = GlobalKey<FormState>();
+    final scheme = Theme.of(context).colorScheme;
+    final bodyColor = Theme.of(context).textTheme.bodyMedium?.color;
+    final iconColor = Theme.of(context).inputDecorationTheme.hintStyle?.color;
 
     return Scaffold(
       body: SafeArea(
@@ -26,10 +31,12 @@ class LoginPage extends GetView<LoginController> {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 50.verticalSpace,
+
+                // ── App name ──────────────────────────────────────────────────
                 Text(
                   'UnSeen',
                   style: TextStyle(
-                    color: ClientColors.textPrimary,
+                    color: scheme.onSurface,
                     fontSize: 48,
                     fontWeight: FontWeight.bold,
                     fontStyle: FontStyle.italic,
@@ -38,19 +45,24 @@ class LoginPage extends GetView<LoginController> {
                 8.verticalSpace,
                 Text(
                   'See anywhere. Know everything.',
-                  style: TextStyle(
-                    color: ClientColors.textSecondary,
-                    fontSize: 15,
-                  ),
+                  style: TextStyle(color: bodyColor, fontSize: 15),
                 ),
-                60.verticalSpace,
+
+                32.verticalSpace,
+
+                // ── Role tab switcher ─────────────────────────────────────────
+                const _RoleTabSwitcher(),
+
+                40.verticalSpace,
+
+                // ── Email ─────────────────────────────────────────────────────
                 AuthTextField(
                   controller: controller.emailCTRL,
                   hint: 'Email address',
                   keyboardType: TextInputType.emailAddress,
                   prefixIcon: Icon(
                     Icons.mail_outline,
-                    color: ClientColors.iconColor,
+                    color: iconColor,
                     size: 20,
                   ),
                   validator: (v) {
@@ -59,7 +71,10 @@ class LoginPage extends GetView<LoginController> {
                     return null;
                   },
                 ),
+
                 16.verticalSpace,
+
+                // ── Password ──────────────────────────────────────────────────
                 Obx(
                   () => AuthTextField(
                     controller: controller.passwordCTRL,
@@ -67,7 +82,7 @@ class LoginPage extends GetView<LoginController> {
                     obscureText: controller.obscurePass.value,
                     prefixIcon: Icon(
                       Icons.lock_outline,
-                      color: ClientColors.iconColor,
+                      color: iconColor,
                       size: 20,
                     ),
                     suffixIcon: GestureDetector(
@@ -78,7 +93,7 @@ class LoginPage extends GetView<LoginController> {
                           controller.obscurePass.value
                               ? Icons.visibility_outlined
                               : Icons.visibility_off_outlined,
-                          color: ClientColors.iconColor,
+                          color: iconColor,
                           size: 20,
                         ),
                       ),
@@ -89,7 +104,10 @@ class LoginPage extends GetView<LoginController> {
                     },
                   ),
                 ),
+
                 12.verticalSpace,
+
+                // ── Forgot password ───────────────────────────────────────────
                 Align(
                   alignment: Alignment.centerRight,
                   child: GestureDetector(
@@ -97,66 +115,80 @@ class LoginPage extends GetView<LoginController> {
                     child: Text(
                       'Forgot Password?',
                       style: TextStyle(
-                        color: ClientColors.primary,
+                        color: scheme.primary,
                         fontSize: 14,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
                   ),
                 ),
+
                 38.verticalSpace,
-                Row(
-                  children: [
-                    Expanded(
-                      child: PrimaryButton(
-                        label: 'Login',
-                        onPressed: () async => await controller.login(formKey),
-                      ),
-                    ),
-                    if (controller.canLoginWithBiometrics.value) ...[
-                      15.horizontalSpace,
-                      GestureDetector(
-                        onTap: () {},
-                        child: Container(
-                          width: 65,
-                          height: 55,
-                          decoration: BoxDecoration(
-                            color: ClientColors.biometricBg,
-                            borderRadius: BorderRadius.circular(18),
-                          ),
-                          child: Icon(
-                            Icons.fingerprint,
-                            color: ClientColors.primary,
-                            size: 36,
-                          ),
+
+                // ── Login button + optional biometric ─────────────────────────
+                Obx(() {
+                  final isScout = ThemeService.to.isScout;
+                  final bioBg = isScout
+                      ? ScoutColors.biometricBg
+                      : ClientColors.biometricBg;
+
+                  return Row(
+                    children: [
+                      Expanded(
+                        child: PrimaryButton(
+                          label: 'Login',
+                          onPressed: () async =>
+                              await controller.login(formKey),
                         ),
                       ),
+                      if (controller.canLoginWithBiometrics.value) ...[
+                        15.horizontalSpace,
+                        GestureDetector(
+                          onTap: () {},
+                          child: Container(
+                            width: 65,
+                            height: 55,
+                            decoration: BoxDecoration(
+                              color: bioBg,
+                              borderRadius: BorderRadius.circular(18),
+                            ),
+                            child: Icon(
+                              Icons.fingerprint,
+                              color: scheme.primary,
+                              size: 36,
+                            ),
+                          ),
+                        ),
+                      ],
                     ],
-                  ],
-                ),
+                  );
+                }),
+
                 40.verticalSpace,
                 const AuthDivider(),
                 40.verticalSpace,
+
+                // ── OAuth ─────────────────────────────────────────────────────
                 GoogleButton(
                   label:
                       'Continue with ${GetPlatform.isIOS ? 'Apple' : 'Google'}',
                   onPressed: () async => await controller.oathLogin(),
                 ),
+
                 30.verticalSpace,
+
+                // ── Sign up link ──────────────────────────────────────────────
                 GestureDetector(
                   onTap: () => Get.toNamed(SignupPage.route),
                   child: RichText(
                     text: TextSpan(
                       text: "Don't have an account? ",
-                      style: TextStyle(
-                        color: ClientColors.textSecondary,
-                        fontSize: 15,
-                      ),
+                      style: TextStyle(color: bodyColor, fontSize: 15),
                       children: [
                         TextSpan(
                           text: 'Sign Up',
                           style: TextStyle(
-                            color: ClientColors.primary,
+                            color: scheme.primary,
                             fontWeight: FontWeight.w700,
                             fontSize: 15,
                           ),
@@ -165,10 +197,116 @@ class LoginPage extends GetView<LoginController> {
                     ),
                   ),
                 ),
+
                 10.verticalSpace,
               ],
             ),
           ),
+        ),
+      ),
+    );
+  }
+}
+
+// ── Role tab switcher ──────────────────────────────────────────────────────────
+
+class _RoleTabSwitcher extends StatelessWidget {
+  const _RoleTabSwitcher();
+
+  @override
+  Widget build(BuildContext context) {
+    // fillColor from the current inputDecorationTheme gives us a surface shade
+    // that's already calibrated for each role's background.
+    final containerBg =
+        Theme.of(context).inputDecorationTheme.fillColor ?? Colors.transparent;
+
+    return Obx(() {
+      final isScout = ThemeService.to.isScout;
+      final borderColor = (isScout ? ScoutColors.primary : ClientColors.primary)
+          .withAlpha(60);
+
+      return Container(
+        height: 52,
+        padding: const EdgeInsets.all(4),
+        decoration: BoxDecoration(
+          color: containerBg,
+          borderRadius: BorderRadius.circular(30),
+          border: Border.all(color: borderColor, width: 1),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            _RoleTab(
+              label: 'Client',
+              icon: Icons.person_outline_rounded,
+              isSelected: !isScout,
+              activeColor: ClientColors.primary,
+              onTap: ThemeService.to.applyClientTheme,
+            ),
+            const SizedBox(width: 4),
+            _RoleTab(
+              label: 'Scout',
+              icon: Icons.radar_rounded,
+              isSelected: isScout,
+              activeColor: ScoutColors.primary,
+              onTap: ThemeService.to.applyScoutTheme,
+            ),
+          ],
+        ),
+      );
+    });
+  }
+}
+
+class _RoleTab extends StatelessWidget {
+  final String label;
+  final IconData icon;
+  final bool isSelected;
+  final Color activeColor;
+  final VoidCallback onTap;
+
+  const _RoleTab({
+    required this.label,
+    required this.icon,
+    required this.isSelected,
+    required this.activeColor,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final inactiveColor =
+        Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey;
+
+    return GestureDetector(
+      onTap: onTap,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 220),
+        curve: Curves.easeInOut,
+        padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 8),
+        decoration: BoxDecoration(
+          color: isSelected ? activeColor : Colors.transparent,
+          borderRadius: BorderRadius.circular(26),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              icon,
+              size: 16,
+              color: isSelected ? Colors.black : inactiveColor,
+            ),
+            const SizedBox(width: 6),
+            Text(
+              label,
+              style: TextStyle(
+                color: isSelected ? Colors.black : inactiveColor,
+                fontSize: 13,
+                fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+                letterSpacing: 0.3,
+              ),
+            ),
+          ],
         ),
       ),
     );

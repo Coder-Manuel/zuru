@@ -2,6 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:zuru/config/client_colors.dart';
 
+/// Shared auth widgets.
+///
+/// Colors are read from [Theme.of(context)] so they automatically adapt
+/// when [ThemeService] switches between [ClientTheme] and [ScoutTheme].
+/// Only [GoogleButton] retains hardcoded white/dark colors — those are
+/// identical across both roles.
+
 class AuthTextField extends StatelessWidget {
   final TextEditingController controller;
   final String hint;
@@ -28,13 +35,10 @@ class AuthTextField extends StatelessWidget {
       controller: controller,
       obscureText: obscureText,
       keyboardType: keyboardType,
-      style: TextStyle(color: ClientColors.textPrimary),
+      style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
       validator: validator,
       decoration: InputDecoration(
         hintText: hint,
-        hintStyle: TextStyle(color: ClientColors.textSecondary),
-        filled: true,
-        fillColor: ClientColors.inputBg,
         prefixIcon: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 14),
           child: prefixIcon,
@@ -44,22 +48,6 @@ class AuthTextField extends StatelessWidget {
           minHeight: 52,
         ),
         suffixIcon: suffixIcon,
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide.none,
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide.none,
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: ClientColors.primary, width: 1.5),
-        ),
-        contentPadding: const EdgeInsets.symmetric(
-          horizontal: 16,
-          vertical: 18,
-        ),
       ),
     );
   }
@@ -79,20 +67,10 @@ class PrimaryButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return SizedBox(
       width: double.infinity,
-      height: 50,
+      height: 55,
       child: ElevatedButton(
         onPressed: onPressed,
-        style: ElevatedButton.styleFrom(
-          backgroundColor: ClientColors.primary,
-          foregroundColor: Colors.black,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(50),
-          ),
-        ),
-        child: Text(
-          label,
-          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
-        ),
+        child: Text(label),
       ),
     );
   }
@@ -102,13 +80,17 @@ class GoogleButton extends StatelessWidget {
   final String label;
   final VoidCallback onPressed;
 
-  const GoogleButton({super.key, required this.label, required this.onPressed});
+  const GoogleButton({
+    super.key,
+    required this.label,
+    required this.onPressed,
+  });
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
       width: double.infinity,
-      height: 50,
+      height: 55,
       child: OutlinedButton(
         onPressed: onPressed,
         style: OutlinedButton.styleFrom(
@@ -152,18 +134,18 @@ class AuthDivider extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        Expanded(child: Divider(color: ClientColors.divider)),
+        const Expanded(child: Divider()),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16),
           child: Text(
             text,
             style: TextStyle(
-              color: ClientColors.textSecondary,
+              color: Theme.of(context).textTheme.bodyMedium?.color,
               fontSize: 14,
             ),
           ),
         ),
-        Expanded(child: Divider(color: ClientColors.divider)),
+        const Expanded(child: Divider()),
       ],
     );
   }
