@@ -2,12 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
+import 'package:zuru/core/services/theme_service/theme_service.dart';
 import 'package:zuru/core/utils/loader.dart';
 import 'package:zuru/core/utils/toast.dart';
 import 'package:zuru/modules/auth/data/models/auth.inputs.dart';
 import 'package:zuru/modules/auth/domain/usecases/login.usecase.dart';
 import 'package:zuru/modules/auth/domain/usecases/login_oauth.usecase.dart';
 import 'package:zuru/modules/home/presentation/pages/home_page.dart';
+import 'package:zuru/modules/home/presentation/pages/scout_home_page.dart';
 
 class LoginController extends GetxController {
   final loginUsecase = Get.find<LoginUseCase>();
@@ -20,6 +22,14 @@ class LoginController extends GetxController {
   Rx<bool> canLoginWithBiometrics = false.obs;
 
   void toggleObscurePass() => obscurePass.value = !obscurePass.value;
+
+  /// Route to whichever home the currently selected role demands.
+  void _navigateHome(String displayName) {
+    Toast.success('Welcome $displayName');
+    Get.offAllNamed(
+      ThemeService.to.isScout ? ScoutHomePage.route : HomePage.route,
+    );
+  }
 
   Future<void> oathLogin() async {
     if (!GetPlatform.isIOS) return _appleLogin();
@@ -37,10 +47,10 @@ class LoginController extends GetxController {
       OAuthInput(idToken: oathResult.authentication.idToken ?? ''),
     );
 
-    response.fold((ex) => Toast.error(ex.message), (data) {
-      Toast.success('Welcome ${data.displayName}');
-      Get.offAllNamed(HomePage.route);
-    });
+    response.fold(
+      (ex) => Toast.error(ex.message),
+      (data) => _navigateHome(data.displayName),
+    );
   }
 
   Future<void> _appleLogin() async {
@@ -59,10 +69,10 @@ class LoginController extends GetxController {
       OAuthInput(idToken: oathResult.identityToken ?? ''),
     );
 
-    response.fold((ex) => Toast.error(ex.message), (data) {
-      Toast.success('Welcome ${data.displayName}');
-      Get.offAllNamed(HomePage.route);
-    });
+    response.fold(
+      (ex) => Toast.error(ex.message),
+      (data) => _navigateHome(data.displayName),
+    );
   }
 
   Future<void> login(GlobalKey<FormState> formKey) async {
@@ -78,13 +88,8 @@ class LoginController extends GetxController {
     Loader.dismiss();
 
     response.fold(
-      (ex) {
-        Toast.error(ex.message);
-      },
-      (data) {
-        Toast.success('Welcome ${data.displayName}');
-        Get.offAllNamed(HomePage.route);
-      },
+      (ex) => Toast.error(ex.message),
+      (data) => _navigateHome(data.displayName),
     );
   }
 }
