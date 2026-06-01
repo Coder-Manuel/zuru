@@ -49,13 +49,13 @@ android {
 
         // Inject GOOGLE_MAPS_API_KEY into AndroidManifest.xml as ${GOOGLE_MAPS_API_KEY}.
         manifestPlaceholders["GOOGLE_MAPS_API_KEY"] =
-            keystoreProperties.getProperty("GOOGLE_MAPS_API_KEY", "")
+            localProperties.getProperty("GOOGLE_MAPS_API_KEY", "")
 
         // Inject MAPBOX_TOKEN as a string resource consumed by the Mapbox SDK.
         resValue(
             "string",
             "mapbox_access_token",
-            keystoreProperties.getProperty("MAPBOX_TOKEN", ""),
+            localProperties.getProperty("MAPBOX_TOKEN", ""),
         )
     }
 

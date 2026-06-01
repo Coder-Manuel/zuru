@@ -35,15 +35,6 @@ class AuthRepositoryImpl extends AuthRepository {
           await logout();
           return FailureResponse('Invalid claims, kindly retry');
         }
-        String? role = claims['user_role'];
-        if (role != UserRole.client.name) {
-          await logout();
-          return FailureResponse(
-            role == null
-                ? 'Account not set up correctly. Contact support.'
-                : 'This app is for Clients only. Use the Scout app.',
-          );
-        }
 
         return SuccessResponse(UserModel.fromMap(res.user?.toJson() ?? {}));
       },
