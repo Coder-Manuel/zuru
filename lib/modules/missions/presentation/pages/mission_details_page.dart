@@ -98,11 +98,10 @@ class MissionDetailsPage extends GetView<RadarController> {
 
                     32.verticalSpace,
 
-                    if (mission.isMyMission)
-                      ...[
-
+                    // ── CTA area ─────────────────────────────────────────
+                    if (mission.isMyMission) ...[
+                      _OwnMissionNotice(),
                     ] else ...[
-                      // ── CTAs — differ based on mission status ─────────────
                       if (mission.status == MissionStatus.accepted) ...[
                         // Already accepted → show navigation CTA
                         ElevatedButton.icon(
@@ -129,7 +128,7 @@ class MissionDetailsPage extends GetView<RadarController> {
                           ),
                         ),
                       ] else ...[
-                        // Open mission → show Accept / Decline
+                        // Open mission → Accept / Decline
                         Obx(
                           () => ElevatedButton(
                             onPressed: controller.isAccepting.value
@@ -199,6 +198,86 @@ class MissionDetailsPage extends GetView<RadarController> {
           ],
         ),
       ),
+    );
+  }
+}
+
+// ── Own-mission notice ────────────────────────────────────────────────────────
+class _OwnMissionNotice extends StatelessWidget {
+  const _OwnMissionNotice();
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Container(
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: Colors.grey.withAlpha(40), width: 1),
+          ),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Icon circle
+              Container(
+                width: 44,
+                height: 44,
+                decoration: BoxDecoration(
+                  color: Colors.grey.withAlpha(18),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                  Icons.person_pin_circle_outlined,
+                  // color: bodyColor,
+                  size: 22,
+                ),
+              ),
+              const SizedBox(width: 14),
+
+              // Text
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Your mission',
+                      style: TextStyle(
+                        color: Colors.grey,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    const SizedBox(height: 6),
+                    Text(
+                      "You posted this mission. It's visible to nearby scouts who can accept it — you don't need to take any action here.",
+                      style: TextStyle(fontSize: 13.5, height: 1.5),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+
+        10.verticalSpace,
+
+        OutlinedButton(
+          onPressed: () => Get.back(),
+          style: OutlinedButton.styleFrom(
+            side: BorderSide(color: Colors.grey, width: 1.2),
+            minimumSize: const Size.fromHeight(52),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(14),
+            ),
+          ),
+          child: const Text(
+            'Go Back',
+            style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
+          ),
+        ),
+      ],
     );
   }
 }
