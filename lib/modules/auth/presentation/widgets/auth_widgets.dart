@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:zuru/config/client_colors.dart';
+import 'package:zuru/config/colors.dart';
 
 /// Shared auth widgets.
 ///
@@ -94,8 +94,8 @@ class GoogleButton extends StatelessWidget {
       child: OutlinedButton(
         onPressed: onPressed,
         style: OutlinedButton.styleFrom(
-          backgroundColor: ClientColors.googleBg,
-          foregroundColor: ClientColors.googleText,
+          backgroundColor: AppColors.googleBg,
+          foregroundColor: AppColors.googleText,
           side: BorderSide.none,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(50),
@@ -114,7 +114,7 @@ class GoogleButton extends StatelessWidget {
             Text(
               label,
               style: TextStyle(
-                color: ClientColors.googleText,
+                color: AppColors.googleText,
                 fontSize: 16,
                 fontWeight: FontWeight.w700,
               ),

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:zuru/config/client_colors.dart';
 import 'package:zuru/core/utils/extensions.dart';
 import 'package:zuru/core/utils/size.util.dart';
 import 'package:zuru/modules/auth/presentation/controllers/reset_password_controller.dart';
@@ -14,6 +13,9 @@ class NewPasswordPage extends GetView<ResetPasswordController> {
   @override
   Widget build(BuildContext context) {
     final formKey = GlobalKey<FormState>();
+    final scheme = Theme.of(context).colorScheme;
+    final bodyColor = Theme.of(context).textTheme.bodyMedium?.color;
+    final iconColor = Theme.of(context).inputDecorationTheme.hintStyle?.color;
 
     return Scaffold(
       body: SafeArea(
@@ -27,7 +29,7 @@ class NewPasswordPage extends GetView<ResetPasswordController> {
                 24.verticalSpace,
 
                 // ── Back to login ───────────────────────────────────────────
-                _BackToLoginButton(),
+                const _BackToLoginButton(),
 
                 60.verticalSpace,
 
@@ -35,19 +37,15 @@ class NewPasswordPage extends GetView<ResetPasswordController> {
                 Text(
                   'New Password',
                   style: TextStyle(
-                    color: ClientColors.textPrimary,
+                    color: scheme.onSurface,
                     fontSize: 34,
                     fontWeight: FontWeight.w800,
                   ),
                 ),
                 14.verticalSpace,
                 Text(
-                  'Choose a strong password for your UnSeen account.',
-                  style: TextStyle(
-                    color: ClientColors.textSecondary,
-                    fontSize: 15,
-                    height: 1.5,
-                  ),
+                  'Choose a strong password for your Zuru account.',
+                  style: TextStyle(color: bodyColor, fontSize: 15, height: 1.5),
                 ),
 
                 40.verticalSpace,
@@ -60,7 +58,7 @@ class NewPasswordPage extends GetView<ResetPasswordController> {
                     obscureText: controller.obscureNewPass.value,
                     prefixIcon: Icon(
                       Icons.lock_outline,
-                      color: ClientColors.iconColor,
+                      color: iconColor,
                       size: 20,
                     ),
                     suffixIcon: GestureDetector(
@@ -71,7 +69,7 @@ class NewPasswordPage extends GetView<ResetPasswordController> {
                           controller.obscureNewPass.value
                               ? Icons.visibility_outlined
                               : Icons.visibility_off_outlined,
-                          color: ClientColors.iconColor,
+                          color: iconColor,
                           size: 20,
                         ),
                       ),
@@ -99,7 +97,7 @@ class NewPasswordPage extends GetView<ResetPasswordController> {
                     obscureText: controller.obscureConfirmPass.value,
                     prefixIcon: Icon(
                       Icons.lock_outline,
-                      color: ClientColors.iconColor,
+                      color: iconColor,
                       size: 20,
                     ),
                     suffixIcon: GestureDetector(
@@ -110,13 +108,15 @@ class NewPasswordPage extends GetView<ResetPasswordController> {
                           controller.obscureConfirmPass.value
                               ? Icons.visibility_outlined
                               : Icons.visibility_off_outlined,
-                          color: ClientColors.iconColor,
+                          color: iconColor,
                           size: 20,
                         ),
                       ),
                     ),
                     validator: (v) {
-                      if (v == null || v.isEmpty) return 'Confirm your password';
+                      if (v == null || v.isEmpty) {
+                        return 'Confirm your password';
+                      }
                       if (v != controller.newPasswordCTRL.text) {
                         return 'Passwords do not match';
                       }
@@ -144,19 +144,22 @@ class NewPasswordPage extends GetView<ResetPasswordController> {
 // ─── Back to login button ─────────────────────────────────────────────────────
 
 class _BackToLoginButton extends StatelessWidget {
+  const _BackToLoginButton();
+
   @override
   Widget build(BuildContext context) {
+    final color = Theme.of(context).colorScheme.onSurface;
     return GestureDetector(
       onTap: () => Get.back(),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(Icons.chevron_left, color: ClientColors.textPrimary, size: 18),
-          SizedBox(width: 4),
+          Icon(Icons.chevron_left, color: color, size: 18),
+          const SizedBox(width: 4),
           Text(
             'BACK TO LOGIN',
             style: TextStyle(
-              color: ClientColors.textPrimary,
+              color: color,
               fontSize: 12,
               fontWeight: FontWeight.w600,
               letterSpacing: 1.1,

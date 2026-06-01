@@ -157,7 +157,7 @@ class SettingsTab extends GetView<UserController> {
 
                   // ── Version ───────────────────────────────────────────────
                   Text(
-                    'UNSEEN APP VERSION 1.0.4',
+                    'ZURU APP VERSION 1.0.4',
                     style: TextStyle(
                       color: ClientColors.textSecondary,
                       fontSize: 11,

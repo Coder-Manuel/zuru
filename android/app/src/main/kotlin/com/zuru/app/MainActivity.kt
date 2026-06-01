@@ -1,4 +1,4 @@
-package com.example.zuru
+package com.zuru.app
 
 import io.flutter.embedding.android.FlutterActivity
 

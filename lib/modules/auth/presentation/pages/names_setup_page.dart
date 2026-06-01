@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:zuru/config/client_colors.dart';
+import 'package:zuru/config/scout_colors.dart';
+import 'package:zuru/core/services/role_service/role_service.dart';
 import 'package:zuru/core/utils/size.util.dart';
 import 'package:zuru/modules/auth/presentation/controllers/register_controller.dart';
 import 'package:zuru/modules/auth/presentation/widgets/auth_widgets.dart';
@@ -13,6 +15,11 @@ class NamesSetupPage extends GetView<RegisterController> {
   @override
   Widget build(BuildContext context) {
     final formKey = GlobalKey<FormState>();
+    final scheme = Theme.of(context).colorScheme;
+    final bodyColor = Theme.of(context).textTheme.bodyMedium?.color;
+    final iconBg = RoleService.instance.isScout
+        ? ScoutColors.biometricBg
+        : ClientColors.biometricBg;
 
     return Scaffold(
       body: SafeArea(
@@ -28,12 +35,12 @@ class NamesSetupPage extends GetView<RegisterController> {
                   width: 80,
                   height: 80,
                   decoration: BoxDecoration(
-                    color: ClientColors.biometricBg,
+                    color: iconBg,
                     shape: BoxShape.circle,
                   ),
                   child: Icon(
                     Icons.person_outline,
-                    color: ClientColors.primary,
+                    color: scheme.primary,
                     size: 36,
                   ),
                 ),
@@ -43,7 +50,7 @@ class NamesSetupPage extends GetView<RegisterController> {
                   child: Text(
                     'Personal Details',
                     style: TextStyle(
-                      color: ClientColors.textPrimary,
+                      color: scheme.onSurface,
                       fontSize: 30,
                       fontWeight: FontWeight.bold,
                     ),
@@ -54,10 +61,7 @@ class NamesSetupPage extends GetView<RegisterController> {
                   alignment: Alignment.centerLeft,
                   child: Text(
                     'How should we address you?',
-                    style: TextStyle(
-                      color: ClientColors.textSecondary,
-                      fontSize: 15,
-                    ),
+                    style: TextStyle(color: bodyColor, fontSize: 15),
                   ),
                 ),
                 28.verticalSpace,

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:zuru/config/client_colors.dart';
 import 'package:zuru/modules/missions/domain/entities/mission.entity.dart';
-import 'package:zuru/modules/stream/presentation/pages/join_stream_page.dart';
+import 'package:zuru/core/routes/app_routes.dart';
 
 class JoinStreamDialog extends StatelessWidget {
   final MissionEntity mission;
@@ -104,7 +104,8 @@ class JoinStreamDialog extends StatelessWidget {
                   child: ElevatedButton(
                     onPressed: () {
                       Get.back();
-                      Get.toNamed(JoinStreamPage.route, arguments: mission);
+                      // StreamRoleMiddleware renders JoinStreamPage for clients.
+                      Get.toNamed(AppRoutes.stream, arguments: mission);
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: ClientColors.primary,

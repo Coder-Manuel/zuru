@@ -1,4 +1,5 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:zuru/core/services/role_service/role_service.dart';
 
 abstract class RemoteAuthDatasource {
   Future<AuthResponse> loginWithPassword({required Map<String, dynamic> data});
@@ -80,9 +81,10 @@ class RemoteAuthDatasourceImpl extends RemoteAuthDatasource {
   @override
   Future<Map<String, dynamic>?> updateNames(Map<String, dynamic> data) {
     return client
-        .from('users')
+        .from('profiles')
         .update(data)
-        .eq('id', client.auth.currentUser?.id ?? '')
+        .eq('user_id', client.auth.currentUser?.id ?? '')
+        .eq('role', RoleService.instance.role.value.name)
         .select()
         .single();
   }

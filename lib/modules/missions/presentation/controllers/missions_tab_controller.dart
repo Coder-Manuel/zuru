@@ -5,7 +5,7 @@ import 'package:zuru/modules/missions/data/models/enum.dart';
 import 'package:zuru/modules/missions/domain/entities/mission.entity.dart';
 import 'package:zuru/modules/missions/domain/entities/session.entity.dart';
 import 'package:zuru/modules/missions/domain/usecases/get_my_missions.usecase.dart';
-import 'package:zuru/modules/stream/presentation/pages/join_stream_page.dart';
+import 'package:zuru/core/routes/app_routes.dart';
 
 enum MissionFilter { all, active, pending, completed }
 
@@ -71,7 +71,10 @@ class MissionsTabController extends GetxController {
     });
   }
 
+  /// Navigate to the stream session.
+  /// [StreamRoleMiddleware] on [AppRoutes.stream] renders [StreamPage] for
+  /// scouts and [JoinStreamPage] for clients.
   void onJoinStream(MissionEntity mission) {
-    Get.toNamed(JoinStreamPage.route, arguments: mission);
+    Get.toNamed(AppRoutes.stream, arguments: mission);
   }
 }

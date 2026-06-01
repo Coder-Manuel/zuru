@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:zuru/config/client_colors.dart';
 import 'package:zuru/core/utils/extensions.dart';
 import 'package:zuru/core/utils/size.util.dart';
 import 'package:zuru/modules/auth/presentation/controllers/register_controller.dart';
@@ -14,6 +13,9 @@ class SignupPage extends GetView<RegisterController> {
   @override
   Widget build(BuildContext context) {
     final formKey = GlobalKey<FormState>();
+    final scheme = Theme.of(context).colorScheme;
+    final bodyColor = Theme.of(context).textTheme.bodyMedium?.color;
+    final iconColor = Theme.of(context).inputDecorationTheme.hintStyle?.color;
 
     return Scaffold(
       body: SafeArea(
@@ -32,13 +34,13 @@ class SignupPage extends GetView<RegisterController> {
                     children: [
                       Icon(
                         Icons.chevron_left,
-                        color: ClientColors.textPrimary,
+                        color: scheme.onSurface,
                         size: 22,
                       ),
                       Text(
                         'Back to Login',
                         style: TextStyle(
-                          color: ClientColors.textPrimary,
+                          color: scheme.onSurface,
                           fontSize: 15,
                         ),
                       ),
@@ -49,7 +51,7 @@ class SignupPage extends GetView<RegisterController> {
                 Text(
                   'Create Account',
                   style: TextStyle(
-                    color: ClientColors.textPrimary,
+                    color: scheme.onSurface,
                     fontSize: 30,
                     fontWeight: FontWeight.bold,
                   ),
@@ -58,7 +60,7 @@ class SignupPage extends GetView<RegisterController> {
                 Text(
                   'Join the network of scouts and clients.',
                   style: TextStyle(
-                    color: ClientColors.textSecondary,
+                    color: bodyColor,
                     fontSize: 15,
                   ),
                 ),
@@ -69,7 +71,7 @@ class SignupPage extends GetView<RegisterController> {
                   keyboardType: TextInputType.emailAddress,
                   prefixIcon: Icon(
                     Icons.mail_outline,
-                    color: ClientColors.iconColor,
+                    color: iconColor,
                     size: 20,
                   ),
                   validator: (v) {
@@ -86,7 +88,7 @@ class SignupPage extends GetView<RegisterController> {
                     obscureText: controller.obscurePass.value,
                     prefixIcon: Icon(
                       Icons.lock_outline,
-                      color: ClientColors.iconColor,
+                      color: iconColor,
                       size: 20,
                     ),
                     suffixIcon: GestureDetector(
@@ -97,7 +99,7 @@ class SignupPage extends GetView<RegisterController> {
                           controller.obscurePass.value
                               ? Icons.visibility_outlined
                               : Icons.visibility_off_outlined,
-                          color: ClientColors.iconColor,
+                          color: iconColor,
                           size: 20,
                         ),
                       ),
@@ -120,7 +122,7 @@ class SignupPage extends GetView<RegisterController> {
                     obscureText: controller.obscureConfirmPass.value,
                     prefixIcon: Icon(
                       Icons.lock_outline,
-                      color: ClientColors.iconColor,
+                      color: iconColor,
                       size: 20,
                     ),
                     suffixIcon: GestureDetector(
@@ -131,7 +133,7 @@ class SignupPage extends GetView<RegisterController> {
                           controller.obscureConfirmPass.value
                               ? Icons.visibility_outlined
                               : Icons.visibility_off_outlined,
-                          color: ClientColors.iconColor,
+                          color: iconColor,
                           size: 20,
                         ),
                       ),

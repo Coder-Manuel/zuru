@@ -1,5 +1,6 @@
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
+import 'package:zuru/core/services/role_service/role_service.dart';
 import 'package:zuru/core/utils/loader.dart';
 import 'package:zuru/core/utils/toast.dart';
 import 'package:zuru/modules/auth/data/models/auth.inputs.dart';
@@ -11,7 +12,7 @@ import 'package:zuru/modules/auth/domain/usecases/verify_phone_otp.usecase.dart'
 import 'package:zuru/modules/auth/presentation/pages/names_setup_page.dart';
 import 'package:zuru/modules/auth/presentation/pages/phone_setup_page.dart';
 import 'package:zuru/modules/auth/presentation/pages/verify_page.dart';
-import 'package:zuru/modules/home/presentation/pages/home_page.dart';
+import 'package:zuru/core/routes/app_routes.dart';
 
 class RegisterController extends GetxController {
   final _signupUsecase = Get.find<RegisterUsecase>();
@@ -50,6 +51,7 @@ class RegisterController extends GetxController {
       SignupInput(
         email: emailCTRL.text.trim(),
         password: passwordCTRL.text.trim(),
+        role: RoleService.instance.role.value,
       ),
     );
     Loader.dismiss();
@@ -132,7 +134,8 @@ class RegisterController extends GetxController {
 
     response.fold(
       (ex) => Toast.error(ex.message),
-      (_) => Get.offAllNamed(HomePage.route),
+      // HomeRoleMiddleware resolves the correct home page per role.
+      (_) => Get.offAllNamed(AppRoutes.home),
     );
   }
 

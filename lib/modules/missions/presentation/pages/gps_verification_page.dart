@@ -7,7 +7,7 @@ import 'package:zuru/config/scout_colors.dart';
 import 'package:zuru/core/services/location_service/location_service.dart';
 import 'package:zuru/core/utils/size.util.dart';
 import 'package:zuru/modules/missions/domain/entities/mission.entity.dart';
-import 'package:zuru/modules/stream/presentation/pages/stream_page.dart';
+import 'package:zuru/core/routes/app_routes.dart';
 
 // ── Verification states ───────────────────────────────────────────────────────
 
@@ -185,7 +185,8 @@ class _GpsVerificationPageState extends State<GpsVerificationPage>
   }
 
   void _onBeginStream() {
-    Get.toNamed(StreamPage.route, arguments: _mission);
+    // StreamRoleMiddleware on AppRoutes.stream renders StreamPage for scouts.
+    Get.toNamed(AppRoutes.stream, arguments: _mission);
   }
 
   // ── Helpers ───────────────────────────────────────────────────────────────

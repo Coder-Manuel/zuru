@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:zuru/config/client_colors.dart';
 import 'package:zuru/config/scout_colors.dart';
-import 'package:zuru/core/services/theme_service/theme_service.dart';
+import 'package:zuru/core/services/role_service/role_service.dart';
 import 'package:zuru/core/utils/size.util.dart';
 import 'package:zuru/modules/auth/presentation/controllers/login_controller.dart';
 import 'package:zuru/modules/auth/presentation/pages/forgot_password_page.dart';
@@ -34,7 +34,7 @@ class LoginPage extends GetView<LoginController> {
 
                 // ── App name ──────────────────────────────────────────────────
                 Text(
-                  'UnSeen',
+                  'Zuru',
                   style: TextStyle(
                     color: scheme.onSurface,
                     fontSize: 48,
@@ -127,7 +127,7 @@ class LoginPage extends GetView<LoginController> {
 
                 // ── Login button + optional biometric ─────────────────────────
                 Obx(() {
-                  final isScout = ThemeService.to.isScout;
+                  final isScout = RoleService.instance.isScout;
                   final bioBg = isScout
                       ? ScoutColors.biometricBg
                       : ClientColors.biometricBg;
@@ -221,9 +221,7 @@ class _RoleTabSwitcher extends StatelessWidget {
         Theme.of(context).inputDecorationTheme.fillColor ?? Colors.transparent;
 
     return Obx(() {
-      final isScout = ThemeService.to.isScout;
-      final borderColor = (isScout ? ScoutColors.primary : ClientColors.primary)
-          .withAlpha(60);
+      final borderColor = Get.theme.primaryColor.withAlpha(60);
 
       return Container(
         height: 52,
@@ -239,17 +237,17 @@ class _RoleTabSwitcher extends StatelessWidget {
             _RoleTab(
               label: 'Client',
               icon: Icons.person_outline_rounded,
-              isSelected: !isScout,
-              activeColor: ClientColors.primary,
-              onTap: ThemeService.to.applyClientTheme,
+              isSelected: !RoleService.instance.isScout,
+              activeColor: Get.theme.primaryColor,
+              onTap: () => RoleService.instance.applyClientTheme(),
             ),
             const SizedBox(width: 4),
             _RoleTab(
               label: 'Scout',
               icon: Icons.radar_rounded,
-              isSelected: isScout,
-              activeColor: ScoutColors.primary,
-              onTap: ThemeService.to.applyScoutTheme,
+              isSelected: RoleService.instance.isScout,
+              activeColor: Get.theme.primaryColor,
+              onTap: () => RoleService.instance.applyScoutTheme(),
             ),
           ],
         ),

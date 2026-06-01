@@ -2,14 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
-import 'package:zuru/core/services/theme_service/theme_service.dart';
+import 'package:zuru/core/routes/app_routes.dart';
 import 'package:zuru/core/utils/loader.dart';
 import 'package:zuru/core/utils/toast.dart';
 import 'package:zuru/modules/auth/data/models/auth.inputs.dart';
 import 'package:zuru/modules/auth/domain/usecases/login.usecase.dart';
 import 'package:zuru/modules/auth/domain/usecases/login_oauth.usecase.dart';
-import 'package:zuru/modules/home/presentation/pages/home_page.dart';
-import 'package:zuru/modules/home/presentation/pages/scout_home_page.dart';
 
 class LoginController extends GetxController {
   final loginUsecase = Get.find<LoginUseCase>();
@@ -23,12 +21,11 @@ class LoginController extends GetxController {
 
   void toggleObscurePass() => obscurePass.value = !obscurePass.value;
 
-  /// Route to whichever home the currently selected role demands.
+  /// Navigate to home — [HomeRoleMiddleware] on [AppRoutes.home] resolves
+  /// the correct page (client → [HomePage], scout → [ScoutHomePage]).
   void _navigateHome(String displayName) {
     Toast.success('Welcome $displayName');
-    Get.offAllNamed(
-      ThemeService.to.isScout ? ScoutHomePage.route : HomePage.route,
-    );
+    Get.offAllNamed(AppRoutes.home);
   }
 
   Future<void> oathLogin() async {

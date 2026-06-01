@@ -1,0 +1,359 @@
+PODS:
+  - app_links (7.0.0):
+    - Flutter
+  - AppAuth (2.0.0):
+    - AppAuth/Core (= 2.0.0)
+    - AppAuth/ExternalUserAgent (= 2.0.0)
+  - AppAuth/Core (2.0.0)
+  - AppAuth/ExternalUserAgent (2.0.0):
+    - AppAuth/Core
+  - AppCheckCore (11.2.0):
+    - GoogleUtilities/Environment (~> 8.0)
+    - GoogleUtilities/UserDefaults (~> 8.0)
+    - PromisesObjC (~> 2.4)
+  - connectivity_plus (0.0.1):
+    - Flutter
+  - device_info_plus (0.0.1):
+    - Flutter
+  - Firebase/CoreOnly (12.13.0):
+    - FirebaseCore (~> 12.13.0)
+  - Firebase/Crashlytics (12.13.0):
+    - Firebase/CoreOnly
+    - FirebaseCrashlytics (~> 12.13.0)
+  - Firebase/Messaging (12.13.0):
+    - Firebase/CoreOnly
+    - FirebaseMessaging (~> 12.13.0)
+  - firebase_core (4.9.0):
+    - Firebase/CoreOnly (= 12.13.0)
+    - Flutter
+  - firebase_crashlytics (5.2.2):
+    - Firebase/Crashlytics (= 12.13.0)
+    - firebase_core
+    - Flutter
+  - firebase_messaging (16.2.2):
+    - Firebase/Messaging (= 12.13.0)
+    - firebase_core
+    - Flutter
+  - FirebaseCore (12.13.0):
+    - FirebaseCoreInternal (~> 12.13.0)
+    - GoogleUtilities/Environment (~> 8.1)
+    - GoogleUtilities/Logger (~> 8.1)
+  - FirebaseCoreExtension (12.13.0):
+    - FirebaseCore (~> 12.13.0)
+  - FirebaseCoreInternal (12.13.0):
+    - "GoogleUtilities/NSData+zlib (~> 8.1)"
+  - FirebaseCrashlytics (12.13.0):
+    - FirebaseCore (~> 12.13.0)
+    - FirebaseInstallations (~> 12.13.0)
+    - FirebaseRemoteConfigInterop (~> 12.13.0)
+    - FirebaseSessions (~> 12.13.0)
+    - GoogleDataTransport (~> 10.1)
+    - GoogleUtilities/Environment (~> 8.1)
+    - nanopb (~> 3.30910.0)
+    - PromisesObjC (~> 2.4)
+  - FirebaseInstallations (12.13.0):
+    - FirebaseCore (~> 12.13.0)
+    - GoogleUtilities/Environment (~> 8.1)
+    - GoogleUtilities/UserDefaults (~> 8.1)
+    - PromisesObjC (~> 2.4)
+  - FirebaseMessaging (12.13.0):
+    - FirebaseCore (~> 12.13.0)
+    - FirebaseInstallations (~> 12.13.0)
+    - GoogleDataTransport (~> 10.1)
+    - GoogleUtilities/AppDelegateSwizzler (~> 8.1)
+    - GoogleUtilities/Environment (~> 8.1)
+    - GoogleUtilities/Reachability (~> 8.1)
+    - GoogleUtilities/UserDefaults (~> 8.1)
+    - nanopb (~> 3.30910.0)
+  - FirebaseRemoteConfigInterop (12.13.0)
+  - FirebaseSessions (12.13.0):
+    - FirebaseCore (~> 12.13.0)
+    - FirebaseCoreExtension (~> 12.13.0)
+    - FirebaseInstallations (~> 12.13.0)
+    - GoogleDataTransport (~> 10.1)
+    - GoogleUtilities/Environment (~> 8.1)
+    - GoogleUtilities/UserDefaults (~> 8.1)
+    - nanopb (~> 3.30910.0)
+    - PromisesSwift (~> 2.1)
+  - Flutter (1.0.0)
+  - flutter_mapbox_navigation_plus (1.0.0):
+    - Flutter
+    - MapboxCoreNavigation (~> 2.11)
+    - MapboxNavigation (~> 2.11)
+  - flutter_webrtc (1.4.0):
+    - Flutter
+    - WebRTC-SDK (= 144.7559.01)
+  - geolocator_apple (1.2.0):
+    - Flutter
+    - FlutterMacOS
+  - Google-Maps-iOS-Utils (6.1.0):
+    - GoogleMaps (~> 9.0)
+  - google_maps_flutter_ios (0.0.1):
+    - Flutter
+    - Google-Maps-iOS-Utils (< 7.0, >= 5.0)
+    - GoogleMaps (< 11.0, >= 8.4)
+  - google_sign_in_ios (0.0.1):
+    - Flutter
+    - FlutterMacOS
+    - GoogleSignIn (~> 9.0)
+    - GTMSessionFetcher (>= 3.4.0)
+  - GoogleDataTransport (10.1.0):
+    - nanopb (~> 3.30910.0)
+    - PromisesObjC (~> 2.4)
+  - GoogleMaps (9.4.0):
+    - GoogleMaps/Maps (= 9.4.0)
+  - GoogleMaps/Maps (9.4.0)
+  - GoogleSignIn (9.1.0):
+    - AppAuth (~> 2.0)
+    - AppCheckCore (~> 11.0)
+    - GTMAppAuth (~> 5.0)
+    - GTMSessionFetcher/Core (~> 3.3)
+  - GoogleUtilities/AppDelegateSwizzler (8.1.0):
+    - GoogleUtilities/Environment
+    - GoogleUtilities/Logger
+    - GoogleUtilities/Network
+    - GoogleUtilities/Privacy
+  - GoogleUtilities/Environment (8.1.0):
+    - GoogleUtilities/Privacy
+  - GoogleUtilities/Logger (8.1.0):
+    - GoogleUtilities/Environment
+    - GoogleUtilities/Privacy
+  - GoogleUtilities/Network (8.1.0):
+    - GoogleUtilities/Logger
+    - "GoogleUtilities/NSData+zlib"
+    - GoogleUtilities/Privacy
+    - GoogleUtilities/Reachability
+  - "GoogleUtilities/NSData+zlib (8.1.0)":
+    - GoogleUtilities/Privacy
+  - GoogleUtilities/Privacy (8.1.0)
+  - GoogleUtilities/Reachability (8.1.0):
+    - GoogleUtilities/Logger
+    - GoogleUtilities/Privacy
+  - GoogleUtilities/UserDefaults (8.1.0):
+    - GoogleUtilities/Logger
+    - GoogleUtilities/Privacy
+  - GTMAppAuth (5.0.0):
+    - AppAuth/Core (~> 2.0)
+    - GTMSessionFetcher/Core (< 4.0, >= 3.3)
+  - GTMSessionFetcher (3.5.0):
+    - GTMSessionFetcher/Full (= 3.5.0)
+  - GTMSessionFetcher/Core (3.5.0)
+  - GTMSessionFetcher/Full (3.5.0):
+    - GTMSessionFetcher/Core
+  - json-enum (1.2.3)
+  - jsonlogic (1.2.4):
+    - json-enum (~> 1.2.3)
+  - livekit_client (2.7.0):
+    - Flutter
+    - flutter_webrtc
+    - WebRTC-SDK (= 144.7559.01)
+  - MapboxCommon (23.12.0)
+  - MapboxCoreMaps (10.19.2):
+    - MapboxCommon (~> 23.11)
+  - MapboxCoreNavigation (2.21.0):
+    - MapboxDirections (~> 2.14)
+    - MapboxNavigationNative (< 207.0.0, >= 206.0.1)
+  - MapboxDirections (2.14.3):
+    - Polyline (~> 5.0)
+    - Turf (~> 2.8.0)
+  - MapboxMaps (10.19.5):
+    - MapboxCommon (= 23.12.0)
+    - MapboxCoreMaps (= 10.19.2)
+    - MapboxMobileEvents (= 2.0.0)
+    - Turf (= 2.8.0)
+  - MapboxMobileEvents (2.0.0)
+  - MapboxNavigation (2.21.0):
+    - MapboxCoreNavigation (= 2.21.0)
+    - MapboxMaps (~> 10.19)
+    - MapboxSpeech (~> 2.0)
+    - Solar-dev (~> 3.0)
+  - MapboxNavigationNative (206.2.2):
+    - MapboxCommon (~> 23.10)
+  - MapboxSpeech (2.1.1)
+  - Mixpanel-swift (6.4.0):
+    - jsonlogic (~> 1.2.0)
+    - Mixpanel-swift/Complete (= 6.4.0)
+    - MixpanelSwiftCommon (~> 1.0.0)
+  - Mixpanel-swift/Complete (6.4.0):
+    - jsonlogic (~> 1.2.0)
+    - MixpanelSwiftCommon (~> 1.0.0)
+  - mixpanel_flutter (2.8.0):
+    - Flutter
+    - Mixpanel-swift (= 6.4.0)
+  - MixpanelSwiftCommon (1.0.1)
+  - nanopb (3.30910.0):
+    - nanopb/decode (= 3.30910.0)
+    - nanopb/encode (= 3.30910.0)
+  - nanopb/decode (3.30910.0)
+  - nanopb/encode (3.30910.0)
+  - Polyline (5.1.0)
+  - PromisesObjC (2.4.0)
+  - PromisesSwift (2.4.0):
+    - PromisesObjC (= 2.4.0)
+  - shared_preferences_foundation (0.0.1):
+    - Flutter
+    - FlutterMacOS
+  - sign_in_with_apple (0.0.1):
+    - Flutter
+  - Solar-dev (3.0.1)
+  - Turf (2.8.0)
+  - url_launcher_ios (0.0.1):
+    - Flutter
+  - WebRTC-SDK (144.7559.01)
+
+DEPENDENCIES:
+  - app_links (from `.symlinks/plugins/app_links/ios`)
+  - connectivity_plus (from `.symlinks/plugins/connectivity_plus/ios`)
+  - device_info_plus (from `.symlinks/plugins/device_info_plus/ios`)
+  - firebase_core (from `.symlinks/plugins/firebase_core/ios`)
+  - firebase_crashlytics (from `.symlinks/plugins/firebase_crashlytics/ios`)
+  - firebase_messaging (from `.symlinks/plugins/firebase_messaging/ios`)
+  - Flutter (from `Flutter`)
+  - flutter_mapbox_navigation_plus (from `.symlinks/plugins/flutter_mapbox_navigation_plus/ios`)
+  - flutter_webrtc (from `.symlinks/plugins/flutter_webrtc/ios`)
+  - geolocator_apple (from `.symlinks/plugins/geolocator_apple/darwin`)
+  - google_maps_flutter_ios (from `.symlinks/plugins/google_maps_flutter_ios/ios`)
+  - google_sign_in_ios (from `.symlinks/plugins/google_sign_in_ios/darwin`)
+  - livekit_client (from `.symlinks/plugins/livekit_client/ios`)
+  - mixpanel_flutter (from `.symlinks/plugins/mixpanel_flutter/ios`)
+  - shared_preferences_foundation (from `.symlinks/plugins/shared_preferences_foundation/darwin`)
+  - sign_in_with_apple (from `.symlinks/plugins/sign_in_with_apple/ios`)
+  - url_launcher_ios (from `.symlinks/plugins/url_launcher_ios/ios`)
+
+SPEC REPOS:
+  trunk:
+    - AppAuth
+    - AppCheckCore
+    - Firebase
+    - FirebaseCore
+    - FirebaseCoreExtension
+    - FirebaseCoreInternal
+    - FirebaseCrashlytics
+    - FirebaseInstallations
+    - FirebaseMessaging
+    - FirebaseRemoteConfigInterop
+    - FirebaseSessions
+    - Google-Maps-iOS-Utils
+    - GoogleDataTransport
+    - GoogleMaps
+    - GoogleSignIn
+    - GoogleUtilities
+    - GTMAppAuth
+    - GTMSessionFetcher
+    - json-enum
+    - jsonlogic
+    - MapboxCommon
+    - MapboxCoreMaps
+    - MapboxCoreNavigation
+    - MapboxDirections
+    - MapboxMaps
+    - MapboxMobileEvents
+    - MapboxNavigation
+    - MapboxNavigationNative
+    - MapboxSpeech
+    - Mixpanel-swift
+    - MixpanelSwiftCommon
+    - nanopb
+    - Polyline
+    - PromisesObjC
+    - PromisesSwift
+    - Solar-dev
+    - Turf
+    - WebRTC-SDK
+
+EXTERNAL SOURCES:
+  app_links:
+    :path: ".symlinks/plugins/app_links/ios"
+  connectivity_plus:
+    :path: ".symlinks/plugins/connectivity_plus/ios"
+  device_info_plus:
+    :path: ".symlinks/plugins/device_info_plus/ios"
+  firebase_core:
+    :path: ".symlinks/plugins/firebase_core/ios"
+  firebase_crashlytics:
+    :path: ".symlinks/plugins/firebase_crashlytics/ios"
+  firebase_messaging:
+    :path: ".symlinks/plugins/firebase_messaging/ios"
+  Flutter:
+    :path: Flutter
+  flutter_mapbox_navigation_plus:
+    :path: ".symlinks/plugins/flutter_mapbox_navigation_plus/ios"
+  flutter_webrtc:
+    :path: ".symlinks/plugins/flutter_webrtc/ios"
+  geolocator_apple:
+    :path: ".symlinks/plugins/geolocator_apple/darwin"
+  google_maps_flutter_ios:
+    :path: ".symlinks/plugins/google_maps_flutter_ios/ios"
+  google_sign_in_ios:
+    :path: ".symlinks/plugins/google_sign_in_ios/darwin"
+  livekit_client:
+    :path: ".symlinks/plugins/livekit_client/ios"
+  mixpanel_flutter:
+    :path: ".symlinks/plugins/mixpanel_flutter/ios"
+  shared_preferences_foundation:
+    :path: ".symlinks/plugins/shared_preferences_foundation/darwin"
+  sign_in_with_apple:
+    :path: ".symlinks/plugins/sign_in_with_apple/ios"
+  url_launcher_ios:
+    :path: ".symlinks/plugins/url_launcher_ios/ios"
+
+SPEC CHECKSUMS:
+  app_links: a754cbec3c255bd4bbb4d236ecc06f28cd9a7ce8
+  AppAuth: 1c1a8afa7e12f2ec3a294d9882dfa5ab7d3cb063
+  AppCheckCore: cc8fd0a3a230ddd401f326489c99990b013f0c4f
+  connectivity_plus: cb623214f4e1f6ef8fe7403d580fdad517d2f7dd
+  device_info_plus: 21fcca2080fbcd348be798aa36c3e5ed849eefbe
+  Firebase: 7d62445aeabdaea36f7d372f33052fed9a72514f
+  firebase_core: 0013f886fbd0b4950865551eaab47784424bfdb5
+  firebase_crashlytics: fae0a58bac6eaaef4cdacc72f9e55fef1e0be0a1
+  firebase_messaging: b875e4088ddd9ecd1834f6c89f6e0a1ffc7d98f0
+  FirebaseCore: 58905958aa00a061397a0fd759ae4b55bddb3576
+  FirebaseCoreExtension: 5b94169f1ee96ecc2dbde40bc53690e4d65eb652
+  FirebaseCoreInternal: 37bee58388fc6d183f0ab1b32d69ae44f2cf8aad
+  FirebaseCrashlytics: 8bb2d41cb47e8f3ea34200d99361499a59995e0d
+  FirebaseInstallations: 134bde50e477628ded76070efdb12d515d53f948
+  FirebaseMessaging: 30564b85d2f81a96f9d312bd23acf8186ff092ae
+  FirebaseRemoteConfigInterop: 4801ab93a543ef8fedfb40ae2f66d03e3fdcb864
+  FirebaseSessions: 0e5f64cd99400275798fcb5e2b773dd000ca02c1
+  Flutter: cabc95a1d2626b1b06e7179b784ebcf0c0cde467
+  flutter_mapbox_navigation_plus: 4d4a3534a7f3193cbd160ff50d1ed3ff9023d42a
+  flutter_webrtc: ec91d94b484ad49cf191ef93413f64a40ffd3b4c
+  geolocator_apple: ab36aa0e8b7d7a2d7639b3b4e48308394e8cef5e
+  Google-Maps-iOS-Utils: 0a484b05ed21d88c9f9ebbacb007956edd508a96
+  google_maps_flutter_ios: 17552876e72723da1d41accc22f03b5f7afbde69
+  google_sign_in_ios: 000870aa06da9b28d1d0bf7ef70ff0213059dd28
+  GoogleDataTransport: aae35b7ea0c09004c3797d53c8c41f66f219d6a7
+  GoogleMaps: 0608099d4870cac8754bdba9b6953db543432438
+  GoogleSignIn: fcee2257188d5eda57a5e2b6a715550ffff9206d
+  GoogleUtilities: 00c88b9a86066ef77f0da2fab05f65d7768ed8e1
+  GTMAppAuth: 217a876b249c3c585a54fd6f73e6b58c4f5c4238
+  GTMSessionFetcher: 5aea5ba6bd522a239e236100971f10cb71b96ab6
+  json-enum: 57ad746d2f0d7852796e9aa50267bd84a778222e
+  jsonlogic: 006f892470384401b8ca5b5d8d4cdadb3a0d5c9b
+  livekit_client: 9b9a08c5c78f694ac6a9e70c1c269704ba574b73
+  MapboxCommon: 9fe257ddc7385d55106345d4520a7fec3f4c0465
+  MapboxCoreMaps: 35685edba03e44468aed57c3dfd7f8795edafda8
+  MapboxCoreNavigation: 11dda50daebae2e2ff15d8ade0f272e75c218d25
+  MapboxDirections: d9ad8452e8927d95ed21e35f733834dbca7e0eb1
+  MapboxMaps: f8d239f0474c07002443dd2f424c6dba2d44ec9a
+  MapboxMobileEvents: d044b9edbe0ec7df60f6c2c9634fe9a7f449266b
+  MapboxNavigation: 0daefde94cff87e774dd0444e3910059119c889c
+  MapboxNavigationNative: 629e359f3d2590acd1ebbacaaf99e1a80ee57e42
+  MapboxSpeech: cd25ef99c3a3d2e0da72620ff558276ea5991a77
+  Mixpanel-swift: 9eb2ea2d0463970687c984e07040669f787b7a49
+  mixpanel_flutter: 259e1ad9a46a6013e74a979e47b25271989ef5fd
+  MixpanelSwiftCommon: 6fc461403945422a2e1d0989d712c0db2c26ecdb
+  nanopb: fad817b59e0457d11a5dfbde799381cd727c1275
+  Polyline: 2a1f29f87f8d9b7de868940f4f76deb8c678a5b1
+  PromisesObjC: f5707f49cb48b9636751c5b2e7d227e43fba9f47
+  PromisesSwift: 9d77319bbe72ebf6d872900551f7eeba9bce2851
+  shared_preferences_foundation: 7036424c3d8ec98dfe75ff1667cb0cd531ec82bb
+  sign_in_with_apple: c5dcc141574c8c54d5ac99dd2163c0c72ad22418
+  Solar-dev: 4612dc9878b9fed2667d23b327f1d4e54e16e8d0
+  Turf: aa2ede4298009639d10db36aba1a7ebaad072a5e
+  url_launcher_ios: 7a95fa5b60cc718a708b8f2966718e93db0cef1b
+  WebRTC-SDK: ab9b5319e458c2bfebdc92b3600740da35d5630d
+
+PODFILE CHECKSUM: 53a6aebc29ccee84c41f92f409fc20cd4ca011f1
+
+COCOAPODS: 1.16.2

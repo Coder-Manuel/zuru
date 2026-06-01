@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:zuru/config/client_colors.dart';
 import 'package:zuru/core/utils/size.util.dart';
 import 'package:zuru/modules/auth/presentation/controllers/reset_password_controller.dart';
 import 'package:zuru/modules/auth/presentation/widgets/auth_widgets.dart';
@@ -13,6 +12,9 @@ class ForgotPasswordPage extends GetView<ResetPasswordController> {
   @override
   Widget build(BuildContext context) {
     final formKey = GlobalKey<FormState>();
+    final scheme = Theme.of(context).colorScheme;
+    final bodyColor = Theme.of(context).textTheme.bodyMedium?.color;
+    final iconColor = Theme.of(context).inputDecorationTheme.hintStyle?.color;
 
     return Scaffold(
       body: SafeArea(
@@ -26,7 +28,7 @@ class ForgotPasswordPage extends GetView<ResetPasswordController> {
                 24.verticalSpace,
 
                 // ── Back to login ─────────────────────────────────────────
-                _BackToLoginButton(),
+                const _BackToLoginButton(),
 
                 80.verticalSpace,
 
@@ -34,7 +36,7 @@ class ForgotPasswordPage extends GetView<ResetPasswordController> {
                 Text(
                   'Reset Password',
                   style: TextStyle(
-                    color: ClientColors.textPrimary,
+                    color: scheme.onSurface,
                     fontSize: 36,
                     fontWeight: FontWeight.w700,
                     fontStyle: FontStyle.italic,
@@ -44,7 +46,7 @@ class ForgotPasswordPage extends GetView<ResetPasswordController> {
                 Text(
                   'Enter your email address below to\nreceive a password reset code.',
                   style: TextStyle(
-                    color: ClientColors.textSecondary,
+                    color: bodyColor,
                     fontSize: 15,
                     height: 1.5,
                   ),
@@ -59,7 +61,7 @@ class ForgotPasswordPage extends GetView<ResetPasswordController> {
                   keyboardType: TextInputType.emailAddress,
                   prefixIcon: Icon(
                     Icons.mail_outline,
-                    color: ClientColors.iconColor,
+                    color: iconColor,
                     size: 20,
                   ),
                   validator: (v) {
@@ -88,19 +90,22 @@ class ForgotPasswordPage extends GetView<ResetPasswordController> {
 // ─── Back to login button ─────────────────────────────────────────────────────
 
 class _BackToLoginButton extends StatelessWidget {
+  const _BackToLoginButton();
+
   @override
   Widget build(BuildContext context) {
+    final color = Theme.of(context).colorScheme.onSurface;
     return GestureDetector(
       onTap: () => Get.back(),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(Icons.chevron_left, color: ClientColors.textPrimary, size: 18),
-          SizedBox(width: 4),
+          Icon(Icons.chevron_left, color: color, size: 18),
+          const SizedBox(width: 4),
           Text(
             'BACK TO LOGIN',
             style: TextStyle(
-              color: ClientColors.textPrimary,
+              color: color,
               fontSize: 12,
               fontWeight: FontWeight.w600,
               letterSpacing: 1.1,

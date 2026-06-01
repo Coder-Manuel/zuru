@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:zuru/config/client_colors.dart';
 import 'package:zuru/core/utils/size.util.dart';
 import 'package:zuru/modules/auth/presentation/controllers/register_controller.dart';
 import 'package:zuru/modules/auth/presentation/widgets/auth_widgets.dart';
@@ -12,6 +11,10 @@ class PhoneSetupPage extends GetView<RegisterController> {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    final bodyColor = Theme.of(context).textTheme.bodyMedium?.color;
+    final fillColor = Theme.of(context).inputDecorationTheme.fillColor;
+
     return Scaffold(
       body: SafeArea(
         child: Padding(
@@ -23,7 +26,7 @@ class PhoneSetupPage extends GetView<RegisterController> {
               Text(
                 'Phone Number',
                 style: TextStyle(
-                  color: ClientColors.textPrimary,
+                  color: scheme.onSurface,
                   fontSize: 30,
                   fontWeight: FontWeight.bold,
                 ),
@@ -31,7 +34,7 @@ class PhoneSetupPage extends GetView<RegisterController> {
               12.verticalSpace,
               Text(
                 'Required for mission coordination and security.',
-                style: TextStyle(color: ClientColors.textSecondary, fontSize: 15),
+                style: TextStyle(color: bodyColor, fontSize: 15),
               ),
               28.verticalSpace,
               Row(
@@ -43,14 +46,14 @@ class PhoneSetupPage extends GetView<RegisterController> {
                         height: 58,
                         padding: const EdgeInsets.symmetric(horizontal: 14),
                         decoration: BoxDecoration(
-                          color: ClientColors.inputBg,
+                          color: fillColor,
                           borderRadius: BorderRadius.circular(12),
                         ),
                         alignment: Alignment.center,
                         child: Text(
                           controller.countryCode.value,
                           style: TextStyle(
-                            color: ClientColors.textPrimary,
+                            color: scheme.onSurface,
                             fontSize: 16,
                             fontWeight: FontWeight.w600,
                           ),
@@ -65,14 +68,12 @@ class PhoneSetupPage extends GetView<RegisterController> {
                       child: TextField(
                         controller: controller.phoneCTRL,
                         keyboardType: TextInputType.phone,
-                        style: TextStyle(color: ClientColors.textPrimary),
+                        style: TextStyle(color: scheme.onSurface),
                         decoration: InputDecoration(
                           hintText: '712 345 678',
-                          hintStyle: TextStyle(
-                            color: ClientColors.textSecondary,
-                          ),
+                          hintStyle: TextStyle(color: bodyColor),
                           filled: true,
-                          fillColor: ClientColors.inputBg,
+                          fillColor: fillColor,
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
                             borderSide: BorderSide.none,
@@ -84,7 +85,7 @@ class PhoneSetupPage extends GetView<RegisterController> {
                           focusedBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
                             borderSide: BorderSide(
-                              color: ClientColors.primary,
+                              color: scheme.primary,
                               width: 1.5,
                             ),
                           ),
@@ -115,19 +116,24 @@ class PhoneSetupPage extends GetView<RegisterController> {
     final codes = ['+254', '+1', '+44', '+91', '+27', '+234', '+255', '+256'];
     showModalBottomSheet(
       context: context,
-      backgroundColor: ClientColors.surface,
+      backgroundColor: Theme.of(context).colorScheme.surface,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
-      builder: (_) => ListView.separated(
+      builder: (sheetCtx) => ListView.separated(
         padding: const EdgeInsets.symmetric(vertical: 16),
         itemCount: codes.length,
-        separatorBuilder: (_, _) =>
-            Divider(color: ClientColors.divider, height: 1),
+        separatorBuilder: (_, _) => Divider(
+          color: Theme.of(sheetCtx).dividerTheme.color,
+          height: 1,
+        ),
         itemBuilder: (_, i) => ListTile(
           title: Text(
             codes[i],
-            style: TextStyle(color: ClientColors.textPrimary, fontSize: 16),
+            style: TextStyle(
+              color: Theme.of(sheetCtx).colorScheme.onSurface,
+              fontSize: 16,
+            ),
           ),
           onTap: () {
             controller.countryCode.value = codes[i];

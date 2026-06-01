@@ -5,7 +5,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:zuru/core/remote/network_client.dart';
 import 'package:zuru/core/services/connectivity_service/connectivity_controller.dart';
 import 'package:zuru/core/services/location_service/location_service.dart';
-import 'package:zuru/core/services/theme_service/theme_service.dart';
+import 'package:zuru/core/services/role_service/role_service.dart';
 import 'package:zuru/core/services/url_launcher_service/url_launcher_service.dart';
 import 'package:zuru/core/utils/navigation_middleware/navigation_controller.dart';
 
@@ -26,7 +26,7 @@ class InitialBinding extends Bindings {
     );
 
     // ── Permanent services ────────────────────────────────────────────────────
-    Get.put(ThemeService(), permanent: true);
+    Get.put(RoleService(), permanent: true);
     Get.put(
       ConnectivityController(strategy: DefaultObServingStrategy()),
       permanent: true,

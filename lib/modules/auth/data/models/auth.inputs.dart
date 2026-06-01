@@ -39,7 +39,7 @@ class SignupInput {
   SignupInput({
     required this.email,
     required this.password,
-    this.role = UserRole.client,
+    required this.role,
   });
 
   Map<String, dynamic> toMap() => {
@@ -78,6 +78,7 @@ class NamesInput {
   Map<String, dynamic> toMap() => {
     'first_name': firstName,
     'last_name': lastName,
+    'status': 'active',
   };
 }
 

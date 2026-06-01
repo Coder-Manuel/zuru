@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pinput/pinput.dart';
 import 'package:zuru/config/client_colors.dart';
+import 'package:zuru/config/scout_colors.dart';
+import 'package:zuru/core/services/role_service/role_service.dart';
 import 'package:zuru/core/utils/size.util.dart';
 import 'package:zuru/modules/auth/presentation/controllers/register_controller.dart';
 import 'package:zuru/modules/auth/presentation/widgets/auth_widgets.dart';
@@ -14,6 +16,12 @@ class VerifyPage extends GetView<RegisterController> {
   @override
   Widget build(BuildContext context) {
     final bool isEmailVerification = Get.arguments ?? false;
+    final scheme = Theme.of(context).colorScheme;
+    final bodyColor = Theme.of(context).textTheme.bodyMedium?.color;
+    final iconBg = RoleService.instance.isScout
+        ? ScoutColors.biometricBg
+        : ClientColors.biometricBg;
+
     return Scaffold(
       body: SafeArea(
         child: Padding(
@@ -26,14 +34,14 @@ class VerifyPage extends GetView<RegisterController> {
                 width: 80,
                 height: 80,
                 decoration: BoxDecoration(
-                  color: ClientColors.biometricBg,
+                  color: iconBg,
                   shape: BoxShape.circle,
                 ),
                 child: Icon(
                   isEmailVerification
                       ? Icons.mail_outline
                       : Icons.phone_in_talk_outlined,
-                  color: ClientColors.primary,
+                  color: scheme.primary,
                   size: 36,
                 ),
               ),
@@ -41,7 +49,7 @@ class VerifyPage extends GetView<RegisterController> {
               Text(
                 'Verify ${isEmailVerification ? 'Email' : 'Phone'}',
                 style: TextStyle(
-                  color: ClientColors.textPrimary,
+                  color: scheme.onSurface,
                   fontSize: 30,
                   fontWeight: FontWeight.bold,
                 ),
@@ -50,10 +58,7 @@ class VerifyPage extends GetView<RegisterController> {
               Text(
                 "We've sent a 6-digit code to ${isEmailVerification ? controller.emailCTRL.text : controller.phoneCTRL.text}.",
                 textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: ClientColors.textSecondary,
-                  fontSize: 15,
-                ),
+                style: TextStyle(color: bodyColor, fontSize: 15),
               ),
               80.verticalSpace,
               OtpInputField(
@@ -83,7 +88,7 @@ class VerifyPage extends GetView<RegisterController> {
                 child: Text(
                   'Resend Code',
                   style: TextStyle(
-                    color: ClientColors.primary,
+                    color: scheme.primary,
                     fontSize: 15,
                     fontWeight: FontWeight.w600,
                   ),
@@ -105,6 +110,23 @@ class OtpInputField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final primaryColor = Theme.of(context).colorScheme.primary;
+
+    final defaultPinTheme = PinTheme(
+      width: 45,
+      height: 56,
+      textStyle: const TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
+      decoration: BoxDecoration(
+        border: Border.all(color: const Color.fromRGBO(234, 239, 243, 1)),
+        borderRadius: BorderRadius.circular(12),
+      ),
+    );
+
+    final focusedPinTheme = defaultPinTheme.copyDecorationWith(
+      border: Border.all(color: primaryColor),
+      borderRadius: BorderRadius.circular(8),
+    );
+
     return Pinput(
       length: 6,
       showCursor: true,
@@ -116,18 +138,4 @@ class OtpInputField extends StatelessWidget {
       separatorBuilder: (_) => 15.horizontalSpace,
     );
   }
-
-  PinTheme get defaultPinTheme => PinTheme(
-    width: 45,
-    height: 56,
-    textStyle: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
-    decoration: BoxDecoration(
-      border: Border.all(color: Color.fromRGBO(234, 239, 243, 1)),
-      borderRadius: BorderRadius.circular(12),
-    ),
-  );
-  PinTheme get focusedPinTheme => defaultPinTheme.copyDecorationWith(
-    border: Border.all(color: ClientColors.primary),
-    borderRadius: BorderRadius.circular(8),
-  );
 }
