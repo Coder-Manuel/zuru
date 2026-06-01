@@ -83,7 +83,10 @@ class _RemoteFeed extends StatelessWidget {
               16.verticalSpace,
               Text(
                 'Joining stream…',
-                style: TextStyle(color: ClientColors.textSecondary, fontSize: 14),
+                style: TextStyle(
+                  color: ClientColors.textSecondary,
+                  fontSize: 14,
+                ),
               ),
             ],
           ),
@@ -104,12 +107,18 @@ class _RemoteFeed extends StatelessWidget {
               20.verticalSpace,
               Text(
                 'Failed to join stream.',
-                style: TextStyle(color: ClientColors.textSecondary, fontSize: 15),
+                style: TextStyle(
+                  color: ClientColors.textSecondary,
+                  fontSize: 15,
+                ),
               ),
               4.verticalSpace,
               Text(
                 'Check your connection and try again.',
-                style: TextStyle(color: ClientColors.textSecondary, fontSize: 13),
+                style: TextStyle(
+                  color: ClientColors.textSecondary,
+                  fontSize: 13,
+                ),
               ),
               24.verticalSpace,
               TextButton(
@@ -308,7 +317,9 @@ class _BottomSection extends StatelessWidget {
                     // Scout avatar with dynamic status ring
                     Obx(
                       () => _ScoutAvatar(
-                        name: ctrl.mission.scout?.displayName ?? 'Scout',
+                        name:
+                            ctrl.mission.scout?.scoutProfile?.displayName ??
+                            'Scout',
                         status: ctrl.scoutStatus.value,
                       ),
                     ),
@@ -320,7 +331,8 @@ class _BottomSection extends StatelessWidget {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Text(
-                            ctrl.mission.scout?.displayName ?? 'Scout',
+                            ctrl.mission.scout?.scoutProfile?.displayName ??
+                                'Scout',
                             style: TextStyle(
                               color: ClientColors.textPrimary,
                               fontSize: 16,

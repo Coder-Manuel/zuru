@@ -177,11 +177,7 @@ class _NoScoutsFallbackState extends State<_NoScoutsFallback>
                   width: 1.5,
                 ),
               ),
-              child: Icon(
-                Icons.sensors,
-                color: ClientColors.primary,
-                size: 40,
-              ),
+              child: Icon(Icons.sensors, color: ClientColors.primary, size: 40),
             ),
           ),
           const SizedBox(height: 28),
@@ -313,7 +309,9 @@ class _RadarPainter extends CustomPainter {
 
     final ringRadii = [0.28, 0.48, 0.68, 0.88, 1.0];
     for (int i = 0; i < ringRadii.length; i++) {
-      ringPaint.color = ClientColors.primary.withAlpha((50 - i * 8).clamp(10, 60));
+      ringPaint.color = ClientColors.primary.withAlpha(
+        (50 - i * 8).clamp(10, 60),
+      );
       canvas.drawCircle(center, maxRadius * ringRadii[i], ringPaint);
     }
 
@@ -466,12 +464,15 @@ class _ScoutCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: ClientColors.surface,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: ClientColors.divider.withAlpha(60), width: 0.5),
+        border: Border.all(
+          color: ClientColors.divider.withAlpha(60),
+          width: 0.5,
+        ),
       ),
       child: Row(
         children: [
           // Avatar — initials derived from User.displayName
-          _InitialsAvatar(name: scout.user.displayName),
+          _InitialsAvatar(name: scout.user.scoutProfile?.displayName ?? '--'),
           const SizedBox(width: 12),
 
           // Name + distance
@@ -480,7 +481,7 @@ class _ScoutCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  scout.user.displayName,
+                  scout.user.scoutProfile?.displayName ?? '--',
                   style: TextStyle(
                     color: ClientColors.textPrimary,
                     fontSize: 15,
@@ -489,7 +490,7 @@ class _ScoutCard extends StatelessWidget {
                 ),
                 const SizedBox(height: 3),
                 Text(
-                  '${scout.distanceMeters.formatDistance} · ${scout.user.totalReviews ?? 0} missions',
+                  '${scout.distanceMeters.formatDistance} · ${scout.user.scoutProfile?.totalReviews ?? 0} missions',
                   style: TextStyle(
                     color: ClientColors.textSecondary,
                     fontSize: 12,
@@ -507,7 +508,7 @@ class _ScoutCard extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(
-                    scout.user.rating?.toStringAsFixed(1) ?? '–',
+                    scout.user.scoutProfile?.rating?.toStringAsFixed(1) ?? '–',
                     style: TextStyle(
                       color: ClientColors.primary,
                       fontSize: 15,

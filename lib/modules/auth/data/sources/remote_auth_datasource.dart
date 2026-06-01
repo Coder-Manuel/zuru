@@ -1,4 +1,5 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:zuru/core/models/enums.dart';
 import 'package:zuru/core/services/role_service/role_service.dart';
 
 abstract class RemoteAuthDatasource {
@@ -14,6 +15,9 @@ abstract class RemoteAuthDatasource {
   Future<AuthResponse> signUp({required Map<String, dynamic> data});
   Future<UserResponse> updatePhone(String phone);
   Future<Map<String, dynamic>?> updateNames(Map<String, dynamic> data);
+
+  Future<Map<String, dynamic>?> updateScoutProfile(Map<String, dynamic> data);
+
   Future<void> logout();
 
   // ── Password reset ─────────────────────────────────────────────────────────
@@ -85,6 +89,17 @@ class RemoteAuthDatasourceImpl extends RemoteAuthDatasource {
         .update(data)
         .eq('user_id', client.auth.currentUser?.id ?? '')
         .eq('role', RoleService.instance.role.value.name)
+        .select()
+        .single();
+  }
+
+  @override
+  Future<Map<String, dynamic>?> updateScoutProfile(Map<String, dynamic> data) {
+    return client
+        .from('profiles')
+        .update(data)
+        .eq('user_id', client.auth.currentUser?.id ?? '')
+        .eq('role', UserRole.scout)
         .select()
         .single();
   }

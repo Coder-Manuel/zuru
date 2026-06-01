@@ -1,18 +1,20 @@
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
+import 'package:zuru/core/routes/app_routes.dart';
 import 'package:zuru/core/services/role_service/role_service.dart';
 import 'package:zuru/core/utils/loader.dart';
 import 'package:zuru/core/utils/toast.dart';
 import 'package:zuru/modules/auth/data/models/auth.inputs.dart';
+import 'package:zuru/modules/auth/data/models/scout_profile.input.dart';
 import 'package:zuru/modules/auth/domain/usecases/register.usecase.dart';
 import 'package:zuru/modules/auth/domain/usecases/setup_names.usecase.dart';
 import 'package:zuru/modules/auth/domain/usecases/setup_phone.usecase.dart';
+import 'package:zuru/modules/auth/domain/usecases/update_scout_profile.usecase.dart';
 import 'package:zuru/modules/auth/domain/usecases/verify_email_otp.usecase.dart';
 import 'package:zuru/modules/auth/domain/usecases/verify_phone_otp.usecase.dart';
 import 'package:zuru/modules/auth/presentation/pages/names_setup_page.dart';
 import 'package:zuru/modules/auth/presentation/pages/phone_setup_page.dart';
 import 'package:zuru/modules/auth/presentation/pages/verify_page.dart';
-import 'package:zuru/core/routes/app_routes.dart';
 
 class RegisterController extends GetxController {
   final _signupUsecase = Get.find<RegisterUsecase>();
@@ -20,6 +22,7 @@ class RegisterController extends GetxController {
   final _verifyPhoneOtpUsecase = Get.find<VerifyPhoneOtpUseCase>();
   final _verifyEmailOtpUsecase = Get.find<VerifyEmailOtpUseCase>();
   final _setupNamesUsecase = Get.find<SetupNamesUseCase>();
+  final _updateScoutProfileUsecase = Get.find<UpdateScoutProfileUseCase>();
 
   // ─── Step 1 — Credentials ─────────────────────────────────────────────────
   final emailCTRL = TextEditingController();
@@ -32,7 +35,7 @@ class RegisterController extends GetxController {
   void toggleObscureConfirmPass() =>
       obscureConfirmPass.value = !obscureConfirmPass.value;
 
-  // ─── Step 2 — Phone ───────────────────────────────────────────────────────
+  // ─── Step 2 — Phone (scouts only) ─────────────────────────────────────────
   final phoneCTRL = TextEditingController();
   RxString countryCode = '+254'.obs;
 
@@ -42,6 +45,20 @@ class RegisterController extends GetxController {
   // ─── Step 4 — Names ───────────────────────────────────────────────────────
   final firstNameCTRL = TextEditingController();
   final lastNameCTRL = TextEditingController();
+
+  // ─── Step 5 — Scout "About Me" ────────────────────────────────────────────
+  final bioCTRL = TextEditingController();
+  final RxList<String> selectedTags = <String>[].obs;
+
+  void toggleTag(String tag) {
+    if (selectedTags.contains(tag)) {
+      selectedTags.remove(tag);
+    } else {
+      selectedTags.add(tag);
+    }
+  }
+
+  // ─── Actions ──────────────────────────────────────────────────────────────
 
   Future<void> signUp(GlobalKey<FormState> formKey) async {
     if (formKey.currentState?.validate() != true) return;
@@ -62,6 +79,9 @@ class RegisterController extends GetxController {
     );
   }
 
+  /// After email OTP verification:
+  /// - **Scouts** → phone setup → (verify phone OTP) → names → about me → home
+  /// - **Clients** → names → home  (no phone step)
   Future<void> verifyEmail(String otp) async {
     if (otp.length < 6) {
       Toast.error('Enter the 6-digit code');
@@ -76,7 +96,9 @@ class RegisterController extends GetxController {
 
     response.fold(
       (ex) => Toast.error(ex.message),
-      (_) => Get.toNamed(PhoneSetupPage.route),
+      (_) => RoleService.instance.isScout
+          ? Get.toNamed(PhoneSetupPage.route)
+          : Get.toNamed(NamesSetupPage.route),
     );
   }
 
@@ -95,7 +117,7 @@ class RegisterController extends GetxController {
 
     response.fold(
       (ex) => Toast.error(ex.message),
-      (_) => Get.toNamed(NamesSetupPage.route, arguments: false),
+      (_) => Get.toNamed(NamesSetupPage.route),
     );
   }
 
@@ -120,21 +142,49 @@ class RegisterController extends GetxController {
     );
   }
 
+  /// After names are saved:
+  /// - **Scouts** → scout "About Me" page
+  /// - **Clients** → home
   Future<void> completeSignup(GlobalKey<FormState> formKey) async {
     if (formKey.currentState?.validate() != true) return;
 
     Loader.show(message: 'Almost done...');
-    final response = await _setupNamesUsecase(
-      NamesInput(
-        firstName: firstNameCTRL.text.trim(),
-        lastName: lastNameCTRL.text.trim(),
-      ),
+    final input = NamesInput(
+      firstName: firstNameCTRL.text.trim(),
+      lastName: lastNameCTRL.text.trim(),
+    );
+    if (RoleService.instance.isClient) input.status = 'active';
+    final response = await _setupNamesUsecase(input);
+    Loader.dismiss();
+
+    response.fold(
+      (ex) => Toast.error(ex.message),
+      (_) => RoleService.instance.isScout
+          ? Get.toNamed(AppRoutes.scoutAboutMe)
+          : Get.offAllNamed(AppRoutes.home),
+    );
+  }
+
+  /// Scout "About Me" — saves bio + tags then navigates home.
+  Future<void> updateScoutProfile() async {
+    final bio = bioCTRL.text.trim();
+    if (bio.isEmpty) {
+      Toast.error('Please write a brief bio');
+      return;
+    }
+    if (selectedTags.isEmpty) {
+      Toast.error('Select at least one skill tag');
+      return;
+    }
+
+    Loader.show(message: 'Saving profile...');
+    final response = await _updateScoutProfileUsecase(
+      ScoutProfileInput(bio: bio, tags: selectedTags.toList()),
     );
     Loader.dismiss();
 
     response.fold(
       (ex) => Toast.error(ex.message),
-      // HomeRoleMiddleware resolves the correct home page per role.
       (_) => Get.offAllNamed(AppRoutes.home),
     );
   }
@@ -148,6 +198,7 @@ class RegisterController extends GetxController {
     otpCTRL.dispose();
     firstNameCTRL.dispose();
     lastNameCTRL.dispose();
+    bioCTRL.dispose();
     super.onClose();
   }
 }

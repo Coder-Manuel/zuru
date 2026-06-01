@@ -1,6 +1,7 @@
 import 'package:zuru/core/entities/user.entity.dart';
 import 'package:zuru/core/types/repo_reponse.type.dart';
 import 'package:zuru/modules/auth/data/models/auth.inputs.dart';
+import 'package:zuru/modules/auth/data/models/scout_profile.input.dart';
 
 abstract class AuthRepository {
   // ─── Login ─────────────────────────────────────────────────────────────────
@@ -21,6 +22,10 @@ abstract class AuthRepository {
 
   // ─── Names setup ───────────────────────────────────────────────────────────
   Future<RepoResponse<bool>> setupNames(NamesInput input);
+
+  // ─── Scout profile (About Me) ─────────────────────────────────────────────
+  /// Updates the scout's [bio] and [tags] on their profile row.
+  Future<RepoResponse<bool>> updateScoutProfile(ScoutProfileInput input);
 
   // ─── Logout ────────────────────────────────────────────────────────────────
   Future<RepoResponse<bool>> logout();

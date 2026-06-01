@@ -1,40 +1,47 @@
 import 'package:zuru/core/entities/base.entity.dart';
+import 'package:zuru/core/entities/profile.entity.dart';
 import 'package:zuru/core/models/enums.dart';
 
 abstract class User extends BaseEntity {
   final String? email;
-  final String? firstName;
-  final String? lastName;
   final String? phone;
-  final UserRole? role;
-  final UserStatus? userStatus;
+  final UserRole? defaultRole;
+  final UserStatus? status;
   final String? fcmToken;
   final bool? isOnline;
-  final double? rating;
-  final int? totalReviews;
+  final List<Profile> profiles;
 
   User({
     super.id,
     super.createdAt,
     super.updatedAt,
     this.email,
-    this.firstName,
-    this.lastName,
     this.phone,
-    this.role,
-    this.userStatus,
+    this.defaultRole,
+    this.status,
     this.fcmToken,
     this.isOnline,
-    this.rating,
-    this.totalReviews,
+    this.profiles = const [],
   });
 
-  String get displayName {
-    final first = firstName ?? '';
-    final last = lastName != null && lastName!.isNotEmpty ? lastName![0] : '';
-    if (first.isEmpty) return email ?? '';
-    return last.isNotEmpty ? '$first $last.' : first;
+  Profile? get profile {
+    if (profiles.isEmpty) {
+      return null;
+    }
+    return profiles.firstWhere((profile) => profile.role == defaultRole);
   }
 
-  String get fullName => '${firstName ?? ''} ${lastName ?? ''}'.trim();
+  Profile? get clientProfile {
+    if (profiles.isEmpty) {
+      return null;
+    }
+    return profiles.firstWhere((profile) => profile.role == UserRole.client);
+  }
+
+  Profile? get scoutProfile {
+    if (profiles.isEmpty) {
+      return null;
+    }
+    return profiles.firstWhere((profile) => profile.role == UserRole.scout);
+  }
 }

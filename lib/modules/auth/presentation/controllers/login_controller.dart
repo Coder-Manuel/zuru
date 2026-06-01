@@ -8,6 +8,7 @@ import 'package:zuru/core/utils/toast.dart';
 import 'package:zuru/modules/auth/data/models/auth.inputs.dart';
 import 'package:zuru/modules/auth/domain/usecases/login.usecase.dart';
 import 'package:zuru/modules/auth/domain/usecases/login_oauth.usecase.dart';
+import 'package:zuru/modules/user/presentation/controllers/user_controller.dart';
 
 class LoginController extends GetxController {
   final loginUsecase = Get.find<LoginUseCase>();
@@ -21,12 +22,32 @@ class LoginController extends GetxController {
 
   void toggleObscurePass() => obscurePass.value = !obscurePass.value;
 
-  /// Navigate to home — [HomeRoleMiddleware] on [AppRoutes.home] resolves
-  /// the correct page (client → [HomePage], scout → [ScoutHomePage]).
-  void _navigateHome(String displayName) {
-    Toast.success('Welcome $displayName');
-    Get.offAllNamed(AppRoutes.home);
+  // ── Post-login destination resolution ─────────────────────────────────────
+
+  /// Fetches fresh user data to check profile completeness, then navigates to
+  /// the correct destination. [HomeRoleMiddleware] handles the final
+  /// client/scout split at [AppRoutes.home].
+  void _navigateHome() => _checkAndNavigate();
+
+  Future<void> _checkAndNavigate() async {
+    Loader.show(message: 'Loading profile...');
+    final userCTRL = Get.find<UserController>();
+    await userCTRL.getUserDetails();
+    Loader.dismiss();
+
+    final user = userCTRL.currentUser.value;
+    // Greet with the active-role display name once the profile is loaded.
+    final name = user?.profile?.displayName ?? 'back';
+    Toast.success('Welcome $name!');
+
+    Get.offAllNamed(
+      user != null
+          ? userCTRL.resolvePostAuthDestination(user)
+          : AppRoutes.home,
+    );
   }
+
+  // ── OAuth ──────────────────────────────────────────────────────────────────
 
   Future<void> oathLogin() async {
     if (!GetPlatform.isIOS) return _appleLogin();
@@ -46,7 +67,7 @@ class LoginController extends GetxController {
 
     response.fold(
       (ex) => Toast.error(ex.message),
-      (data) => _navigateHome(data.displayName),
+      (_) => _navigateHome(),
     );
   }
 
@@ -68,9 +89,11 @@ class LoginController extends GetxController {
 
     response.fold(
       (ex) => Toast.error(ex.message),
-      (data) => _navigateHome(data.displayName),
+      (_) => _navigateHome(),
     );
   }
+
+  // ── Email / password login ─────────────────────────────────────────────────
 
   Future<void> login(GlobalKey<FormState> formKey) async {
     if (formKey.currentState?.validate() != true) return;
@@ -86,7 +109,7 @@ class LoginController extends GetxController {
 
     response.fold(
       (ex) => Toast.error(ex.message),
-      (data) => _navigateHome(data.displayName),
+      (_) => _navigateHome(),
     );
   }
 }

@@ -18,9 +18,9 @@ class SettingsTab extends GetView<UserController> {
             const SizedBox(height: 36),
             Obx(() {
               final user = controller.currentUser.value;
-              final name = user?.fullName ?? 'User';
-              final role = _roleLabel(user?.role?.name);
-              final rating = user?.rating?.toStringAsFixed(1) ?? '–';
+              final name = user?.profile?.fullName ?? 'User';
+              final role = _roleLabel(user?.profile?.role?.name);
+              final rating = user?.profile?.rating?.toStringAsFixed(1) ?? '–';
               return Column(
                 children: [
                   _ProfileAvatar(name: name),

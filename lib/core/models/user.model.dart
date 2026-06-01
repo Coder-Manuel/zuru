@@ -1,5 +1,7 @@
+import 'package:zuru/core/entities/profile.entity.dart';
 import 'package:zuru/core/entities/user.entity.dart';
 import 'package:zuru/core/models/enums.dart';
+import 'package:zuru/core/models/profile.model.dart';
 
 class UserModel extends User {
   UserModel({
@@ -7,15 +9,12 @@ class UserModel extends User {
     super.createdAt,
     super.updatedAt,
     super.email,
-    super.firstName,
-    super.lastName,
     super.phone,
-    super.role,
-    super.userStatus,
+    super.defaultRole,
+    super.status,
     super.fcmToken,
     super.isOnline,
-    super.rating,
-    super.totalReviews,
+    super.profiles,
   });
 
   factory UserModel.fromMap(Map<String, dynamic> data) => UserModel(
@@ -23,20 +22,21 @@ class UserModel extends User {
     createdAt: data['created_at']?.toString(),
     updatedAt: data['updated_at']?.toString(),
     email: data['email']?.toString(),
-    firstName: data['first_name']?.toString(),
-    lastName: data['last_name']?.toString(),
     phone: data['phone']?.toString(),
-    role: UserRole.values.firstWhere(
-      (v) => v.name == data['role'],
+    defaultRole: UserRole.values.firstWhere(
+      (v) => v.name == data['default_role'],
       orElse: () => UserRole.client,
     ),
-    userStatus: UserStatus.values.firstWhere(
+    status: UserStatus.values.firstWhere(
       (s) => s.name == data['status'],
       orElse: () => UserStatus.inactive,
     ),
     fcmToken: data['fcm_token']?.toString(),
     isOnline: data['is_online'] as bool?,
-    rating: (data['rating'] as num?)?.toDouble(),
-    totalReviews: data['total_reviews'] as int?,
+    profiles:
+        data['profiles']
+            ?.map<Profile>((data) => ProfileModel.fromMap(data))
+            .toList() ??
+        [],
   );
 }

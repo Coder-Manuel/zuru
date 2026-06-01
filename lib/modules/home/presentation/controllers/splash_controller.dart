@@ -1,5 +1,4 @@
 import 'package:get/get.dart';
-import 'package:zuru/core/routes/app_routes.dart';
 import 'package:zuru/modules/auth/presentation/pages/login_page.dart';
 import 'package:zuru/modules/user/presentation/controllers/user_controller.dart';
 
@@ -11,9 +10,9 @@ class SplashController extends GetxController {
     final user = userCTRL.currentUser.value;
 
     if (user != null) {
-      // ThemeService.onInit() already restored the persisted role from storage.
-      // HomeRoleMiddleware on AppRoutes.home resolves the correct home page.
-      return Get.offAllNamed(AppRoutes.home);
+      // resolvePostAuthDestination checks phone, names, status, and (for
+      // scouts) bio completeness, then returns the correct AppRoutes constant.
+      return Get.offAllNamed(userCTRL.resolvePostAuthDestination(user));
     }
 
     return Get.offAllNamed(LoginPage.route);

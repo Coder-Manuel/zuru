@@ -287,7 +287,8 @@ class _BottomSection extends StatelessWidget {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Text(
-                            ctrl.mission.client?.displayName ?? 'Scout',
+                            ctrl.mission.client?.clientProfile?.displayName ??
+                                'Scout',
                             style: TextStyle(
                               color: ClientColors.textPrimary,
                               fontSize: 16,
@@ -523,7 +524,10 @@ class _ClientStatusText extends StatelessWidget {
         'Client left the stream',
         Color(0xFFF5A020),
       ),
-      ClientStreamState.terminated => ('Stream ended', ClientColors.textSecondary),
+      ClientStreamState.terminated => (
+        'Stream ended',
+        ClientColors.textSecondary,
+      ),
     };
 
     return AnimatedSwitcher(
@@ -545,7 +549,7 @@ class _ScoutAvatar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final name = ctrl.mission.client?.displayName ?? '';
+    final name = ctrl.mission.client?.clientProfile?.displayName ?? '';
     final initial = name.isNotEmpty ? name[0].toUpperCase() : 'C';
 
     return Obx(() {

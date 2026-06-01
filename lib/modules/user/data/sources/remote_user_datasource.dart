@@ -18,9 +18,6 @@ class RemoteUserDatasourceImpl extends RemoteUserDatasource {
   @override
   Future<void> updateFcmToken(String token) {
     final uid = client.auth.currentUser?.id ?? '';
-    return client
-        .from('users')
-        .update({'fcm_token': token})
-        .eq('id', uid);
+    return client.from('users').update({'fcm_token': token}).eq('id', uid);
   }
 }

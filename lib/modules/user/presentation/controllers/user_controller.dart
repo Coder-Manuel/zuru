@@ -3,7 +3,10 @@ import 'dart:developer';
 
 import 'package:get/get.dart';
 import 'package:zuru/core/entities/user.entity.dart';
+import 'package:zuru/core/models/enums.dart';
+import 'package:zuru/core/routes/app_routes.dart';
 import 'package:zuru/core/services/notification_service/notification_service.dart';
+import 'package:zuru/core/services/role_service/role_service.dart';
 import 'package:zuru/core/utils/loader.dart';
 import 'package:zuru/core/utils/toast.dart';
 import 'package:zuru/modules/auth/domain/usecases/logout.usecase.dart';
@@ -44,8 +47,43 @@ class UserController extends GetxController {
 
     response.fold((_) => null, (data) {
       currentUser.value = data;
+      RoleService.instance.setRole(data.defaultRole);
       _syncFcmToken();
     });
+  }
+
+  /// Inspects [user]'s profile completeness for the currently active role and
+  /// returns the next [AppRoutes] destination.
+  ///
+  /// Decision order:
+  /// 1. Scout with no phone → [AppRoutes.phoneSetup]
+  /// 2. Profile for active role missing, or names empty, or status inactive
+  ///    → [AppRoutes.names]
+  /// 3. Scout with no bio → [AppRoutes.scoutAboutMe]
+  /// 4. All complete → [AppRoutes.home]  (middleware handles client/scout split)
+  String resolvePostAuthDestination(User user) {
+    final role = RoleService.instance.role.value;
+
+    // 1. Scouts must have a phone number.
+    if (role == UserRole.scout && (user.phone == null || user.phone!.isEmpty)) {
+      return AppRoutes.phoneSetup;
+    }
+
+    // 2. Locate the profile matching the active role.
+    final profile = user.profiles.where((p) => p.role == role).firstOrNull;
+
+    if (profile == null ||
+        (profile.lastName?.isEmpty ?? true) ||
+        profile.status != UserStatus.active) {
+      return AppRoutes.names;
+    }
+
+    // 3. Scout must have completed their "About Me".
+    if (role == UserRole.scout && (profile.bio?.isEmpty ?? true)) {
+      return AppRoutes.scoutAboutMe;
+    }
+
+    return AppRoutes.home;
   }
 
   Future<void> logout() async {

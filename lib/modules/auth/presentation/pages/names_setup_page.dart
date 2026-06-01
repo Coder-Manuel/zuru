@@ -15,8 +15,8 @@ class NamesSetupPage extends GetView<RegisterController> {
   @override
   Widget build(BuildContext context) {
     final formKey = GlobalKey<FormState>();
-    final scheme = Theme.of(context).colorScheme;
-    final bodyColor = Theme.of(context).textTheme.bodyMedium?.color;
+    final scheme = Get.theme.colorScheme;
+    final bodyColor = Get.theme.textTheme.bodyMedium?.color;
     final iconBg = RoleService.instance.isScout
         ? ScoutColors.biometricBg
         : ClientColors.biometricBg;

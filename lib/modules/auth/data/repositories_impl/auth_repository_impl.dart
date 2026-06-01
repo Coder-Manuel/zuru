@@ -6,6 +6,7 @@ import 'package:zuru/core/types/repo_reponse.type.dart';
 import 'package:zuru/core/utils/common_functions.dart';
 import 'package:zuru/core/utils/error_wrapper.dart';
 import 'package:zuru/modules/auth/data/models/auth.inputs.dart';
+import 'package:zuru/modules/auth/data/models/scout_profile.input.dart';
 import 'package:zuru/modules/auth/data/sources/remote_auth_datasource.dart';
 import 'package:zuru/modules/auth/domain/repository/auth_repository.dart';
 
@@ -192,6 +193,23 @@ class AuthRepositoryImpl extends AuthRepository {
       onError: (_) => FailureResponse('An error occurred, kindly retry'),
       library: _library,
       description: 'while setting up names',
+    );
+    return response!;
+  }
+
+  @override
+  Future<RepoResponse<bool>> updateScoutProfile(ScoutProfileInput input) async {
+    final response = await ErrorWrapper.async<RepoResponse<bool>>(
+      () async {
+        final result = await remoteDatasource.updateScoutProfile(input.toMap());
+        if (result == null) {
+          return FailureResponse('Unable to save your profile, kindly retry');
+        }
+        return SuccessResponse(true);
+      },
+      onError: (_) => FailureResponse('An error occurred, kindly retry'),
+      library: _library,
+      description: 'while updating scout profile',
     );
     return response!;
   }

@@ -12,6 +12,7 @@ import 'package:zuru/modules/auth/domain/usecases/send_reset_otp.usecase.dart';
 import 'package:zuru/modules/auth/domain/usecases/setup_names.usecase.dart';
 import 'package:zuru/modules/auth/domain/usecases/setup_phone.usecase.dart';
 import 'package:zuru/modules/auth/domain/usecases/update_password.usecase.dart';
+import 'package:zuru/modules/auth/domain/usecases/update_scout_profile.usecase.dart';
 import 'package:zuru/modules/auth/domain/usecases/verify_email_otp.usecase.dart';
 import 'package:zuru/modules/auth/domain/usecases/verify_phone_otp.usecase.dart';
 import 'package:zuru/modules/auth/domain/usecases/verify_reset_otp.usecase.dart';
@@ -61,6 +62,10 @@ class AuthBindings extends Bindings {
     );
     Get.lazyPut<SetupNamesUseCase>(
       () => SetupNamesUseCase(repo: Get.find<AuthRepository>()),
+      fenix: true,
+    );
+    Get.lazyPut<UpdateScoutProfileUseCase>(
+      () => UpdateScoutProfileUseCase(repo: Get.find<AuthRepository>()),
       fenix: true,
     );
     Get.lazyPut<LogoutUseCase>(

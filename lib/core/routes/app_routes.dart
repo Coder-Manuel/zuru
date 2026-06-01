@@ -19,6 +19,11 @@ abstract final class AppRoutes {
   static const phoneSetup = '/phone-setup';
   static const verify = '/verify';
   static const names = '/names';
+
+  /// Scout-only: bio + tags setup page shown after [names] in the scout
+  /// signup flow and on launch when the scout's bio is empty.
+  static const scoutAboutMe = '/scout/about-me';
+
   static const forgotPassword = '/forgot-password';
   static const resetOtp = '/reset-otp';
   static const newPassword = '/new-password';

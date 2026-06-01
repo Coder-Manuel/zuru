@@ -72,13 +72,14 @@ class PhoneSetupInput {
 class NamesInput {
   final String firstName;
   final String lastName;
+  String? status;
 
-  NamesInput({required this.firstName, required this.lastName});
+  NamesInput({required this.firstName, required this.lastName, this.status});
 
   Map<String, dynamic> toMap() => {
     'first_name': firstName,
     'last_name': lastName,
-    'status': 'active',
+    if (status != null) 'status': status,
   };
 }
 

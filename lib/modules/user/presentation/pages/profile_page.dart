@@ -192,9 +192,9 @@ class _ProfileHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     return Obx(() {
       final user = controller.currentUser.value;
-      final name = user?.fullName ?? '';
+      final name = user?.profile?.fullName ?? '';
       final initial = name.isNotEmpty ? name[0].toUpperCase() : 'S';
-      final rating = user?.rating?.toStringAsFixed(1) ?? '—';
+      final rating = user?.profile?.rating?.toStringAsFixed(1) ?? '—';
 
       return Column(
         children: [
@@ -251,11 +251,17 @@ class _ProfileHeader extends StatelessWidget {
             children: [
               Text(
                 'Scout',
-                style: TextStyle(color: ClientColors.textSecondary, fontSize: 14),
+                style: TextStyle(
+                  color: ClientColors.textSecondary,
+                  fontSize: 14,
+                ),
               ),
               Text(
                 ' · ',
-                style: TextStyle(color: ClientColors.textSecondary, fontSize: 14),
+                style: TextStyle(
+                  color: ClientColors.textSecondary,
+                  fontSize: 14,
+                ),
               ),
               Text(
                 rating,
@@ -433,11 +439,7 @@ class _LinkRow extends StatelessWidget {
                   ),
                 ),
               ),
-              Icon(
-                Icons.link_rounded,
-                color: ClientColors.primary,
-                size: 22,
-              ),
+              Icon(Icons.link_rounded, color: ClientColors.primary, size: 22),
             ],
           ),
         ),

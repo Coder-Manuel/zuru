@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:zuru/config/client_theme.dart';
@@ -35,9 +37,10 @@ class RoleService extends GetxService {
     StorageService.save(StorageKeys.roleKey, value: UserRole.scout.name);
   }
 
-  /// Called when the role is determined from the Supabase JWT claim.
-  void applyThemeForRole(String? jwtRole) {
-    if (jwtRole == 'scout') {
+  void setRole(UserRole? role) {
+    log('===== NEW ROLE: $role');
+    if (role == null) return;
+    if (role == UserRole.scout) {
       applyScoutTheme();
     } else {
       applyClientTheme();
