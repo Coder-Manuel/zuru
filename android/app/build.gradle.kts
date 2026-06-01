@@ -11,14 +11,12 @@ plugins {
     id("dev.flutter.flutter-gradle-plugin")
 }
 
-// ── Load local.properties (Mapbox token, Maps key) ───────────────────────────
 val localProperties = Properties()
 val localPropertiesFile = rootProject.file("local.properties")
 if (localPropertiesFile.exists()) {
     localPropertiesFile.inputStream().use { localProperties.load(it) }
 }
 
-// ── Load key.properties (signing config) ─────────────────────────────────────
 val keystoreProperties = Properties()
 val keystorePropertiesFile = rootProject.file("key.properties")
 if (keystorePropertiesFile.exists()) {
@@ -51,19 +49,17 @@ android {
 
         // Inject GOOGLE_MAPS_API_KEY into AndroidManifest.xml as ${GOOGLE_MAPS_API_KEY}.
         manifestPlaceholders["GOOGLE_MAPS_API_KEY"] =
-            localProperties.getProperty("GOOGLE_MAPS_API_KEY", "")
+            keystoreProperties.getProperty("GOOGLE_MAPS_API_KEY", "")
 
         // Inject MAPBOX_TOKEN as a string resource consumed by the Mapbox SDK.
         resValue(
             "string",
             "mapbox_access_token",
-            localProperties.getProperty("MAPBOX_TOKEN", ""),
+            keystoreProperties.getProperty("MAPBOX_TOKEN", ""),
         )
     }
 
     signingConfigs {
-        // TODO(manual): Create android/key.properties with keyAlias, keyPassword,
-        //               storeFile, and storePassword before building a release APK.
         if (keystorePropertiesFile.exists()) {
             create("release") {
                 keyAlias = keystoreProperties["keyAlias"] as String

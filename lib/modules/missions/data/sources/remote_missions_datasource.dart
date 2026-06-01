@@ -108,6 +108,9 @@ class RemoteMissionsDatasourceImpl extends RemoteMissionsDatasource {
             .from('missions')
             .select("""
             *,
+            client:client_id (
+              id
+            ),
             scout:scout_id (
               id,
               first_name,
@@ -116,7 +119,7 @@ class RemoteMissionsDatasourceImpl extends RemoteMissionsDatasource {
               total_reviews
             )
             """)
-            .eq('client_id', userId ?? '')
+            .eq('client_id.user_id', userId ?? '')
             .inFilter('status', statuses);
 
         final rows = res
