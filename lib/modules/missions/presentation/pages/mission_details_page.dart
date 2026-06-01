@@ -89,12 +89,9 @@ class MissionDetailsPage extends GetView<RadarController> {
                         _InstructionsRow(text: mission.description),
                         _Divider(),
                         _ClientRow(
-                          name:
-                              mission.client?.clientProfile?.displayName ??
-                              'Client',
-                          rating: mission.client?.clientProfile?.rating ?? 0,
-                          missions:
-                              mission.client?.clientProfile?.totalReviews ?? 0,
+                          name: mission.client?.displayName ?? 'Client',
+                          rating: mission.client?.rating ?? 0,
+                          missions: mission.client?.totalReviews ?? 0,
                         ),
                       ],
                     ),

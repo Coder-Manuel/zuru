@@ -317,9 +317,7 @@ class _BottomSection extends StatelessWidget {
                     // Scout avatar with dynamic status ring
                     Obx(
                       () => _ScoutAvatar(
-                        name:
-                            ctrl.mission.scout?.scoutProfile?.displayName ??
-                            'Scout',
+                        name: ctrl.mission.scout?.displayName ?? 'Scout',
                         status: ctrl.scoutStatus.value,
                       ),
                     ),
@@ -331,8 +329,7 @@ class _BottomSection extends StatelessWidget {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Text(
-                            ctrl.mission.scout?.scoutProfile?.displayName ??
-                                'Scout',
+                            ctrl.mission.scout?.displayName ?? 'Scout',
                             style: TextStyle(
                               color: ClientColors.textPrimary,
                               fontSize: 16,

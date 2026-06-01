@@ -38,7 +38,7 @@ class JoinStreamDialog extends StatelessWidget {
 
             // ── Title ────────────────────────────────────────────────────────
             Text(
-              'Scout ${mission.scout?.scoutProfile?.firstName ?? ''} is Live!',
+              'Scout ${mission.scout?.firstName ?? ''} is Live!',
               style: TextStyle(
                 color: ClientColors.textPrimary,
                 fontSize: 20,

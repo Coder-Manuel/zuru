@@ -287,8 +287,7 @@ class _BottomSection extends StatelessWidget {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Text(
-                            ctrl.mission.client?.clientProfile?.displayName ??
-                                'Scout',
+                            ctrl.mission.client?.displayName ?? 'Scout',
                             style: TextStyle(
                               color: ClientColors.textPrimary,
                               fontSize: 16,
@@ -549,7 +548,7 @@ class _ScoutAvatar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final name = ctrl.mission.client?.clientProfile?.displayName ?? '';
+    final name = ctrl.mission.client?.displayName ?? '';
     final initial = name.isNotEmpty ? name[0].toUpperCase() : 'C';
 
     return Obx(() {

@@ -160,7 +160,7 @@ class JoinStreamController extends GetxController {
   // ── LiveKit event listeners ───────────────────────────────────────────────
 
   void _attachRoomListeners() {
-    final name = mission.scout?.scoutProfile?.displayName;
+    final name = mission.scout?.displayName;
     _roomListener = _room.createListener()
       // ── Room-level ────────────────────────────────────────────────────────
       ..on<RoomDisconnectedEvent>((e) => _onRoomTerminated(e.reason))

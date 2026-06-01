@@ -1,5 +1,5 @@
 import 'package:zuru/core/entities/base.entity.dart';
-import 'package:zuru/core/entities/user.entity.dart';
+import 'package:zuru/core/entities/profile.entity.dart';
 import 'package:zuru/modules/missions/data/models/enum.dart';
 import 'package:zuru/modules/rating/domain/entities/rating.entity.dart';
 
@@ -9,10 +9,10 @@ abstract class MissionEntity extends BaseEntity {
 
   // ── Role-specific user snapshots ──────────────────────────────────────────
   /// Scout user snapshot (populated in client view).
-  final User? scout;
+  final Profile? scout;
 
   /// Client user snapshot (populated in scout view).
-  final User? client;
+  final Profile? client;
 
   /// LiveKit session ID (client-side).
   final String? sessionId;

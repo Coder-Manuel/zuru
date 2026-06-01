@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:zuru/core/services/monitor_service/monitor.service.dart';
+import 'package:zuru/core/services/role_service/role_service.dart';
 import 'package:zuru/modules/missions/data/models/enum.dart';
 
 abstract class RemoteMissionsDatasource {
@@ -44,25 +45,43 @@ class RemoteMissionsDatasourceImpl extends RemoteMissionsDatasource {
   }
 
   @override
-  Future<List<Map<String, dynamic>>> getMyMissions() {
+  Future<List<Map<String, dynamic>>> getMyMissions() async {
+    final userId = client.auth.currentUser?.id;
+    if (userId == null) return [];
+
+    final role = RoleService.instance.role.value.name;
+
+    final column = role == 'client' ? 'client_id' : 'scout_id';
+
     return client
         .from('missions')
         .select("""
-          *,
-          scout:scout_id (
-            id,
-            first_name,
-            last_name,
-            rating,
-            total_reviews
-          ),
-          ratings!ratings_mission_id_fkey (
-            id,
-            from_user_id,
-            to_user_id,
-            score
-          )
-          """)
+        *,
+        client:client_id (
+          id,
+          first_name,
+          last_name,
+          avatar_url,
+          rating,
+          total_reviews
+        ),
+        scout:scout_id (
+          id,
+          first_name,
+          last_name,
+          avatar_url,
+          rating,
+          total_reviews
+        ),
+        ratings!ratings_mission_id_fkey (
+          id,
+          from_profile_id,
+          to_profile_id,
+          score
+        )
+      """)
+        .eq('$column.user_id', userId)
+        .eq('$column.role', role)
         .order('created_at', ascending: false);
   }
 
@@ -203,8 +222,8 @@ class RemoteMissionsDatasourceImpl extends RemoteMissionsDatasource {
           ),
           ratings!ratings_mission_id_fkey (
             id,
-            from_user_id,
-            to_user_id,
+            from_profile_id,
+            to_profile_id,
             score
           )
           """)

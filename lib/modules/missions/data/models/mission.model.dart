@@ -1,6 +1,6 @@
 import 'dart:math' as math;
 
-import 'package:zuru/core/models/user.model.dart';
+import 'package:zuru/core/models/profile.model.dart';
 import 'package:zuru/core/utils/ewkb_parser.dart';
 import 'package:zuru/modules/missions/data/models/enum.dart';
 import 'package:zuru/modules/missions/domain/entities/mission.entity.dart';
@@ -53,7 +53,7 @@ class MissionModel extends MissionEntity {
       address: m['address']?.toString() ?? '',
       latitude: latitude,
       longitude: longitude,
-      scout: m['scout'] != null ? UserModel.fromMap(m['scout']) : null,
+      scout: m['scout'] != null ? ProfileModel.fromMap(m['scout']) : null,
       status: MissionStatus.values.firstWhere(
         (v) => v.name == m['status'],
         orElse: () => MissionStatus.open,
@@ -111,7 +111,9 @@ class MissionModel extends MissionEntity {
               orElse: () => MissionType.surveillance,
             )
           : null,
-      client: map['client'] != null ? UserModel.fromMap(map['client']) : null,
+      client: map['client'] != null
+          ? ProfileModel.fromMap(map['client'])
+          : null,
       description: map['description'] as String? ?? '',
       currency: map['currency'] as String? ?? 'KES',
       price: (map['price'] as num?)?.toDouble() ?? 0.0,
