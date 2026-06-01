@@ -6,7 +6,7 @@ import 'package:zuru/modules/home/presentation/controllers/splash_controller.dar
 class HomeBindings extends Bindings {
   @override
   void dependencies() {
-    Get.lazyPut<HomeController>(() => HomeController(), fenix: true);
+    Get.put<HomeController>(HomeController(), permanent: true);
     Get.lazyPut<SplashController>(() => SplashController(), fenix: true);
     Get.lazyPut<MapsTabController>(() => MapsTabController(), fenix: true);
   }

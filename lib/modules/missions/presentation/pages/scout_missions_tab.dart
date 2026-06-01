@@ -16,66 +16,75 @@ class ScoutMissionsTab extends GetView<MissionsController> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // ── Header ────────────────────────────────────────────────────
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    'Missions',
-                    style: TextStyle(
-                      color: ScoutColors.textPrimary,
-                      fontSize: 28,
-                      fontWeight: FontWeight.bold,
-                    ),
+        child: FutureBuilder(
+          future: controller.fetchMissions(),
+          builder: (_, _) {
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // ── Header ────────────────────────────────────────────────────
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 24,
+                    vertical: 20,
                   ),
-                ],
-              ),
-            ),
-
-            // ── Filter row ────────────────────────────────────────────────
-            Obx(
-              () => _FilterRow(
-                activeFilter: controller.activeFilter.value,
-                onFilterChanged: controller.setFilter,
-              ),
-            ),
-            const SizedBox(height: 8),
-
-            // ── Body ──────────────────────────────────────────────────────
-            Expanded(
-              child: Obx(() {
-                if (controller.isLoading.value) {
-                  return const _ShimmerList();
-                }
-
-                final missions = controller.filteredMissions;
-
-                if (missions.isEmpty) {
-                  return _EmptyState(filter: controller.activeFilter.value);
-                }
-
-                return RefreshIndicator(
-                  color: ScoutColors.primary,
-                  backgroundColor: ScoutColors.surface,
-                  onRefresh: controller.fetchMissions,
-                  child: ListView.separated(
-                    padding: const EdgeInsets.fromLTRB(24, 8, 24, 32),
-                    itemCount: missions.length,
-                    separatorBuilder: (_, _) => const SizedBox(height: 14),
-                    itemBuilder: (_, i) => _MissionCard(
-                      mission: missions[i],
-                      onComplete: () => controller.onTapMission(missions[i]),
-                    ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'Missions',
+                        style: TextStyle(
+                          color: ScoutColors.textPrimary,
+                          fontSize: 28,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
                   ),
-                );
-              }),
-            ),
-          ],
+                ),
+
+                // ── Filter row ────────────────────────────────────────────────
+                Obx(
+                  () => _FilterRow(
+                    activeFilter: controller.activeFilter.value,
+                    onFilterChanged: controller.setFilter,
+                  ),
+                ),
+                const SizedBox(height: 8),
+
+                // ── Body ──────────────────────────────────────────────────────
+                Expanded(
+                  child: Obx(() {
+                    if (controller.isLoading.value) {
+                      return const _ShimmerList();
+                    }
+
+                    final missions = controller.filteredMissions;
+
+                    if (missions.isEmpty) {
+                      return _EmptyState(filter: controller.activeFilter.value);
+                    }
+
+                    return RefreshIndicator(
+                      color: ScoutColors.primary,
+                      backgroundColor: ScoutColors.surface,
+                      onRefresh: controller.fetchMissions,
+                      child: ListView.separated(
+                        padding: const EdgeInsets.fromLTRB(24, 8, 24, 32),
+                        itemCount: missions.length,
+                        separatorBuilder: (_, _) => const SizedBox(height: 14),
+                        itemBuilder: (_, i) => _MissionCard(
+                          mission: missions[i],
+                          onComplete: () =>
+                              controller.onTapMission(missions[i]),
+                        ),
+                      ),
+                    );
+                  }),
+                ),
+              ],
+            );
+          },
         ),
       ),
     );

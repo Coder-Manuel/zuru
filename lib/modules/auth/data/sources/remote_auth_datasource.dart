@@ -99,7 +99,7 @@ class RemoteAuthDatasourceImpl extends RemoteAuthDatasource {
         .from('profiles')
         .update(data)
         .eq('user_id', client.auth.currentUser?.id ?? '')
-        .eq('role', UserRole.scout)
+        .eq('role', UserRole.scout.name)
         .select()
         .single();
   }

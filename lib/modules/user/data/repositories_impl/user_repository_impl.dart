@@ -1,4 +1,5 @@
 import 'package:zuru/core/entities/user.entity.dart';
+import 'package:zuru/core/models/enums.dart';
 import 'package:zuru/core/models/user.model.dart';
 import 'package:zuru/core/types/repo_reponse.type.dart';
 import 'package:zuru/core/utils/error_wrapper.dart';
@@ -45,6 +46,21 @@ class UserRepositoryImpl extends UserRepository {
       onError: (_) => FailureResponse('Failed to update notification token'),
       library: _library,
       description: 'while updating FCM token',
+    );
+    return response!;
+  }
+
+  @override
+  Future<RepoResponse<void>> updateDefaultRole(UserRole role) async {
+    final response = await ErrorWrapper.async<RepoResponse<void>>(
+      () async {
+        await remoteDatasource.updateDefaultRole(role.name);
+        return SuccessResponse(null);
+      },
+      onError: (_) =>
+          FailureResponse('Could not switch role, please try again'),
+      library: _library,
+      description: 'while updating default role',
     );
     return response!;
   }

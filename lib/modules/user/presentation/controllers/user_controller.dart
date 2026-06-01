@@ -12,11 +12,13 @@ import 'package:zuru/core/utils/toast.dart';
 import 'package:zuru/modules/auth/domain/usecases/logout.usecase.dart';
 import 'package:zuru/modules/auth/presentation/pages/login_page.dart';
 import 'package:zuru/modules/user/domain/usecases/get_user_info.usecase.dart';
+import 'package:zuru/modules/user/domain/usecases/update_default_role.usecase.dart';
 import 'package:zuru/modules/user/domain/usecases/update_fcm_token.usecase.dart';
 
 class UserController extends GetxController {
   final _getUserInfoUsecase = Get.find<GetUserInfoUseCase>();
   final _updateFcmTokenUseCase = Get.find<UpdateFcmTokenUseCase>();
+  final _updateDefaultRoleUseCase = Get.find<UpdateDefaultRoleUseCase>();
   final _logoutUseCase = Get.find<LogoutUseCase>();
 
   Rx<User?> currentUser = Rx<User?>(null);
@@ -24,6 +26,9 @@ class UserController extends GetxController {
   // ── Settings toggles ──────────────────────────────────────────────────────
   final RxBool biometricsEnabled = true.obs;
   final RxBool notificationsEnabled = true.obs;
+
+  /// True while a role-switch API call is in flight.
+  final RxBool isSwitchingRole = false.obs;
 
   /// Periodic retry timer — active only while the FCM token is still null.
   Timer? _fcmRetryTimer;
@@ -50,6 +55,51 @@ class UserController extends GetxController {
       RoleService.instance.setRole(data.defaultRole);
       _syncFcmToken();
     });
+  }
+
+  // ── Role switch ───────────────────────────────────────────────────────────
+
+  /// Switches the active role to the opposite of the current one:
+  /// - Persists the new `default_role` via [UpdateDefaultRoleUseCase]
+  /// - Updates [RoleService] locally (theme + storage)
+  /// - Refreshes user data, then routes via [resolvePostAuthDestination] so
+  ///   any incomplete cross-role profile is caught automatically.
+  Future<void> switchRole() async {
+    final target = RoleService.instance.isScout
+        ? UserRole.client
+        : UserRole.scout;
+    final label = target == UserRole.scout ? 'Scout' : 'Client';
+
+    isSwitchingRole.value = true;
+    Loader.show(message: 'Switching to $label mode…');
+
+    final result = await _updateDefaultRoleUseCase(target);
+
+    result.fold(
+      (err) {
+        Loader.dismiss();
+        isSwitchingRole.value = false;
+        Toast.error(err.message);
+      },
+      (_) async {
+        // 1. Update local role & theme immediately.
+        if (target == UserRole.scout) {
+          RoleService.instance.applyScoutTheme();
+        } else {
+          RoleService.instance.applyClientTheme();
+        }
+
+        // 2. Refresh user data so resolvePostAuthDestination has fresh profiles.
+        await getUserDetails();
+        Loader.dismiss();
+        isSwitchingRole.value = false;
+
+        final user = currentUser.value;
+        Get.offAllNamed(
+          user != null ? resolvePostAuthDestination(user) : AppRoutes.home,
+        );
+      },
+    );
   }
 
   /// Inspects [user]'s profile completeness for the currently active role and

@@ -75,6 +75,8 @@ abstract class MissionEntity extends BaseEntity {
   /// Backward-compat: in client context, "has rated" means the client rated.
   bool get hasRated => hasRatedByClient;
 
+  bool get isMyMission;
+
   // ── Display helpers ───────────────────────────────────────────────────────
   String get durationLabel {
     final minutes = durationInSec ~/ 60;

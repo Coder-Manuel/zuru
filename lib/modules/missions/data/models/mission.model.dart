@@ -1,11 +1,13 @@
 import 'dart:math' as math;
 
+import 'package:get/get.dart';
 import 'package:zuru/core/models/profile.model.dart';
 import 'package:zuru/core/utils/ewkb_parser.dart';
 import 'package:zuru/modules/missions/data/models/enum.dart';
 import 'package:zuru/modules/missions/domain/entities/mission.entity.dart';
 import 'package:zuru/modules/rating/data/models/rating.model.dart';
 import 'package:zuru/modules/rating/domain/entities/rating.entity.dart';
+import 'package:zuru/modules/user/presentation/controllers/user_controller.dart';
 
 class MissionModel extends MissionEntity {
   MissionModel({
@@ -137,5 +139,10 @@ class MissionModel extends MissionEntity {
       acceptedAt: map['accepted_at'] as String?,
       completedAt: map['completed_at'] as String?,
     );
+  }
+
+  @override
+  bool get isMyMission {
+    return client?.userId == Get.find<UserController>().currentUser.value?.id;
   }
 }

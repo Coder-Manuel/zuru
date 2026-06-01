@@ -5,6 +5,7 @@ import 'package:zuru/modules/user/data/repositories_impl/user_repository_impl.da
 import 'package:zuru/modules/user/data/sources/remote_user_datasource.dart';
 import 'package:zuru/modules/user/domain/repository/user_repository.dart';
 import 'package:zuru/modules/user/domain/usecases/get_user_info.usecase.dart';
+import 'package:zuru/modules/user/domain/usecases/update_default_role.usecase.dart';
 import 'package:zuru/modules/user/domain/usecases/update_fcm_token.usecase.dart';
 import 'package:zuru/modules/user/presentation/controllers/profile_controller.dart';
 import 'package:zuru/modules/user/presentation/controllers/user_controller.dart';
@@ -28,6 +29,10 @@ class UserBindings extends Bindings {
     );
     Get.lazyPut<UpdateFcmTokenUseCase>(
       () => UpdateFcmTokenUseCase(repo: Get.find<UserRepository>()),
+      fenix: true,
+    );
+    Get.lazyPut<UpdateDefaultRoleUseCase>(
+      () => UpdateDefaultRoleUseCase(repo: Get.find<UserRepository>()),
       fenix: true,
     );
 

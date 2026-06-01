@@ -98,92 +98,97 @@ class MissionDetailsPage extends GetView<RadarController> {
 
                     32.verticalSpace,
 
-                    // ── CTAs — differ based on mission status ─────────────
-                    if (mission.status == MissionStatus.accepted) ...[
-                      // Already accepted → show navigation CTA
-                      ElevatedButton.icon(
-                        onPressed: () => Get.toNamed(
-                          NavigationPage.route,
-                          arguments: mission,
-                        ),
-                        icon: const Icon(Icons.navigation_rounded, size: 20),
-                        label: const Text(
-                          'Navigate to Location',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: ClientColors.primary,
-                          foregroundColor: ClientColors.background,
-                          minimumSize: const Size.fromHeight(56),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(14),
-                          ),
-                          elevation: 0,
-                        ),
-                      ),
+                    if (mission.isMyMission)
+                      ...[
+
                     ] else ...[
-                      // Open mission → show Accept / Decline
-                      Obx(
-                        () => ElevatedButton(
-                          onPressed: controller.isAccepting.value
-                              ? null
-                              : () => controller.acceptMission(mission.id!),
+                      // ── CTAs — differ based on mission status ─────────────
+                      if (mission.status == MissionStatus.accepted) ...[
+                        // Already accepted → show navigation CTA
+                        ElevatedButton.icon(
+                          onPressed: () => Get.toNamed(
+                            NavigationPage.route,
+                            arguments: mission,
+                          ),
+                          icon: const Icon(Icons.navigation_rounded, size: 20),
+                          label: const Text(
+                            'Navigate to Location',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: ClientColors.primary,
                             foregroundColor: ClientColors.background,
-                            disabledBackgroundColor: ClientColors.primary
-                                .withAlpha(100),
                             minimumSize: const Size.fromHeight(56),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(14),
                             ),
                             elevation: 0,
                           ),
-                          child: controller.isAccepting.value
-                              ? SizedBox(
-                                  width: 22,
-                                  height: 22,
-                                  child: CircularProgressIndicator(
-                                    strokeWidth: 2.5,
-                                    color: ClientColors.background,
+                        ),
+                      ] else ...[
+                        // Open mission → show Accept / Decline
+                        Obx(
+                          () => ElevatedButton(
+                            onPressed: controller.isAccepting.value
+                                ? null
+                                : () => controller.acceptMission(mission.id!),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: ClientColors.primary,
+                              foregroundColor: ClientColors.background,
+                              disabledBackgroundColor: ClientColors.primary
+                                  .withAlpha(100),
+                              minimumSize: const Size.fromHeight(56),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(14),
+                              ),
+                              elevation: 0,
+                            ),
+                            child: controller.isAccepting.value
+                                ? SizedBox(
+                                    width: 22,
+                                    height: 22,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2.5,
+                                      color: ClientColors.background,
+                                    ),
+                                  )
+                                : const Text(
+                                    'Accept Mission',
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w700,
+                                    ),
                                   ),
-                                )
-                              : const Text(
-                                  'Accept Mission',
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w700,
-                                  ),
-                                ),
+                          ),
                         ),
-                      ),
 
-                      12.verticalSpace,
+                        12.verticalSpace,
 
-                      OutlinedButton(
-                        onPressed: () => Get.back(),
-                        style: OutlinedButton.styleFrom(
-                          foregroundColor: ClientColors.textSecondary,
-                          side: BorderSide(
-                            color: ClientColors.divider,
-                            width: 1.2,
+                        OutlinedButton(
+                          onPressed: () => Get.back(),
+                          style: OutlinedButton.styleFrom(
+                            foregroundColor: ClientColors.textSecondary,
+                            side: BorderSide(
+                              color: ClientColors.divider,
+                              width: 1.2,
+                            ),
+                            minimumSize: const Size.fromHeight(56),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(14),
+                            ),
                           ),
-                          minimumSize: const Size.fromHeight(56),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(14),
+                          child: const Text(
+                            'Decline',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                            ),
                           ),
                         ),
-                        child: const Text(
-                          'Decline',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ),
+                      ],
                     ],
 
                     20.verticalSpace,

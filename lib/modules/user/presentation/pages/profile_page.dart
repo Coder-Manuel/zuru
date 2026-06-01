@@ -3,10 +3,12 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:get/get.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:zuru/config/client_colors.dart';
-import 'package:zuru/core/utils/extensions.dart';
+import 'package:zuru/config/scout_colors.dart';
+import 'package:zuru/core/services/role_service/role_service.dart';
 import 'package:zuru/core/utils/size.util.dart';
 import 'package:zuru/modules/payments/presentation/pages/statements_page.dart';
 import 'package:zuru/modules/user/presentation/controllers/profile_controller.dart';
+import 'package:zuru/modules/user/presentation/controllers/user_controller.dart';
 
 class ProfilePage extends GetView<ProfileController> {
   static const String route = '/scout/profile';
@@ -14,8 +16,11 @@ class ProfilePage extends GetView<ProfileController> {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    final bodyColor = Theme.of(context).textTheme.bodyMedium?.color;
+    final fillColor = Theme.of(context).inputDecorationTheme.fillColor;
+
     return Scaffold(
-      backgroundColor: ClientColors.background,
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -23,36 +28,32 @@ class ProfilePage extends GetView<ProfileController> {
             children: [
               32.verticalSpace,
 
-              // ── Avatar + name ──────────────────────────────────────────────
-              _ProfileHeader(controller: controller)
+              // ── Avatar + name ────────────────────────────────────────────────
+              _ProfileHeader(
+                    controller: controller,
+                    scheme: scheme,
+                    bodyColor: bodyColor,
+                  )
                   .animate()
                   .fadeIn(duration: 500.ms)
-                  .slideY(
-                    begin: 0.08,
-                    end: 0,
-                    duration: 500.ms,
-                    curve: Curves.easeOut,
-                  ),
+                  .slideY(begin: 0.08, end: 0, duration: 500.ms),
 
               40.verticalSpace,
 
-              // ── Settings rows (each delayed by 80ms more than the last) ───
+              // ── Settings rows ────────────────────────────────────────────────
               _ToggleRow(
                     icon: Icons.fingerprint_rounded,
                     title: 'Enable Biometrics',
                     subtitle: 'Face ID or Fingerprint',
                     valueObs: controller.biometricsEnabled,
                     onChanged: controller.toggleBiometrics,
+                    scheme: scheme,
+                    bodyColor: bodyColor,
+                    fillColor: fillColor,
                   )
                   .animate()
                   .fadeIn(delay: 80.ms, duration: 500.ms)
-                  .slideY(
-                    begin: 0.08,
-                    end: 0,
-                    delay: 80.ms,
-                    duration: 500.ms,
-                    curve: Curves.easeOut,
-                  ),
+                  .slideY(begin: 0.08, end: 0, delay: 80.ms, duration: 500.ms),
 
               8.verticalSpace,
 
@@ -62,16 +63,13 @@ class ProfilePage extends GetView<ProfileController> {
                     subtitle: 'Mission alerts & updates',
                     valueObs: controller.notificationsEnabled,
                     onChanged: controller.toggleNotifications,
+                    scheme: scheme,
+                    bodyColor: bodyColor,
+                    fillColor: fillColor,
                   )
                   .animate()
                   .fadeIn(delay: 160.ms, duration: 500.ms)
-                  .slideY(
-                    begin: 0.08,
-                    end: 0,
-                    delay: 160.ms,
-                    duration: 500.ms,
-                    curve: Curves.easeOut,
-                  ),
+                  .slideY(begin: 0.08, end: 0, delay: 160.ms, duration: 500.ms),
 
               8.verticalSpace,
 
@@ -79,33 +77,13 @@ class ProfilePage extends GetView<ProfileController> {
                     icon: Icons.credit_card_outlined,
                     title: 'Payment Statements',
                     onTap: () => Get.toNamed(StatementsPage.route),
+                    scheme: scheme,
+                    bodyColor: bodyColor,
+                    fillColor: fillColor,
                   )
                   .animate()
                   .fadeIn(delay: 240.ms, duration: 500.ms)
-                  .slideY(
-                    begin: 0.08,
-                    end: 0,
-                    delay: 240.ms,
-                    duration: 500.ms,
-                    curve: Curves.easeOut,
-                  ),
-
-              8.verticalSpace,
-
-              _NavRow(
-                    icon: Icons.account_balance_wallet_outlined,
-                    title: 'Payment Methods',
-                    onTap: () {}, // stub
-                  )
-                  .animate()
-                  .fadeIn(delay: 320.ms, duration: 500.ms)
-                  .slideY(
-                    begin: 0.08,
-                    end: 0,
-                    delay: 320.ms,
-                    duration: 500.ms,
-                    curve: Curves.easeOut,
-                  ),
+                  .slideY(begin: 0.08, end: 0, delay: 240.ms, duration: 500.ms),
 
               8.verticalSpace,
 
@@ -113,16 +91,13 @@ class ProfilePage extends GetView<ProfileController> {
                     icon: Icons.shield_outlined,
                     title: 'Privacy Policy',
                     url: 'https://unseenapp.com/privacy',
+                    scheme: scheme,
+                    bodyColor: bodyColor,
+                    fillColor: fillColor,
                   )
                   .animate()
-                  .fadeIn(delay: 400.ms, duration: 500.ms)
-                  .slideY(
-                    begin: 0.08,
-                    end: 0,
-                    delay: 400.ms,
-                    duration: 500.ms,
-                    curve: Curves.easeOut,
-                  ),
+                  .fadeIn(delay: 320.ms, duration: 500.ms)
+                  .slideY(begin: 0.08, end: 0, delay: 320.ms, duration: 500.ms),
 
               8.verticalSpace,
 
@@ -130,20 +105,29 @@ class ProfilePage extends GetView<ProfileController> {
                     icon: Icons.description_outlined,
                     title: 'Terms & Conditions',
                     url: 'https://unseenapp.com/terms',
+                    scheme: scheme,
+                    bodyColor: bodyColor,
+                    fillColor: fillColor,
+                  )
+                  .animate()
+                  .fadeIn(delay: 400.ms, duration: 500.ms)
+                  .slideY(begin: 0.08, end: 0, delay: 400.ms, duration: 500.ms),
+
+              24.verticalSpace,
+
+              // ── Switch Role ──────────────────────────────────────────────────
+              _RoleSwitchCard(
+                    userController: Get.find<UserController>(),
+                    bodyColor: bodyColor,
+                    fillColor: fillColor,
                   )
                   .animate()
                   .fadeIn(delay: 480.ms, duration: 500.ms)
-                  .slideY(
-                    begin: 0.08,
-                    end: 0,
-                    delay: 480.ms,
-                    duration: 500.ms,
-                    curve: Curves.easeOut,
-                  ),
+                  .slideY(begin: 0.08, end: 0, delay: 480.ms, duration: 500.ms),
 
               32.verticalSpace,
 
-              // ── Logout ─────────────────────────────────────────────────────
+              // ── Logout ───────────────────────────────────────────────────────
               Obx(
                     () => _LogoutButton(
                       isLoading: controller.isLoggingOut.value,
@@ -152,21 +136,14 @@ class ProfilePage extends GetView<ProfileController> {
                   )
                   .animate()
                   .fadeIn(delay: 560.ms, duration: 500.ms)
-                  .slideY(
-                    begin: 0.08,
-                    end: 0,
-                    delay: 560.ms,
-                    duration: 500.ms,
-                    curve: Curves.easeOut,
-                  ),
+                  .slideY(begin: 0.08, end: 0, delay: 560.ms, duration: 500.ms),
 
               28.verticalSpace,
 
-              // ── Version ────────────────────────────────────────────────────
               Text(
-                'SCOUT APP V1.0.4',
+                'ZURU WORLD  v1.0.4',
                 style: TextStyle(
-                  color: ClientColors.textSecondary,
+                  color: bodyColor,
                   fontSize: 11,
                   fontWeight: FontWeight.w600,
                   letterSpacing: 1.6,
@@ -182,14 +159,225 @@ class ProfilePage extends GetView<ProfileController> {
   }
 }
 
-// ── Profile header (avatar + name + rating) ───────────────────────────────────
+// ── Role switch card ──────────────────────────────────────────────────────────
 
-class _ProfileHeader extends StatelessWidget {
-  final ProfileController controller;
-  const _ProfileHeader({required this.controller});
+class _RoleSwitchCard extends StatelessWidget {
+  final UserController userController;
+  final Color? bodyColor;
+  final Color? fillColor;
+
+  const _RoleSwitchCard({
+    required this.userController,
+    required this.bodyColor,
+    required this.fillColor,
+  });
 
   @override
   Widget build(BuildContext context) {
+    return Obx(() {
+      final isScout = RoleService.instance.isScout;
+      final targetLabel = isScout ? 'Client' : 'Scout';
+      final targetIcon = isScout
+          ? Icons.person_outline_rounded
+          : Icons.radar_rounded;
+      final targetColor = isScout ? ClientColors.primary : ScoutColors.primary;
+
+      return GestureDetector(
+        onTap: userController.isSwitchingRole.value
+            ? null
+            : () => _showConfirmSheet(
+                context: context,
+                isCurrentlyScout: isScout,
+                targetLabel: targetLabel,
+                targetIcon: targetIcon,
+                targetColor: targetColor,
+              ),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+          decoration: BoxDecoration(
+            color: targetColor.withAlpha(15),
+            borderRadius: BorderRadius.circular(14),
+            border: Border.all(color: targetColor.withAlpha(60), width: 1),
+          ),
+          child: Row(
+            children: [
+              Container(
+                width: 42,
+                height: 42,
+                decoration: BoxDecoration(
+                  color: targetColor.withAlpha(30),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Icon(targetIcon, color: targetColor, size: 22),
+              ),
+              14.horizontalSpace,
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Switch to $targetLabel',
+                      style: TextStyle(
+                        color: targetColor,
+                        fontSize: 15,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    4.verticalSpace,
+                    Text(
+                      isScout
+                          ? 'Post missions & watch live feeds'
+                          : 'Accept missions & stream live',
+                      style: TextStyle(color: bodyColor, fontSize: 12),
+                    ),
+                  ],
+                ),
+              ),
+              userController.isSwitchingRole.value
+                  ? SizedBox(
+                      width: 18,
+                      height: 18,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: targetColor,
+                      ),
+                    )
+                  : Icon(
+                      Icons.swap_horiz_rounded,
+                      color: targetColor,
+                      size: 22,
+                    ),
+            ],
+          ),
+        ),
+      );
+    });
+  }
+
+  void _showConfirmSheet({
+    required BuildContext context,
+    required bool isCurrentlyScout,
+    required String targetLabel,
+    required IconData targetIcon,
+    required Color targetColor,
+  }) {
+    final bodyColor = Theme.of(context).textTheme.bodyMedium?.color;
+
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Theme.of(context).colorScheme.surface,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (_) => Padding(
+        padding: const EdgeInsets.fromLTRB(24, 16, 24, 32),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 40,
+              height: 4,
+              decoration: BoxDecoration(
+                color: bodyColor?.withAlpha(50),
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+            24.verticalSpace,
+            Container(
+              width: 72,
+              height: 72,
+              decoration: BoxDecoration(
+                color: targetColor.withAlpha(30),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(targetIcon, color: targetColor, size: 34),
+            ),
+            20.verticalSpace,
+            Text(
+              'Switch to $targetLabel?',
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.onSurface,
+                fontSize: 22,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+            10.verticalSpace,
+            Text(
+              isCurrentlyScout
+                  ? 'You\'ll switch to Client mode — browse, post missions and watch scouts in the field.'
+                  : 'You\'ll switch to Scout mode — accept missions, navigate to locations and stream live to clients.',
+              textAlign: TextAlign.center,
+              style: TextStyle(color: bodyColor, fontSize: 14, height: 1.5),
+            ),
+            28.verticalSpace,
+            Row(
+              children: [
+                Expanded(
+                  child: OutlinedButton(
+                    onPressed: Get.back,
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: bodyColor,
+                      side: BorderSide(
+                        color: bodyColor?.withAlpha(60) ?? Colors.grey,
+                      ),
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    child: const Text(
+                      'Cancel',
+                      style: TextStyle(fontWeight: FontWeight.w600),
+                    ),
+                  ),
+                ),
+                12.horizontalSpace,
+                Expanded(
+                  child: ElevatedButton(
+                    onPressed: () {
+                      Get.back();
+                      userController.switchRole();
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: targetColor,
+                      foregroundColor: Colors.black,
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      elevation: 0,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    child: const Text(
+                      'Switch',
+                      style: TextStyle(fontWeight: FontWeight.w700),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// ── Profile header ────────────────────────────────────────────────────────────
+
+class _ProfileHeader extends StatelessWidget {
+  final ProfileController controller;
+  final ColorScheme scheme;
+  final Color? bodyColor;
+
+  const _ProfileHeader({
+    required this.controller,
+    required this.scheme,
+    required this.bodyColor,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final fillColor = Theme.of(context).inputDecorationTheme.fillColor;
     return Obx(() {
       final user = controller.currentUser.value;
       final name = user?.profile?.fullName ?? '';
@@ -198,16 +386,15 @@ class _ProfileHeader extends StatelessWidget {
 
       return Column(
         children: [
-          // ── Avatar ──────────────────────────────────────────────────────
           Container(
             width: 100,
             height: 100,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              border: Border.all(color: ClientColors.primary, width: 3),
+              border: Border.all(color: scheme.primary, width: 3),
               boxShadow: [
                 BoxShadow(
-                  color: ClientColors.primary.withAlpha(50),
+                  color: scheme.primary.withAlpha(50),
                   blurRadius: 24,
                   spreadRadius: 2,
                 ),
@@ -215,12 +402,12 @@ class _ProfileHeader extends StatelessWidget {
             ),
             child: ClipOval(
               child: Container(
-                color: ClientColors.surface,
+                color: fillColor,
                 child: Center(
                   child: Text(
                     initial,
                     style: TextStyle(
-                      color: ClientColors.textPrimary,
+                      color: scheme.onSurface,
                       fontSize: 36,
                       fontWeight: FontWeight.w700,
                     ),
@@ -229,47 +416,23 @@ class _ProfileHeader extends StatelessWidget {
               ),
             ),
           ),
-
           18.verticalSpace,
-
-          // ── Name ────────────────────────────────────────────────────────
           Text(
             name.isNotEmpty ? name : 'Scout',
             style: TextStyle(
-              color: ClientColors.textPrimary,
+              color: scheme.onSurface,
               fontSize: 28,
               fontWeight: FontWeight.w700,
               fontStyle: FontStyle.italic,
             ),
           ),
-
           8.verticalSpace,
-
-          // ── Role + rating ────────────────────────────────────────────────
           Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text(
-                'Scout',
-                style: TextStyle(
-                  color: ClientColors.textSecondary,
-                  fontSize: 14,
-                ),
-              ),
-              Text(
-                ' · ',
-                style: TextStyle(
-                  color: ClientColors.textSecondary,
-                  fontSize: 14,
-                ),
-              ),
-              Text(
-                rating,
-                style: TextStyle(
-                  color: ClientColors.textSecondary,
-                  fontSize: 14,
-                ),
-              ),
+              Text('Scout', style: TextStyle(color: bodyColor, fontSize: 14)),
+              Text(' · ', style: TextStyle(color: bodyColor, fontSize: 14)),
+              Text(rating, style: TextStyle(color: bodyColor, fontSize: 14)),
               const SizedBox(width: 4),
               const Icon(
                 Icons.star_rounded,
@@ -284,7 +447,7 @@ class _ProfileHeader extends StatelessWidget {
   }
 }
 
-// ── Toggle row (biometrics, notifications) ────────────────────────────────────
+// ── Toggle row ────────────────────────────────────────────────────────────────
 
 class _ToggleRow extends StatelessWidget {
   final IconData icon;
@@ -292,6 +455,9 @@ class _ToggleRow extends StatelessWidget {
   final String subtitle;
   final RxBool valueObs;
   final void Function(bool) onChanged;
+  final ColorScheme scheme;
+  final Color? bodyColor;
+  final Color? fillColor;
 
   const _ToggleRow({
     required this.icon,
@@ -299,20 +465,23 @@ class _ToggleRow extends StatelessWidget {
     required this.subtitle,
     required this.valueObs,
     required this.onChanged,
+    required this.scheme,
+    required this.bodyColor,
+    required this.fillColor,
   });
 
   @override
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: ClientColors.surface.setOpacity(0.7),
+        color: fillColor?.withAlpha(178),
         borderRadius: BorderRadius.circular(14),
       ),
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         child: Row(
           children: [
-            _IconBox(icon: icon),
+            _IconBox(icon: icon, primaryColor: scheme.primary),
             14.horizontalSpace,
             Expanded(
               child: Column(
@@ -321,7 +490,7 @@ class _ToggleRow extends StatelessWidget {
                   Text(
                     title,
                     style: TextStyle(
-                      color: ClientColors.textPrimary,
+                      color: scheme.onSurface,
                       fontSize: 15,
                       fontWeight: FontWeight.w600,
                     ),
@@ -329,10 +498,7 @@ class _ToggleRow extends StatelessWidget {
                   4.verticalSpace,
                   Text(
                     subtitle,
-                    style: TextStyle(
-                      color: ClientColors.textSecondary,
-                      fontSize: 12,
-                    ),
+                    style: TextStyle(color: bodyColor, fontSize: 12),
                   ),
                 ],
               ),
@@ -341,10 +507,10 @@ class _ToggleRow extends StatelessWidget {
               () => Switch.adaptive(
                 value: valueObs.value,
                 onChanged: onChanged,
-                activeThumbColor: ClientColors.background,
-                activeTrackColor: ClientColors.primary,
-                inactiveThumbColor: ClientColors.textSecondary,
-                inactiveTrackColor: ClientColors.divider,
+                activeThumbColor: Colors.black,
+                activeTrackColor: scheme.primary,
+                inactiveThumbColor: bodyColor,
+                inactiveTrackColor: fillColor,
               ),
             ),
           ],
@@ -354,14 +520,24 @@ class _ToggleRow extends StatelessWidget {
   }
 }
 
-// ── Navigation row (payment statements, payment methods) ──────────────────────
+// ── Nav row ───────────────────────────────────────────────────────────────────
 
 class _NavRow extends StatelessWidget {
   final IconData icon;
   final String title;
   final VoidCallback onTap;
+  final ColorScheme scheme;
+  final Color? bodyColor;
+  final Color? fillColor;
 
-  const _NavRow({required this.icon, required this.title, required this.onTap});
+  const _NavRow({
+    required this.icon,
+    required this.title,
+    required this.onTap,
+    required this.scheme,
+    required this.bodyColor,
+    required this.fillColor,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -369,30 +545,26 @@ class _NavRow extends StatelessWidget {
       onTap: onTap,
       child: Container(
         decoration: BoxDecoration(
-          color: ClientColors.surface.setOpacity(0.7),
+          color: fillColor?.withAlpha(178),
           borderRadius: BorderRadius.circular(14),
         ),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
           child: Row(
             children: [
-              _IconBox(icon: icon),
+              _IconBox(icon: icon, primaryColor: scheme.primary),
               14.horizontalSpace,
               Expanded(
                 child: Text(
                   title,
                   style: TextStyle(
-                    color: ClientColors.textPrimary,
+                    color: scheme.onSurface,
                     fontSize: 15,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
               ),
-              Icon(
-                Icons.chevron_right_rounded,
-                color: ClientColors.textSecondary,
-                size: 22,
-              ),
+              Icon(Icons.chevron_right_rounded, color: bodyColor, size: 22),
             ],
           ),
         ),
@@ -401,14 +573,24 @@ class _NavRow extends StatelessWidget {
   }
 }
 
-// ── Link row (privacy policy, terms) ─────────────────────────────────────────
+// ── Link row ──────────────────────────────────────────────────────────────────
 
 class _LinkRow extends StatelessWidget {
   final IconData icon;
   final String title;
   final String url;
+  final ColorScheme scheme;
+  final Color? bodyColor;
+  final Color? fillColor;
 
-  const _LinkRow({required this.icon, required this.title, required this.url});
+  const _LinkRow({
+    required this.icon,
+    required this.title,
+    required this.url,
+    required this.scheme,
+    required this.bodyColor,
+    required this.fillColor,
+  });
 
   Future<void> _launch() async {
     final uri = Uri.parse(url);
@@ -421,25 +603,22 @@ class _LinkRow extends StatelessWidget {
       onTap: _launch,
       child: Container(
         decoration: BoxDecoration(
-          color: ClientColors.surface.setOpacity(0.7),
+          color: fillColor?.withAlpha(178),
           borderRadius: BorderRadius.circular(14),
         ),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
           child: Row(
             children: [
-              Icon(icon, color: ClientColors.textSecondary, size: 22),
+              Icon(icon, color: bodyColor, size: 22),
               14.horizontalSpace,
               Expanded(
                 child: Text(
                   title,
-                  style: TextStyle(
-                    color: ClientColors.textPrimary,
-                    fontSize: 15,
-                  ),
+                  style: TextStyle(color: scheme.onSurface, fontSize: 15),
                 ),
               ),
-              Icon(Icons.link_rounded, color: ClientColors.primary, size: 22),
+              Icon(Icons.link_rounded, color: scheme.primary, size: 22),
             ],
           ),
         ),
@@ -448,11 +627,12 @@ class _LinkRow extends StatelessWidget {
   }
 }
 
-// ── Icon box (green-tinted background) ───────────────────────────────────────
+// ── Icon box ──────────────────────────────────────────────────────────────────
 
 class _IconBox extends StatelessWidget {
   final IconData icon;
-  const _IconBox({required this.icon});
+  final Color primaryColor;
+  const _IconBox({required this.icon, required this.primaryColor});
 
   @override
   Widget build(BuildContext context) {
@@ -460,10 +640,10 @@ class _IconBox extends StatelessWidget {
       width: 40,
       height: 40,
       decoration: BoxDecoration(
-        color: ClientColors.primary.withAlpha(26),
+        color: primaryColor.withAlpha(26),
         borderRadius: BorderRadius.circular(10),
       ),
-      child: Icon(icon, color: ClientColors.primary, size: 20),
+      child: Icon(icon, color: primaryColor, size: 20),
     );
   }
 }
@@ -483,9 +663,9 @@ class _LogoutButton extends StatelessWidget {
       child: Container(
         height: 56,
         decoration: BoxDecoration(
-          color: const Color(0xFF2A1010),
+          color: const Color(0xFFEF4444).withAlpha(25),
           borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: const Color(0xFFCC1E1E).withAlpha(60)),
+          border: Border.all(color: const Color(0xFFEF4444).withAlpha(60)),
         ),
         child: Center(
           child: isLoading
@@ -493,14 +673,14 @@ class _LogoutButton extends StatelessWidget {
                   width: 22,
                   height: 22,
                   child: CircularProgressIndicator(
-                    color: Color(0xFFCC1E1E),
+                    color: Color(0xFFEF4444),
                     strokeWidth: 2,
                   ),
                 )
               : const Text(
                   'Logout',
                   style: TextStyle(
-                    color: Color(0xFFCC1E1E),
+                    color: Color(0xFFEF4444),
                     fontSize: 17,
                     fontWeight: FontWeight.w700,
                   ),

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:zuru/config/client_colors.dart';
+import 'package:zuru/config/scout_colors.dart';
+import 'package:zuru/core/services/role_service/role_service.dart';
 import 'package:zuru/modules/user/presentation/controllers/user_controller.dart';
 
 class SettingsTab extends GetView<UserController> {
@@ -8,27 +10,32 @@ class SettingsTab extends GetView<UserController> {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    final bodyColor = Theme.of(context).textTheme.bodyMedium?.color;
+    final fillColor = Theme.of(context).inputDecorationTheme.fillColor;
+
     return Scaffold(
-      backgroundColor: ClientColors.background,
       body: SafeArea(
         child: ListView(
           padding: EdgeInsets.zero,
           children: [
-            // ── Profile header ──────────────────────────────────────────────
             const SizedBox(height: 36),
+
+            // ── Profile header ────────────────────────────────────────────────
             Obx(() {
               final user = controller.currentUser.value;
               final name = user?.profile?.fullName ?? 'User';
               final role = _roleLabel(user?.profile?.role?.name);
               final rating = user?.profile?.rating?.toStringAsFixed(1) ?? '–';
+
               return Column(
                 children: [
-                  _ProfileAvatar(name: name),
+                  _ProfileAvatar(name: name, primaryColor: scheme.primary),
                   const SizedBox(height: 16),
                   Text(
                     name,
                     style: TextStyle(
-                      color: ClientColors.textPrimary,
+                      color: scheme.onSurface,
                       fontSize: 26,
                       fontWeight: FontWeight.w600,
                       fontStyle: FontStyle.italic,
@@ -40,33 +47,18 @@ class SettingsTab extends GetView<UserController> {
                     children: [
                       Text(
                         role,
-                        style: TextStyle(
-                          color: ClientColors.textSecondary,
-                          fontSize: 14,
-                          fontWeight: FontWeight.w500,
-                        ),
+                        style: TextStyle(color: bodyColor, fontSize: 14),
                       ),
                       Text(
                         ' · ',
-                        style: TextStyle(
-                          color: ClientColors.textSecondary,
-                          fontSize: 14,
-                        ),
+                        style: TextStyle(color: bodyColor, fontSize: 14),
                       ),
                       Text(
                         rating,
-                        style: TextStyle(
-                          color: ClientColors.textSecondary,
-                          fontSize: 14,
-                          fontWeight: FontWeight.w500,
-                        ),
+                        style: TextStyle(color: bodyColor, fontSize: 14),
                       ),
                       const SizedBox(width: 4),
-                      Icon(
-                        Icons.star_rounded,
-                        color: ClientColors.textSecondary,
-                        size: 16,
-                      ),
+                      Icon(Icons.star_rounded, color: bodyColor, size: 16),
                     ],
                   ),
                 ],
@@ -75,19 +67,24 @@ class SettingsTab extends GetView<UserController> {
 
             const SizedBox(height: 36),
 
-            // ── Settings tiles ──────────────────────────────────────────────
+            // ── Settings tiles ────────────────────────────────────────────────
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Column(
                 children: [
-                  // Enable Biometrics
+                  // Biometrics
                   Obx(
                     () => _SettingsCard(
                       icon: Icons.fingerprint_rounded,
                       title: 'Enable Biometrics',
                       subtitle: 'Face ID or Fingerprint',
+                      fillColor: fillColor,
+                      primaryColor: scheme.primary,
+                      textColor: scheme.onSurface,
+                      subtitleColor: bodyColor,
                       trailing: _AppSwitch(
                         value: controller.biometricsEnabled.value,
+                        activeColor: scheme.primary,
                         onChanged: (v) =>
                             controller.biometricsEnabled.value = v,
                       ),
@@ -95,14 +92,19 @@ class SettingsTab extends GetView<UserController> {
                   ),
                   const SizedBox(height: 12),
 
-                  // Push Notifications
+                  // Notifications
                   Obx(
                     () => _SettingsCard(
                       icon: Icons.notifications_outlined,
                       title: 'Push Notifications',
                       subtitle: 'Mission alerts & updates',
+                      fillColor: fillColor,
+                      primaryColor: scheme.primary,
+                      textColor: scheme.onSurface,
+                      subtitleColor: bodyColor,
                       trailing: _AppSwitch(
                         value: controller.notificationsEnabled.value,
+                        activeColor: scheme.primary,
                         onChanged: (v) =>
                             controller.notificationsEnabled.value = v,
                       ),
@@ -114,9 +116,13 @@ class SettingsTab extends GetView<UserController> {
                   _SettingsCard(
                     icon: Icons.shield_outlined,
                     title: 'Privacy Policy',
+                    fillColor: fillColor,
+                    primaryColor: scheme.primary,
+                    textColor: scheme.onSurface,
+                    subtitleColor: bodyColor,
                     trailing: Icon(
                       Icons.link_rounded,
-                      color: ClientColors.textSecondary,
+                      color: scheme.primary,
                       size: 20,
                     ),
                     onTap: () {},
@@ -127,39 +133,39 @@ class SettingsTab extends GetView<UserController> {
                   _SettingsCard(
                     icon: Icons.description_outlined,
                     title: 'Terms & Conditions',
+                    fillColor: fillColor,
+                    primaryColor: scheme.primary,
+                    textColor: scheme.onSurface,
+                    subtitleColor: bodyColor,
                     trailing: Icon(
                       Icons.link_rounded,
-                      color: ClientColors.textSecondary,
+                      color: scheme.primary,
                       size: 20,
                     ),
                     onTap: () {},
                   ),
-                  const SizedBox(height: 12),
 
-                  // Account Settings
-                  _SettingsCard(
-                    icon: Icons.settings_outlined,
-                    title: 'Account Settings',
-                    trailing: Icon(
-                      Icons.chevron_right_rounded,
-                      color: ClientColors.textSecondary,
-                      size: 22,
-                    ),
-                    onTap: () {},
+                  const SizedBox(height: 24),
+
+                  // ── Switch Role ───────────────────────────────────────────
+                  _RoleSwitchCard(
+                    controller: controller,
+                    fillColor: fillColor,
+                    textColor: scheme.onSurface,
+                    subtitleColor: bodyColor,
                   ),
 
                   const SizedBox(height: 28),
 
-                  // ── Logout ────────────────────────────────────────────────
+                  // Logout
                   _LogoutButton(onTap: () async => await controller.logout()),
 
                   const SizedBox(height: 24),
 
-                  // ── Version ───────────────────────────────────────────────
                   Text(
-                    'ZURU APP VERSION 1.0.4',
+                    'ZURU WORLD  v1.0.4',
                     style: TextStyle(
-                      color: ClientColors.textSecondary,
+                      color: bodyColor,
                       fontSize: 11,
                       fontWeight: FontWeight.w500,
                       letterSpacing: 1.2,
@@ -176,22 +182,229 @@ class SettingsTab extends GetView<UserController> {
     );
   }
 
-  static String _roleLabel(String? role) {
-    switch (role?.toLowerCase()) {
-      case 'scout':
-        return 'Scout';
-      case 'client':
-      default:
-        return 'Client';
-    }
+  static String _roleLabel(String? role) =>
+      role?.toLowerCase() == 'scout' ? 'Scout' : 'Client';
+}
+
+// ── Role switch card ──────────────────────────────────────────────────────────
+
+class _RoleSwitchCard extends StatelessWidget {
+  final UserController controller;
+  final Color? fillColor;
+  final Color textColor;
+  final Color? subtitleColor;
+
+  const _RoleSwitchCard({
+    required this.controller,
+    required this.fillColor,
+    required this.textColor,
+    required this.subtitleColor,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Obx(() {
+      final isScout = RoleService.instance.isScout;
+      final targetLabel = isScout ? 'Client' : 'Scout';
+      final targetIcon = isScout
+          ? Icons.person_outline_rounded
+          : Icons.radar_rounded;
+      final targetColor = isScout ? ClientColors.primary : ScoutColors.primary;
+
+      return GestureDetector(
+        onTap: controller.isSwitchingRole.value
+            ? null
+            : () => _showConfirmSheet(
+                context: context,
+                controller: controller,
+                isCurrentlyScout: isScout,
+                targetLabel: targetLabel,
+                targetIcon: targetIcon,
+                targetColor: targetColor,
+              ),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+          decoration: BoxDecoration(
+            color: targetColor.withAlpha(15),
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: targetColor.withAlpha(60), width: 1),
+          ),
+          child: Row(
+            children: [
+              Container(
+                width: 42,
+                height: 42,
+                decoration: BoxDecoration(
+                  color: targetColor.withAlpha(30),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Icon(targetIcon, color: targetColor, size: 22),
+              ),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Switch to $targetLabel',
+                      style: TextStyle(
+                        color: targetColor,
+                        fontSize: 15,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      isScout
+                          ? 'Post missions & watch live feeds'
+                          : 'Accept missions & stream live',
+                      style: TextStyle(color: subtitleColor, fontSize: 12),
+                    ),
+                  ],
+                ),
+              ),
+              controller.isSwitchingRole.value
+                  ? SizedBox(
+                      width: 18,
+                      height: 18,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: targetColor,
+                      ),
+                    )
+                  : Icon(
+                      Icons.swap_horiz_rounded,
+                      color: targetColor,
+                      size: 22,
+                    ),
+            ],
+          ),
+        ),
+      );
+    });
+  }
+
+  void _showConfirmSheet({
+    required BuildContext context,
+    required UserController controller,
+    required bool isCurrentlyScout,
+    required String targetLabel,
+    required IconData targetIcon,
+    required Color targetColor,
+  }) {
+    final bodyColor = Theme.of(context).textTheme.bodyMedium?.color;
+    final surfaceColor = Theme.of(context).colorScheme.surface;
+
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: surfaceColor,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (_) => Padding(
+        padding: const EdgeInsets.fromLTRB(24, 16, 24, 32),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // Drag handle
+            Container(
+              width: 40,
+              height: 4,
+              decoration: BoxDecoration(
+                color: bodyColor?.withAlpha(50),
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+            const SizedBox(height: 24),
+
+            // Role icon
+            Container(
+              width: 72,
+              height: 72,
+              decoration: BoxDecoration(
+                color: targetColor.withAlpha(30),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(targetIcon, color: targetColor, size: 34),
+            ),
+            const SizedBox(height: 20),
+
+            Text(
+              'Switch to $targetLabel?',
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.onSurface,
+                fontSize: 22,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+            const SizedBox(height: 10),
+            Text(
+              isCurrentlyScout
+                  ? 'You\'ll switch to Client mode — browse, post missions and watch scouts in the field.'
+                  : 'You\'ll switch to Scout mode — accept missions, navigate to locations and stream live to clients.',
+              textAlign: TextAlign.center,
+              style: TextStyle(color: bodyColor, fontSize: 14, height: 1.5),
+            ),
+            const SizedBox(height: 28),
+
+            Row(
+              children: [
+                Expanded(
+                  child: OutlinedButton(
+                    onPressed: Get.back,
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: bodyColor,
+                      side: BorderSide(
+                        color: bodyColor?.withAlpha(60) ?? Colors.grey,
+                      ),
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    child: const Text(
+                      'Cancel',
+                      style: TextStyle(fontWeight: FontWeight.w600),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: ElevatedButton(
+                    onPressed: () {
+                      Get.back();
+                      controller.switchRole();
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: targetColor,
+                      foregroundColor: Colors.black,
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      elevation: 0,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    child: Text(
+                      'Switch',
+                      style: const TextStyle(fontWeight: FontWeight.w700),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }
 
-// ─── Profile avatar ───────────────────────────────────────────────────────────
+// ── Profile avatar ────────────────────────────────────────────────────────────
 
 class _ProfileAvatar extends StatelessWidget {
   final String name;
-  const _ProfileAvatar({required this.name});
+  final Color primaryColor;
+  const _ProfileAvatar({required this.name, required this.primaryColor});
 
   String get _initials {
     final parts = name.trim().split(' ');
@@ -203,19 +416,20 @@ class _ProfileAvatar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final fillColor = Theme.of(context).inputDecorationTheme.fillColor;
     return Container(
       width: 100,
       height: 100,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        border: Border.all(color: ClientColors.primary, width: 3),
-        color: ClientColors.inputBg,
+        border: Border.all(color: primaryColor, width: 3),
+        color: fillColor,
       ),
       child: Center(
         child: Text(
           _initials,
           style: TextStyle(
-            color: ClientColors.primary,
+            color: primaryColor,
             fontSize: 34,
             fontWeight: FontWeight.w700,
           ),
@@ -225,7 +439,7 @@ class _ProfileAvatar extends StatelessWidget {
   }
 }
 
-// ─── Settings card ────────────────────────────────────────────────────────────
+// ── Settings card ─────────────────────────────────────────────────────────────
 
 class _SettingsCard extends StatelessWidget {
   final IconData icon;
@@ -233,19 +447,27 @@ class _SettingsCard extends StatelessWidget {
   final String? subtitle;
   final Widget? trailing;
   final VoidCallback? onTap;
+  final Color? fillColor;
+  final Color primaryColor;
+  final Color textColor;
+  final Color? subtitleColor;
 
   const _SettingsCard({
     required this.icon,
     required this.title,
+    required this.primaryColor,
+    required this.textColor,
     this.subtitle,
     this.trailing,
     this.onTap,
+    this.fillColor,
+    this.subtitleColor,
   });
 
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: ClientColors.inputBg,
+      color: fillColor ?? Colors.transparent,
       borderRadius: BorderRadius.circular(16),
       child: InkWell(
         onTap: onTap,
@@ -254,19 +476,16 @@ class _SettingsCard extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
           child: Row(
             children: [
-              // Icon container
               Container(
                 width: 42,
                 height: 42,
                 decoration: BoxDecoration(
-                  color: ClientColors.primary.withAlpha(30),
+                  color: primaryColor.withAlpha(30),
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: Icon(icon, color: ClientColors.primary, size: 22),
+                child: Icon(icon, color: primaryColor, size: 22),
               ),
               const SizedBox(width: 14),
-
-              // Text
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -274,7 +493,7 @@ class _SettingsCard extends StatelessWidget {
                     Text(
                       title,
                       style: TextStyle(
-                        color: ClientColors.textPrimary,
+                        color: textColor,
                         fontSize: 15,
                         fontWeight: FontWeight.w700,
                       ),
@@ -283,16 +502,12 @@ class _SettingsCard extends StatelessWidget {
                       const SizedBox(height: 2),
                       Text(
                         subtitle!,
-                        style: TextStyle(
-                          color: ClientColors.textSecondary,
-                          fontSize: 12,
-                        ),
+                        style: TextStyle(color: subtitleColor, fontSize: 12),
                       ),
                     ],
                   ],
                 ),
               ),
-
               ?trailing,
             ],
           ),
@@ -302,29 +517,36 @@ class _SettingsCard extends StatelessWidget {
   }
 }
 
-// ─── Toggle switch ────────────────────────────────────────────────────────────
+// ── Toggle switch ─────────────────────────────────────────────────────────────
 
 class _AppSwitch extends StatelessWidget {
   final bool value;
+  final Color activeColor;
   final ValueChanged<bool> onChanged;
 
-  const _AppSwitch({required this.value, required this.onChanged});
+  const _AppSwitch({
+    required this.value,
+    required this.activeColor,
+    required this.onChanged,
+  });
 
   @override
   Widget build(BuildContext context) {
+    final bodyColor = Theme.of(context).textTheme.bodyMedium?.color;
+    final fillColor = Theme.of(context).inputDecorationTheme.fillColor;
     return Switch(
       value: value,
       onChanged: onChanged,
-      activeThumbColor: ClientColors.primary,
-      activeTrackColor: const Color(0xFF3A3A3A),
-      inactiveThumbColor: ClientColors.textSecondary,
-      inactiveTrackColor: const Color(0xFF2A2A2A),
+      activeThumbColor: activeColor,
+      activeTrackColor: fillColor,
+      inactiveThumbColor: bodyColor,
+      inactiveTrackColor: fillColor,
       trackOutlineColor: WidgetStateProperty.all(Colors.transparent),
     );
   }
 }
 
-// ─── Logout button ────────────────────────────────────────────────────────────
+// ── Logout button ─────────────────────────────────────────────────────────────
 
 class _LogoutButton extends StatelessWidget {
   final VoidCallback onTap;
@@ -336,7 +558,7 @@ class _LogoutButton extends StatelessWidget {
       width: double.infinity,
       height: 56,
       child: Material(
-        color: const Color(0xFF3B1219),
+        color: const Color(0xFFEF4444).withAlpha(25),
         borderRadius: BorderRadius.circular(16),
         child: InkWell(
           onTap: onTap,

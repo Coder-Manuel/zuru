@@ -14,6 +14,7 @@ class ProfileModel extends Profile {
     super.totalReviews,
     super.bio,
     super.tags,
+    super.userId,
   });
 
   factory ProfileModel.fromMap(Map<String, dynamic> data) => ProfileModel(
@@ -33,6 +34,7 @@ class ProfileModel extends Profile {
     rating: (data['rating'] as num?)?.toDouble(),
     totalReviews: data['total_reviews'] as int?,
     bio: data['bio']?.toString(),
+    userId: data['user_id']?.toString(),
     tags: (data['tags']?.toString() ?? '').split(','),
   );
 }

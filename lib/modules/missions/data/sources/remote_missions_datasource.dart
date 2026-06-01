@@ -53,12 +53,13 @@ class RemoteMissionsDatasourceImpl extends RemoteMissionsDatasource {
 
     final column = role == 'client' ? 'client_id' : 'scout_id';
 
-    return client
+    var query = client
         .from('missions')
         .select("""
         *,
         client:client_id (
           id,
+          user_id,
           first_name,
           last_name,
           avatar_url,
@@ -67,6 +68,7 @@ class RemoteMissionsDatasourceImpl extends RemoteMissionsDatasource {
         ),
         scout:scout_id (
           id,
+          user_id,
           first_name,
           last_name,
           avatar_url,
@@ -81,8 +83,17 @@ class RemoteMissionsDatasourceImpl extends RemoteMissionsDatasource {
         )
       """)
         .eq('$column.user_id', userId)
-        .eq('$column.role', role)
-        .order('created_at', ascending: false);
+        .eq('$column.role', role);
+
+    if (RoleService.instance.isScout) {
+      final scoutStatuses = MissionStatus.values
+          .where((v) => v != MissionStatus.open && v != MissionStatus.cancelled)
+          .map((e) => e.name)
+          .toList();
+      query = query.inFilter('status', scoutStatuses);
+    }
+
+    return query.order('created_at', ascending: false);
   }
 
   @override
@@ -109,10 +120,12 @@ class RemoteMissionsDatasourceImpl extends RemoteMissionsDatasource {
             .select("""
             *,
             client:client_id (
-              id
+              id,
+              user_id
             ),
             scout:scout_id (
               id,
+              user_id,
               first_name,
               last_name,
               rating,
@@ -218,6 +231,7 @@ class RemoteMissionsDatasourceImpl extends RemoteMissionsDatasource {
           *,
           client:client_id (
             id,
+            user_id,
             first_name,
             last_name,
             rating,
@@ -314,16 +328,25 @@ class RemoteMissionsDatasourceImpl extends RemoteMissionsDatasource {
             .from('missions')
             .select("""
               *,
+              scout:scout_id (
+                id,
+                user_id
+              ),
               client:client_id (
                 id,
+                user_id,
                 first_name,
                 last_name,
                 rating,
                 total_reviews
               )
             """)
-            .eq('scout_id', userId)
-            .eq('status', 'accepted')
+            .eq('scout_id.user_id', userId)
+            .inFilter('status', [
+              MissionStatus.accepted.name,
+              MissionStatus.enroute.name,
+              MissionStatus.live.name,
+            ])
             .limit(1)
             .maybeSingle();
 
@@ -355,7 +378,7 @@ class RemoteMissionsDatasourceImpl extends RemoteMissionsDatasource {
             table: 'missions',
             filter: PostgresChangeFilter(
               type: PostgresChangeFilterType.eq,
-              column: 'scout_id',
+              column: 'scout_id.user_id',
               value: userId,
             ),
             callback: (_) => debouncedFetch(),
@@ -387,6 +410,7 @@ class RemoteMissionsDatasourceImpl extends RemoteMissionsDatasource {
           *,
           client:client_id (
             id,
+            user_id,
             first_name,
             last_name,
             rating,

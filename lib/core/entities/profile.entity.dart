@@ -9,6 +9,7 @@ abstract class Profile extends BaseEntity {
   final double? rating;
   final int? totalReviews;
   final String? bio;
+  final String? userId;
   final List<String> tags;
 
   Profile({
@@ -22,6 +23,7 @@ abstract class Profile extends BaseEntity {
     this.rating,
     this.totalReviews,
     this.bio,
+    this.userId,
     this.tags = const [],
   });
 
