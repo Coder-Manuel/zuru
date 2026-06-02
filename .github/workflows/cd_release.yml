@@ -1,0 +1,22 @@
+---
+name: "Auto Release CD"
+
+on:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  release:
+    name: "Auto Tagged Release"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get Commit SHA
+        id: commit_sha
+        run: echo "sha=${GITHUB_SHA::8}" >> $GITHUB_OUTPUT
+
+      - uses: marvinpinto/action-automatic-releases@latest
+        with:
+          repo_token: ${{ secrets.PAT_TOKEN }}
+          title: "Release ${{ github.ref_name }}"
+          prerelease: false

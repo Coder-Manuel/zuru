@@ -1,0 +1,40 @@
+---
+name: "CI"
+
+on:
+  pull_request:
+    branches:
+      - develop
+      - master
+    types: [ opened, edited, reopened, synchronize, ready_for_review ]
+
+jobs:
+  ci_checks:
+    name: CI Checks
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Validate PR title
+        uses: Slashgear/action-check-pr-title@v4.3.0
+        with:
+          regexp: "(feat|perf|fix|docs|style|refactor|chore|test|ci)((.+?))?: .+"
+          helpMessage: "Example: 'feat: example of title'"
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          cache: true
+          flutter-version: "3.41.0"
+          channel: "stable"
+
+      - name: Install Dependencies
+        run: flutter pub get
+
+      - name: Verify Code
+        run: dart format -o none --set-exit-if-changed lib
+      - name: Flutter Analyze
+        run: flutter analyze
+      # - name: Run Tests
+      #   run: ./test.sh
