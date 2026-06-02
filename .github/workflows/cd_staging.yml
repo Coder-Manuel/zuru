@@ -1,0 +1,65 @@
+---
+name: "Deploy Zuru - Staging"
+
+on:
+  workflow_dispatch:
+
+run-name: Deploy Zuru - Staging
+
+jobs:
+  build_and_deploy:
+    name: Build & Deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+      - name: Setup JDK
+        uses: actions/setup-java@v1
+        with:
+          java-version: "17.x"
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          cache: true
+          flutter-version: "3.41.0"
+          channel: "stable"
+
+      - name: Decode keystore
+        run: |
+          gpg -d --passphrase "${{ secrets.GPG_PASSPHRASE }}" --batch ./android/key.jks.asc > ./android/key.jks
+      - name: Decode properties file
+        run: |
+          gpg -d --passphrase "${{ secrets.GPG_PASSPHRASE }}" --batch ./android/key.properties.asc > ./android/key.properties
+
+      - name: Decode env file
+        run: |
+          gpg -d --passphrase "${{ secrets.GPG_PASSPHRASE }}" --batch env.asc > .env
+
+      - name: Restore Gradle Cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: gradle-${{ runner.os }}-${{ hashFiles('**/*.gradle*',
+            '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            gradle-${{ runner.os }}-
+      - name: Install Dependencies
+        run: flutter pub get
+      - name: Build Staging Apk
+        run: flutter build apk --target-platform android-arm64 --dart-define=env=staging
+          --dart-define-from-file=.env
+      - name: Save Output Apk
+        uses: actions/upload-artifact@v4
+        with:
+          name: unseen_client-${{ github.run_number }}
+          path: build/app/outputs/flutter-apk/app-release.apk
+
+      - name: Upload to Firebase
+        uses: wzieba/Firebase-Distribution-Github-Action@v1.7.1
+        with:
+          appId: ${{ secrets.FIREBASE_APPID }}
+          serviceCredentialsFileContent: ${{ secrets.FIREBASE_CREDENTIAL_FILE_CONTENT }}
+          groups: QA
+          file: build/app/outputs/flutter-apk/app-release.apk

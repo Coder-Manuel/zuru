@@ -1,0 +1,67 @@
+---
+name: "Deploy Zuru - Prod"
+
+on:
+  workflow_dispatch:
+    inputs:
+      platform:
+        description: "Specify the platform: 'android' or 'ios'"
+        required: true
+        type: choice
+        options:
+          - android
+          - ios
+      type:
+        description: "Specify the release type: 'major', 'minor', 'patch' or 'ota'"
+        required: true
+        type: choice
+        options:
+          - patch
+          - minor
+          - major
+          - ota
+      release_notes:
+        description: "Specify the release notes (Optional)"
+        required: false
+        type: string
+
+run-name: Deploy Zuru - prod ${{github.event.inputs.platform}}
+
+jobs:
+  build_and_deploy:
+    name: Build & Deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+      - name: Set up Git authentication
+        run: |
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "github-actions@users.noreply.github.com"
+          git remote set-url origin https://x-access-token:${{ secrets.PAT_TOKEN }}@github.com/${{ github.repository }}
+      - name: Setup JDK
+        uses: actions/setup-java@v1
+        with:
+          java-version: "17.x"
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          cache: true
+          flutter-version: "3.41.0"
+          channel: "stable"
+      - name: Restore Gradle Cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: gradle-${{ runner.os }}-${{ hashFiles('**/*.gradle*',
+            '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            gradle-${{ runner.os }}-
+      - name: Install Dependencies
+        run: flutter pub get
+      - name: Build & Deploy Prod
+        run: |
+          chmod +x ./release.sh
+          ./release.sh --platform ${{ github.event.inputs.platform}} --type ${{ github.event.inputs.type}} --release-notes "${{ github.event.inputs.release_notes}}"

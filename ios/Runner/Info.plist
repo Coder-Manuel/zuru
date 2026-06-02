@@ -7,7 +7,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
-	<string>Zuru</string>
+	<string>Zuru World</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -15,7 +15,7 @@
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
-	<string>zuru</string>
+	<string>Zuru World</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
@@ -66,5 +66,43 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+
+	<!-- Location — used by both client (map pin) and scout (navigation + radar) -->
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Zuru World needs your location to show nearby missions and pin your map location.</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>Zuru World uses your location for turn-by-turn navigation and to find nearby missions.</string>
+
+	<!-- Camera / microphone — LiveKit live streaming -->
+	<key>NSCameraUsageDescription</key>
+	<string>Zuru World uses your camera to stream live video during active missions.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Zuru World uses your microphone to capture audio during live mission streams.</string>
+
+	<!-- Biometrics — profile settings -->
+	<key>NSFaceIDUsageDescription</key>
+	<string>Zuru World uses Face ID to authenticate you quickly.</string>
+
+	<!-- Google Maps API key (client location picker) -->
+	<!-- TODO(manual): set GOOGLE_MAPS_API_KEY in ios/Flutter/Secret.xcconfig -->
+	<key>GMSApiKey</key>
+	<string>$(GOOGLE_MAPS_API_KEY)</string>
+
+	<!-- Mapbox token (scout navigation) -->
+	<!-- TODO(manual): set MAPBOX_TOKEN in ios/Flutter/Secret.xcconfig -->
+	<key>MBXAccessToken</key>
+	<string>$(MAPBOX_TOKEN)</string>
+
+	<!-- Required for Mapbox voice guidance and background location updates -->
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>audio</string>
+		<string>location</string>
+		<string>fetch</string>
+	</array>
+
+	<!-- Required for embedded MapBox navigation view -->
+	<key>io.flutter.embedded_views_preview</key>
+	<true/>
 </dict>
 </plist>

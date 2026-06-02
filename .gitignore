@@ -38,8 +38,28 @@ app.*.symbols
 
 # Obfuscation related
 app.*.map.json
+.vscode/
 
 # Android Studio will place build artifacts here
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# Secrets — never commit these
+ios/Flutter/Secret.xcconfig
+android/key.properties
+android/app/google-services.json
+ios/Runner/GoogleService-Info.plist
+
+
+# FVM Version Cache
+.fvm/
+.claude/
+.claire/
+
+# Env 
+.env
+
+# Test Data
+.data/
+coverage/
