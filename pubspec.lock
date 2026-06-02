@@ -338,8 +338,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: "v1.0.0"
-      resolved-ref: e68a7c1f2a40332fa00888a98cb3390edf832ad6
+      ref: main
+      resolved-ref: "324024718b07d89da5fa118415976d6786cf3aed"
       url: "https://github.com/Coder-Manuel/flutter_mapbox_navigation_plus.git"
     source: git
     version: "1.0.0"

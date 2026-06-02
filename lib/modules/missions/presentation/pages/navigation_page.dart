@@ -158,9 +158,13 @@ class _NavigationPageState extends State<NavigationPage> {
   Future<void> _onClosePressed() async {
     _closedManually = true;
     try {
-      await MapBoxNavigation.instance.finishNavigation();
+      final status = await MapBoxNavigation.instance.finishNavigation();
+      log('==== NavigationPage: finishNavigation status $status');
     } catch (_) {}
-    if (mounted) Get.back();
+    if (mounted) {
+      log('==== NavigationPage: pushing GpsVerificationPage');
+      Get.off(() => const GpsVerificationPage(), arguments: _mission);
+    }
   }
 
   List<WayPoint> _buildWayPoints() {

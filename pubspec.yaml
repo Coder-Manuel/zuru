@@ -61,7 +61,7 @@ dependencies:
   flutter_mapbox_navigation_plus:
     git:
       url: https://github.com/Coder-Manuel/flutter_mapbox_navigation_plus.git
-      ref: v1.0.0
+      ref: main
 
 dev_dependencies:
   flutter_test:
