@@ -12,6 +12,7 @@ import 'package:zuru/modules/missions/domain/usecases/nearby_missions.usecase.da
 import 'package:zuru/modules/missions/domain/usecases/update_mission_status.usecase.dart';
 import 'package:zuru/modules/missions/domain/usecases/watch_active_mission.usecase.dart';
 import 'package:zuru/modules/missions/presentation/pages/mission_details_page.dart';
+import 'package:zuru/modules/user/presentation/controllers/user_controller.dart';
 
 class RadarController extends GetxController
     with GetSingleTickerProviderStateMixin {
@@ -87,10 +88,15 @@ class RadarController extends GetxController
 
     final lat = _locationService.latitude ?? 0;
     final lng = _locationService.longitude ?? 0;
+    final user = Get.find<UserController>().currentUser.value;
 
     _activeMissionSub =
         _watchActiveUseCase(
-          WatchActiveMissionInput(scoutLat: lat, scoutLng: lng),
+          WatchActiveMissionInput(
+            scoutLat: lat,
+            scoutLng: lng,
+            profileId: user?.scoutProfile?.id,
+          ),
         ).listen(
           (response) {
             response.fold(

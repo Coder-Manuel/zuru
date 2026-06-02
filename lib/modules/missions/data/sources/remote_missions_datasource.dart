@@ -19,7 +19,7 @@ abstract class RemoteMissionsDatasource {
     Map<String, dynamic> data,
   );
   Future<bool> acceptMission(String missionId);
-  Stream<Map<String, dynamic>?> watchScoutActiveMission();
+  Stream<Map<String, dynamic>?> watchScoutActiveMission(String? profileId);
   Future<Map<String, dynamic>?> updateMissionStatus({
     required String missionId,
     required String status,
@@ -51,13 +51,11 @@ class RemoteMissionsDatasourceImpl extends RemoteMissionsDatasource {
 
     final role = RoleService.instance.role.value.name;
 
-    final column = role == 'client' ? 'client_id' : 'scout_id';
-
     var query = client
         .from('missions')
         .select("""
         *,
-        client:client_id (
+        client:client_id!inner (
           id,
           user_id,
           first_name,
@@ -66,7 +64,7 @@ class RemoteMissionsDatasourceImpl extends RemoteMissionsDatasource {
           rating,
           total_reviews
         ),
-        scout:scout_id (
+        scout:scout_id!inner (
           id,
           user_id,
           first_name,
@@ -82,16 +80,7 @@ class RemoteMissionsDatasourceImpl extends RemoteMissionsDatasource {
           score
         )
       """)
-        .eq('$column.user_id', userId)
-        .eq('$column.role', role);
-
-    if (RoleService.instance.isScout) {
-      final scoutStatuses = MissionStatus.values
-          .where((v) => v != MissionStatus.open && v != MissionStatus.cancelled)
-          .map((e) => e.name)
-          .toList();
-      query = query.inFilter('status', scoutStatuses);
-    }
+        .eq('$role.user_id', userId);
 
     return query.order('created_at', ascending: false);
   }
@@ -119,11 +108,11 @@ class RemoteMissionsDatasourceImpl extends RemoteMissionsDatasource {
             .from('missions')
             .select("""
             *,
-            client:client_id (
+            client:client_id!inner (
               id,
               user_id
             ),
-            scout:scout_id (
+            scout:scout_id!inner (
               id,
               user_id,
               first_name,
@@ -132,7 +121,7 @@ class RemoteMissionsDatasourceImpl extends RemoteMissionsDatasource {
               total_reviews
             )
             """)
-            .eq('client_id.user_id', userId ?? '')
+            .eq('client.user_id', userId ?? '')
             .inFilter('status', statuses);
 
         final rows = res
@@ -310,7 +299,7 @@ class RemoteMissionsDatasourceImpl extends RemoteMissionsDatasource {
   }
 
   @override
-  Stream<Map<String, dynamic>?> watchScoutActiveMission() {
+  Stream<Map<String, dynamic>?> watchScoutActiveMission(String? profileId) {
     final ctrl = StreamController<Map<String, dynamic>?>.broadcast();
     Timer? debounceTimer;
     RealtimeChannel? channel;
@@ -319,7 +308,7 @@ class RemoteMissionsDatasourceImpl extends RemoteMissionsDatasource {
 
     Future<void> fetchActive() async {
       if (ctrl.isClosed) return;
-      if (userId == null) {
+      if (userId == null || profileId == null) {
         if (!ctrl.isClosed) ctrl.add(null);
         return;
       }
@@ -369,17 +358,17 @@ class RemoteMissionsDatasourceImpl extends RemoteMissionsDatasource {
       debounceTimer = Timer(const Duration(milliseconds: 300), fetchActive);
     }
 
-    if (userId != null) {
+    if (profileId != null) {
       channel = client
-          .channel('active_mission_watch_$userId')
+          .channel('active_mission_watch_$profileId')
           .onPostgresChanges(
             event: PostgresChangeEvent.all,
             schema: 'public',
             table: 'missions',
             filter: PostgresChangeFilter(
               type: PostgresChangeFilterType.eq,
-              column: 'scout_id.user_id',
-              value: userId,
+              column: 'scout_id',
+              value: profileId,
             ),
             callback: (_) => debouncedFetch(),
           )

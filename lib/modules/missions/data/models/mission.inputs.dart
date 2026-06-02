@@ -28,7 +28,12 @@ class AcceptMissionInput {
 class WatchActiveMissionInput {
   final double scoutLat;
   final double scoutLng;
-  const WatchActiveMissionInput({this.scoutLat = 0, this.scoutLng = 0});
+  final String? profileId;
+  const WatchActiveMissionInput({
+    this.profileId,
+    this.scoutLat = 0,
+    this.scoutLng = 0,
+  });
 }
 
 class UpdateMissionStatusInput {

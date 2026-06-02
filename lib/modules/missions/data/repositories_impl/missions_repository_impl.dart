@@ -173,7 +173,9 @@ class MissionsRepositoryImpl extends MissionsRepository {
   ) async* {
     yield* ErrorWrapper.stream<RepoResponse<MissionEntity?>>(
       () async* {
-        await for (final row in remoteDatasource.watchScoutActiveMission()) {
+        await for (final row in remoteDatasource.watchScoutActiveMission(
+          input.profileId,
+        )) {
           if (row == null) {
             yield SuccessResponse(null);
           } else {
