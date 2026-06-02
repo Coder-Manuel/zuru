@@ -246,10 +246,7 @@ class _StatementCard extends StatelessWidget {
             18.verticalSpace,
 
             // ── Channel row ─────────────────────────────────────────────────
-            Container(
-              height: 1,
-              color: ClientColors.divider,
-            ),
+            Container(height: 1, color: ClientColors.divider),
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 14),
               child: Row(
@@ -287,8 +284,18 @@ class _StatementCard extends StatelessWidget {
     try {
       final dt = DateTime.parse(iso).toLocal();
       const months = [
-        'JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN',
-        'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC',
+        'JAN',
+        'FEB',
+        'MAR',
+        'APR',
+        'MAY',
+        'JUN',
+        'JUL',
+        'AUG',
+        'SEP',
+        'OCT',
+        'NOV',
+        'DEC',
       ];
       return '${months[dt.month - 1]} ${dt.day}, ${dt.year}';
     } catch (_) {
@@ -443,7 +450,10 @@ class _ErrorView extends StatelessWidget {
             onPressed: onRetry,
             child: Text(
               'Retry',
-              style: TextStyle(color: ClientColors.primary, fontWeight: FontWeight.w700),
+              style: TextStyle(
+                color: ClientColors.primary,
+                fontWeight: FontWeight.w700,
+              ),
             ),
           ),
         ],

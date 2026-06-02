@@ -192,7 +192,8 @@ class _GpsVerificationPageState extends State<GpsVerificationPage>
   // ── Helpers ───────────────────────────────────────────────────────────────
 
   Color get _accentColor => _state == _GpsState.tooFar
-      ? ScoutColors.scoutMarker // orange for error
+      ? ScoutColors
+            .scoutMarker // orange for error
       : ScoutColors.primary; // green for locating / verified
 
   // ── Build ─────────────────────────────────────────────────────────────────
@@ -375,10 +376,7 @@ class _GpsVerificationPageState extends State<GpsVerificationPage>
               children: [
                 Text(
                   'Begin Stream',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w700,
-                  ),
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
                 ),
                 SizedBox(width: 10),
                 Icon(Icons.arrow_forward_rounded, size: 20),
@@ -474,10 +472,7 @@ class _GpsDotIcon extends StatelessWidget {
               height: 108,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                border: Border.all(
-                  color: accentColor.withAlpha(70),
-                  width: 1,
-                ),
+                border: Border.all(color: accentColor.withAlpha(70), width: 1),
               ),
             ),
           ),

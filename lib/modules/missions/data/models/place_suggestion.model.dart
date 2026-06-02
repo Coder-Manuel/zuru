@@ -9,7 +9,8 @@ class PlaceSuggestionModel extends PlaceSuggestionEntity {
   });
 
   factory PlaceSuggestionModel.fromMap(Map<String, dynamic> map) {
-    final structured = map['structured_formatting'] as Map<String, dynamic>? ?? {};
+    final structured =
+        map['structured_formatting'] as Map<String, dynamic>? ?? {};
     return PlaceSuggestionModel(
       placeId: map['place_id'] as String? ?? '',
       description: map['description'] as String? ?? '',

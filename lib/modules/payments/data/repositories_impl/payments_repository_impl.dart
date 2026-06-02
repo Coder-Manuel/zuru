@@ -13,16 +13,17 @@ class PaymentsRepositoryImpl extends PaymentsRepository {
 
   @override
   Future<RepoResponse<List<StatementEntity>>> getStatements() async {
-    final response = await ErrorWrapper.async<RepoResponse<List<StatementEntity>>>(
-      () async {
-        final rows = await remoteDatasource.getStatements();
-        final statements = rows.map(StatementModel.fromMap).toList();
-        return SuccessResponse(statements);
-      },
-      onError: (_) => FailureResponse('Unable to load payment statements.'),
-      library: _library,
-      description: 'while fetching payment statements',
-    );
+    final response =
+        await ErrorWrapper.async<RepoResponse<List<StatementEntity>>>(
+          () async {
+            final rows = await remoteDatasource.getStatements();
+            final statements = rows.map(StatementModel.fromMap).toList();
+            return SuccessResponse(statements);
+          },
+          onError: (_) => FailureResponse('Unable to load payment statements.'),
+          library: _library,
+          description: 'while fetching payment statements',
+        );
     return response!;
   }
 }

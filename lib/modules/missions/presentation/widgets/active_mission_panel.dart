@@ -74,9 +74,8 @@ class ActiveMissionPanel extends GetView<RadarController> {
                         style: ElevatedButton.styleFrom(
                           backgroundColor: ScoutColors.primary,
                           foregroundColor: ScoutColors.background,
-                          disabledBackgroundColor: ScoutColors.primary.withAlpha(
-                            100,
-                          ),
+                          disabledBackgroundColor: ScoutColors.primary
+                              .withAlpha(100),
                           minimumSize: const Size.fromHeight(54),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(14),

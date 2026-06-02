@@ -49,8 +49,7 @@ class RemotePlacesDatasourceImpl extends RemotePlacesDatasource {
       },
     );
 
-    final predictions =
-        (response.data?['predictions'] as List<dynamic>?) ?? [];
+    final predictions = (response.data?['predictions'] as List<dynamic>?) ?? [];
 
     return predictions
         .cast<Map<String, dynamic>>()

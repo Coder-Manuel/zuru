@@ -54,32 +54,39 @@ class OfflineWidget extends GetView<ConnectivityController> {
                     ),
                   ),
                 ),
-                Obx(() => Visibility(
-                  visible: controller.showConnectedIndicator.value,
-                  child: Align(
-                    alignment: Alignment.bottomCenter,
-                    child: Material(
-                      key: const Key('OnlineWidget'),
-                      child: AnimatedContainer(
-                        width: double.infinity,
-                        duration: const Duration(milliseconds: 800),
-                        padding: const EdgeInsets.symmetric(vertical: 2),
-                        decoration: BoxDecoration(color: Colors.green.shade800),
-                        child: Padding(
-                          padding: EdgeInsets.only(
-                            bottom: Platform.isIOS ? 10 : 5,
-                            top: 5,
+                Obx(
+                  () => Visibility(
+                    visible: controller.showConnectedIndicator.value,
+                    child: Align(
+                      alignment: Alignment.bottomCenter,
+                      child: Material(
+                        key: const Key('OnlineWidget'),
+                        child: AnimatedContainer(
+                          width: double.infinity,
+                          duration: const Duration(milliseconds: 800),
+                          padding: const EdgeInsets.symmetric(vertical: 2),
+                          decoration: BoxDecoration(
+                            color: Colors.green.shade800,
                           ),
-                          child: const Text(
-                            "You're back online",
-                            textAlign: TextAlign.center,
-                            style: TextStyle(color: Colors.white, fontSize: 14),
+                          child: Padding(
+                            padding: EdgeInsets.only(
+                              bottom: Platform.isIOS ? 10 : 5,
+                              top: 5,
+                            ),
+                            child: const Text(
+                              "You're back online",
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 14,
+                              ),
+                            ),
                           ),
                         ),
                       ),
                     ),
                   ),
-                )),
+                ),
               ],
             );
           },

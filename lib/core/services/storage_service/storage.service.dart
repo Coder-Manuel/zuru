@@ -24,8 +24,7 @@ class StorageService {
   static Future<void> save<T>(StorageKeys key, {required T value}) =>
       _storage.write(key.name, value);
 
-  static Future<T?> get<T>(StorageKeys key) async =>
-      _storage.read<T>(key.name);
+  static Future<T?> get<T>(StorageKeys key) async => _storage.read<T>(key.name);
 
   static Future<void> remove(StorageKeys key) => _storage.remove(key.name);
 

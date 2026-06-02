@@ -37,5 +37,4 @@ class SessionEntity extends BaseEntity {
     this.startedAt,
     this.endedAt,
   });
-
 }

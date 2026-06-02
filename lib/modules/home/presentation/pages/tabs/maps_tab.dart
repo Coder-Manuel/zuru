@@ -342,10 +342,7 @@ class _BottomOverlay extends StatelessWidget {
               count == 0
                   ? 'Tap map · Long-press to post a mission'
                   : '$count active mission${count == 1 ? '' : 's'} on the map',
-              style: TextStyle(
-                color: ClientColors.textSecondary,
-                fontSize: 13,
-              ),
+              style: TextStyle(color: ClientColors.textSecondary, fontSize: 13),
             );
           }),
           const SizedBox(height: 18),

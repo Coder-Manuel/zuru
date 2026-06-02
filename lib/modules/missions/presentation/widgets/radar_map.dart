@@ -101,9 +101,7 @@ class RadarMap extends GetView<RadarController> {
                           final mLat = m.latitude ?? 0.0;
                           final mLng = m.longitude ?? 0.0;
                           final dxKm =
-                              (mLng - clng) *
-                              kmPerDeg *
-                              cos(clat * pi / 180);
+                              (mLng - clng) * kmPerDeg * cos(clat * pi / 180);
                           final dyKm = (mLat - clat) * kmPerDeg;
                           final distKm = sqrt(dxKm * dxKm + dyKm * dyKm);
 

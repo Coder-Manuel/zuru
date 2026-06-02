@@ -36,4 +36,3 @@ class ScoutColors {
   static const Color googleBg = Colors.white;
   static const Color googleText = Color(0xFF1F2937);
 }
-

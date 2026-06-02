@@ -15,8 +15,8 @@ class FirebaseErrorProvider {
     if (isReleaseMode && (isProdEnv ?? Env.isProd)) {
       final StackTrace safeStack =
           (error.stack == null || error.stack.toString().isEmpty)
-              ? StackTrace.current
-              : error.stack!;
+          ? StackTrace.current
+          : error.stack!;
 
       final flutterError = FlutterErrorDetails(
         exception: error.exception,

@@ -39,10 +39,7 @@ class SignupPage extends GetView<RegisterController> {
                       ),
                       Text(
                         'Back to Login',
-                        style: TextStyle(
-                          color: scheme.onSurface,
-                          fontSize: 15,
-                        ),
+                        style: TextStyle(color: scheme.onSurface, fontSize: 15),
                       ),
                     ],
                   ),
@@ -59,10 +56,7 @@ class SignupPage extends GetView<RegisterController> {
                 10.verticalSpace,
                 Text(
                   'Join the network of scouts and clients.',
-                  style: TextStyle(
-                    color: bodyColor,
-                    fontSize: 15,
-                  ),
+                  style: TextStyle(color: bodyColor, fontSize: 15),
                 ),
                 32.verticalSpace,
                 AuthTextField(

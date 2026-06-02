@@ -29,9 +29,8 @@ class PaymentsBindings extends Bindings {
 
     // ── Controller ────────────────────────────────────────────────────────────
     Get.lazyPut<StatementsController>(
-      () => StatementsController(
-        getStatements: Get.find<GetStatementsUseCase>(),
-      ),
+      () =>
+          StatementsController(getStatements: Get.find<GetStatementsUseCase>()),
       fenix: true,
     );
   }

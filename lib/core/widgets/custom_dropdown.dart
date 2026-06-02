@@ -112,7 +112,10 @@ class CustomDropDown<T> extends StatelessWidget {
         decoration: BoxDecoration(
           color: ClientColors.surface,
           borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: ClientColors.divider.withAlpha(80), width: 0.5),
+          border: Border.all(
+            color: ClientColors.divider.withAlpha(80),
+            width: 0.5,
+          ),
           boxShadow: [
             BoxShadow(
               color: Colors.black.withAlpha(80),

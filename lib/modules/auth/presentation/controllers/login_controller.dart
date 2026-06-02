@@ -41,9 +41,7 @@ class LoginController extends GetxController {
     Toast.success('Welcome $name!');
 
     Get.offAllNamed(
-      user != null
-          ? userCTRL.resolvePostAuthDestination(user)
-          : AppRoutes.home,
+      user != null ? userCTRL.resolvePostAuthDestination(user) : AppRoutes.home,
     );
   }
 
@@ -65,10 +63,7 @@ class LoginController extends GetxController {
       OAuthInput(idToken: oathResult.authentication.idToken ?? ''),
     );
 
-    response.fold(
-      (ex) => Toast.error(ex.message),
-      (_) => _navigateHome(),
-    );
+    response.fold((ex) => Toast.error(ex.message), (_) => _navigateHome());
   }
 
   Future<void> _appleLogin() async {
@@ -87,10 +82,7 @@ class LoginController extends GetxController {
       OAuthInput(idToken: oathResult.identityToken ?? ''),
     );
 
-    response.fold(
-      (ex) => Toast.error(ex.message),
-      (_) => _navigateHome(),
-    );
+    response.fold((ex) => Toast.error(ex.message), (_) => _navigateHome());
   }
 
   // ── Email / password login ─────────────────────────────────────────────────
@@ -107,9 +99,6 @@ class LoginController extends GetxController {
     );
     Loader.dismiss();
 
-    response.fold(
-      (ex) => Toast.error(ex.message),
-      (_) => _navigateHome(),
-    );
+    response.fold((ex) => Toast.error(ex.message), (_) => _navigateHome());
   }
 }

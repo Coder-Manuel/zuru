@@ -12,12 +12,12 @@ class ConnectivityController extends GetxController {
   Rx<bool> showConnectedIndicator = false.obs;
   Rx<ConnectivityStatus> connectivity = ConnectivityStatus.pending.obs;
 
-  bool get isConnected =>
-      connectivity.value != ConnectivityStatus.disconnected;
+  bool get isConnected => connectivity.value != ConnectivityStatus.disconnected;
 
   void onConnectionUpdate(BuildContext? _, bool status) {
-    connectivity.value =
-        status ? ConnectivityStatus.connected : ConnectivityStatus.disconnected;
+    connectivity.value = status
+        ? ConnectivityStatus.connected
+        : ConnectivityStatus.disconnected;
     update();
 
     if (!isInitialAppOpen.value && status) {

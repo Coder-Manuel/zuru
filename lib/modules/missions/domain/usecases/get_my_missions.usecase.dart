@@ -10,6 +10,5 @@ class GetMyMissionsUseCase implements UseCase<List<MissionEntity>, dynamic> {
   GetMyMissionsUseCase({required this.repo});
 
   @override
-  FutureOr<RepoResponse<List<MissionEntity>>> call([_]) =>
-      repo.getMyMissions();
+  FutureOr<RepoResponse<List<MissionEntity>>> call([_]) => repo.getMyMissions();
 }

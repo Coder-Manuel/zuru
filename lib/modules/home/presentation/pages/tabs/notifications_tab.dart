@@ -12,8 +12,7 @@ class NotificationsTab extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Padding(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -110,8 +109,7 @@ class _NotificationItem extends StatelessWidget {
                   style: TextStyle(
                     color: ClientColors.textPrimary,
                     fontSize: 14,
-                    fontWeight:
-                        item.unread ? FontWeight.w700 : FontWeight.w500,
+                    fontWeight: item.unread ? FontWeight.w700 : FontWeight.w500,
                   ),
                 ),
                 const SizedBox(height: 4),
@@ -130,7 +128,9 @@ class _NotificationItem extends StatelessWidget {
               Text(
                 item.time,
                 style: TextStyle(
-                    color: ClientColors.textSecondary, fontSize: 11),
+                  color: ClientColors.textSecondary,
+                  fontSize: 11,
+                ),
               ),
               if (item.unread) ...[
                 const SizedBox(height: 6),

@@ -5,8 +5,7 @@ import 'package:zuru/core/types/usecase.dart';
 import 'package:zuru/modules/auth/data/models/auth.inputs.dart';
 import 'package:zuru/modules/auth/domain/repository/auth_repository.dart';
 
-class SendResetEmailUseCase
-    implements UseCase<bool, ForgotPasswordInput> {
+class SendResetEmailUseCase implements UseCase<bool, ForgotPasswordInput> {
   final AuthRepository repo;
   SendResetEmailUseCase({required this.repo});
 

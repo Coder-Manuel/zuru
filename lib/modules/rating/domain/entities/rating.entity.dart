@@ -18,5 +18,4 @@ class RatingEntity extends BaseEntity {
     required this.score,
     this.comment,
   });
-
 }

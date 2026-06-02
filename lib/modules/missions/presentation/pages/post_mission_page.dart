@@ -226,7 +226,9 @@ class _GpsBanner extends StatelessWidget {
             ),
             Icon(
               Icons.chevron_right,
-              color: hasLocation ? ClientColors.primary : ClientColors.textSecondary,
+              color: hasLocation
+                  ? ClientColors.primary
+                  : ClientColors.textSecondary,
               size: 18,
             ),
           ],
@@ -283,10 +285,7 @@ class _MissionTextField extends StatelessWidget {
       style: TextStyle(color: ClientColors.textPrimary, fontSize: 15),
       decoration: InputDecoration(
         hintText: hint,
-        hintStyle: TextStyle(
-          color: ClientColors.textSecondary,
-          fontSize: 15,
-        ),
+        hintStyle: TextStyle(color: ClientColors.textSecondary, fontSize: 15),
         filled: true,
         fillColor: ClientColors.inputBg,
         border: OutlineInputBorder(
@@ -331,7 +330,9 @@ class _PriceChip extends StatelessWidget {
         duration: const Duration(milliseconds: 180),
         height: 48,
         decoration: BoxDecoration(
-          color: selected ? ClientColors.primary.withAlpha(25) : ClientColors.inputBg,
+          color: selected
+              ? ClientColors.primary.withAlpha(25)
+              : ClientColors.inputBg,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
             color: selected ? ClientColors.primary : Colors.transparent,

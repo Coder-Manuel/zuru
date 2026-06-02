@@ -182,10 +182,7 @@ class _StatRow extends StatelessWidget {
         children: [
           Text(
             label,
-            style: TextStyle(
-              color: ClientColors.textSecondary,
-              fontSize: 14.5,
-            ),
+            style: TextStyle(color: ClientColors.textSecondary, fontSize: 14.5),
           ),
           Text(
             value,

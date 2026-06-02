@@ -123,10 +123,8 @@ class PhoneSetupPage extends GetView<RegisterController> {
       builder: (sheetCtx) => ListView.separated(
         padding: const EdgeInsets.symmetric(vertical: 16),
         itemCount: codes.length,
-        separatorBuilder: (_, _) => Divider(
-          color: Theme.of(sheetCtx).dividerTheme.color,
-          height: 1,
-        ),
+        separatorBuilder: (_, _) =>
+            Divider(color: Theme.of(sheetCtx).dividerTheme.color, height: 1),
         itemBuilder: (_, i) => ListTile(
           title: Text(
             codes[i],

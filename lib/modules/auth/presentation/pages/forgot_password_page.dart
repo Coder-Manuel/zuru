@@ -45,11 +45,7 @@ class ForgotPasswordPage extends GetView<ResetPasswordController> {
                 16.verticalSpace,
                 Text(
                   'Enter your email address below to\nreceive a password reset code.',
-                  style: TextStyle(
-                    color: bodyColor,
-                    fontSize: 15,
-                    height: 1.5,
-                  ),
+                  style: TextStyle(color: bodyColor, fontSize: 15, height: 1.5),
                 ),
 
                 40.verticalSpace,

@@ -180,8 +180,9 @@ class _BioFieldState extends State<_BioField> {
           controller: widget.controller,
           maxLines: 4,
           maxLength: _maxChars,
-          buildCounter: (_, {required currentLength, required isFocused, maxLength}) =>
-              const SizedBox.shrink(), // we draw our own counter below
+          buildCounter:
+              (_, {required currentLength, required isFocused, maxLength}) =>
+                  const SizedBox.shrink(), // we draw our own counter below
           style: TextStyle(color: widget.textColor, fontSize: 15, height: 1.5),
           decoration: InputDecoration(
             hintText:

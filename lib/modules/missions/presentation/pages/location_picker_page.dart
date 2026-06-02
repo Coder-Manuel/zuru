@@ -171,21 +171,14 @@ class _SearchField extends StatelessWidget {
       style: TextStyle(color: ClientColors.textPrimary, fontSize: 15),
       decoration: InputDecoration(
         hintText: 'Search address…',
-        hintStyle: TextStyle(
-          color: ClientColors.textSecondary,
-          fontSize: 15,
-        ),
+        hintStyle: TextStyle(color: ClientColors.textSecondary, fontSize: 15),
         prefixIcon: Icon(
           Icons.search,
           color: ClientColors.textSecondary,
           size: 20,
         ),
         suffixIcon: IconButton(
-          icon: Icon(
-            Icons.close,
-            color: ClientColors.textSecondary,
-            size: 18,
-          ),
+          icon: Icon(Icons.close, color: ClientColors.textSecondary, size: 18),
           onPressed: () {
             controller.clear();
             onChanged('');
@@ -232,7 +225,10 @@ class _SuggestionsList extends StatelessWidget {
       decoration: BoxDecoration(
         color: ClientColors.surface,
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: ClientColors.divider.withAlpha(80), width: 0.5),
+        border: Border.all(
+          color: ClientColors.divider.withAlpha(80),
+          width: 0.5,
+        ),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withAlpha(80),
@@ -348,7 +344,10 @@ class _ConfirmBar extends StatelessWidget {
         color: ClientColors.surface,
         borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
         border: Border(
-          top: BorderSide(color: ClientColors.divider.withAlpha(80), width: 0.5),
+          top: BorderSide(
+            color: ClientColors.divider.withAlpha(80),
+            width: 0.5,
+          ),
         ),
         boxShadow: [
           BoxShadow(

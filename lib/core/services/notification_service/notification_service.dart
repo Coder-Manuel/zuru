@@ -27,8 +27,10 @@ class NotificationService {
         );
 
         if (settings.authorizationStatus == AuthorizationStatus.denied) {
-          log('Notification permission denied — skipping token fetch',
-              name: _library);
+          log(
+            'Notification permission denied — skipping token fetch',
+            name: _library,
+          );
           return;
         }
 

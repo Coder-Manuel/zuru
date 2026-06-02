@@ -68,10 +68,7 @@ class PrimaryButton extends StatelessWidget {
     return SizedBox(
       width: double.infinity,
       height: 55,
-      child: ElevatedButton(
-        onPressed: onPressed,
-        child: Text(label),
-      ),
+      child: ElevatedButton(onPressed: onPressed, child: Text(label)),
     );
   }
 }
@@ -80,11 +77,7 @@ class GoogleButton extends StatelessWidget {
   final String label;
   final VoidCallback onPressed;
 
-  const GoogleButton({
-    super.key,
-    required this.label,
-    required this.onPressed,
-  });
+  const GoogleButton({super.key, required this.label, required this.onPressed});
 
   @override
   Widget build(BuildContext context) {

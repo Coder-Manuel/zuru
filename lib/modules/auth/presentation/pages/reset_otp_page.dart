@@ -64,11 +64,7 @@ class ResetOtpPage extends GetView<ResetPasswordController> {
                 child: Text(
                   'Enter the 6-digit code sent to\n${controller.emailCTRL.text.trim()}',
                   textAlign: TextAlign.center,
-                  style: TextStyle(
-                    color: bodyColor,
-                    fontSize: 15,
-                    height: 1.5,
-                  ),
+                  style: TextStyle(color: bodyColor, fontSize: 15, height: 1.5),
                 ),
               ),
 
@@ -95,8 +91,7 @@ class ResetOtpPage extends GetView<ResetPasswordController> {
               // ── Resend ──────────────────────────────────────────────────
               Center(
                 child: GestureDetector(
-                  onTap: () =>
-                      controller.sendResetCode(GlobalKey<FormState>()),
+                  onTap: () => controller.sendResetCode(GlobalKey<FormState>()),
                   child: Text(
                     'Resend Code',
                     style: TextStyle(

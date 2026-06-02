@@ -21,9 +21,6 @@ class HomeRoutes implements AppRoute {
     ),
 
     // ── /scout/home — reached only via HomeRoleMiddleware redirect ────────────
-    GetPage(
-      name: AppRoutes.scoutHome,
-      page: () => const ScoutHomePage(),
-    ),
+    GetPage(name: AppRoutes.scoutHome, page: () => const ScoutHomePage()),
   ];
 }
