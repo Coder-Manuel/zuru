@@ -11,7 +11,7 @@ class LocationService extends GetxService with WidgetsBindingObserver {
   final String _library = 'Location Service';
 
   LocationService({required SupabaseClient supabaseClient})
-      : _supabase = supabaseClient;
+    : _supabase = supabaseClient;
 
   final SupabaseClient _supabase;
 
@@ -145,8 +145,7 @@ class LocationService extends GetxService with WidgetsBindingObserver {
 
   void _startTimer() {
     _stopTimer();
-    _periodicTimer =
-        Timer.periodic(_kUpdateInterval, (_) => _fetchAndSubmit());
+    _periodicTimer = Timer.periodic(_kUpdateInterval, (_) => _fetchAndSubmit());
   }
 
   void _stopTimer() {

@@ -20,7 +20,7 @@ class CreateRatingInput {
 
   Map<String, dynamic> toMap() => {
     'mission_id': missionId,
-    'to_user_id': toUserId,
+    'to_profile_id': toUserId,
     'score': score,
     if (comment != null && comment!.isNotEmpty) 'comment': comment,
   };

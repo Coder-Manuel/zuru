@@ -19,7 +19,7 @@ class StreamRepositoryImpl implements StreamRepository {
     final response =
         await ErrorWrapper.async<RepoResponse<LiveKitSessionEntity>>(
           () async {
-            final res = await remoteDatasource.joinStream(missionId: missionId);
+            final res = await remoteDatasource.goLive(missionId: missionId);
             if (res.status != 200) {
               return FailureResponse(
                 'Failed to join stream (HTTP ${res.status}).',
