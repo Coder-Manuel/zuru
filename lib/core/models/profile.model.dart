@@ -22,6 +22,9 @@ class ProfileModel extends Profile {
     super.availability,
     super.sessionPricing,
     super.clips,
+    super.fulfillmentRate,
+    super.avgResponseMinutes,
+    super.languages,
   });
 
   factory ProfileModel.fromMap(Map<String, dynamic> data) => ProfileModel(
@@ -53,7 +56,24 @@ class ProfileModel extends Profile {
           ),
     sessionPricing: _parsePricing(data['session_pricing']),
     clips: _parseClips(data['profile_clips']),
+    fulfillmentRate: (data['fulfillment_rate'] as num?)?.toDouble(),
+    avgResponseMinutes: (data['avg_response_minutes'] as num?)?.toDouble(),
+    languages: _parseLanguages(data['languages']),
   );
+
+  static List<String> _parseLanguages(dynamic raw) {
+    if (raw is List) {
+      return raw.map((e) => e.toString()).where((e) => e.isNotEmpty).toList();
+    }
+    if (raw is String && raw.isNotEmpty) {
+      return raw
+          .split(',')
+          .map((e) => e.trim())
+          .where((e) => e.isNotEmpty)
+          .toList();
+    }
+    return const [];
+  }
 
   static List<String> _parseTags(dynamic raw) {
     if (raw == null) return const [];

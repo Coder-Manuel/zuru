@@ -3,7 +3,7 @@ import 'package:get/get.dart';
 import 'package:zuru/config/client_colors.dart';
 import 'package:zuru/modules/home/presentation/pages/tabs/maps_tab.dart';
 import 'package:zuru/modules/missions/presentation/pages/missions_tab.dart';
-import 'package:zuru/modules/home/presentation/pages/tabs/notifications_tab.dart';
+import 'package:zuru/modules/scouts/presentation/pages/scouts_feed_tab.dart';
 import 'package:zuru/modules/user/presentation/pages/settings_tab.dart';
 import 'package:zuru/modules/home/presentation/controllers/home_controller.dart';
 
@@ -21,7 +21,7 @@ class HomePage extends GetView<HomeController> {
           children: const [
             MapsTab(),
             MissionsTab(),
-            NotificationsTab(),
+            ScoutsFeedTab(),
             SettingsTab(),
           ],
         );
@@ -65,9 +65,9 @@ class HomePage extends GetView<HomeController> {
                 label: 'MISSIONS',
               ),
               BottomNavigationBarItem(
-                icon: Icon(Icons.notifications_outlined),
-                activeIcon: Icon(Icons.notifications),
-                label: 'ALERTS',
+                icon: Icon(Icons.travel_explore_outlined),
+                activeIcon: Icon(Icons.travel_explore),
+                label: 'SCOUTS',
               ),
               BottomNavigationBarItem(
                 icon: Icon(Icons.person_outline),

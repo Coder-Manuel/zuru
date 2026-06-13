@@ -67,4 +67,9 @@ abstract final class AppRoutes {
 
   /// Scout-only World Profile editor. Guarded by [ScoutOnlyMiddleware].
   static const scoutProfileEdit = '/scout/profile/edit';
+
+  // ── Scouts (client) ─────────────────────────────────────────────────────────
+  /// Client-only scout profile detail. Pass the scout's profile id as
+  /// [Get.arguments]. Guarded by [ClientOnlyMiddleware].
+  static const scoutDetail = '/scouts/detail';
 }

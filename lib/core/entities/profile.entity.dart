@@ -21,6 +21,16 @@ abstract class Profile extends BaseEntity {
   final List<SessionPricing> sessionPricing;
   final List<ProfileClip> clips;
 
+  // ── Scout performance stats (nullable until tracked server-side) ────────────
+  /// Fraction in 0..1 (e.g. 0.95 → 95%).
+  final double? fulfillmentRate;
+
+  /// Average response time in minutes.
+  final double? avgResponseMinutes;
+
+  /// Languages the scout speaks.
+  final List<String> languages;
+
   Profile({
     super.id,
     super.createdAt,
@@ -39,6 +49,9 @@ abstract class Profile extends BaseEntity {
     this.availability,
     this.sessionPricing = const [],
     this.clips = const [],
+    this.fulfillmentRate,
+    this.avgResponseMinutes,
+    this.languages = const [],
   });
 
   String get displayName {
