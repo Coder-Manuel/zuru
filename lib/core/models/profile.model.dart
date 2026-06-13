@@ -47,7 +47,7 @@ class ProfileModel extends Profile {
     userId: data['user_id']?.toString(),
     tags: _parseTags(data['tags']),
     avatarUrl: data['avatar_url']?.toString(),
-    locality: data['locality']?.toString(),
+    locality: data['locality_address']?.toString(),
     availability: data['availability'] == null
         ? null
         : ScoutAvailability.values.firstWhere(

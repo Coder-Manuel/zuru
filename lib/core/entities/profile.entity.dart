@@ -1,3 +1,4 @@
+import 'package:get/get.dart';
 import 'package:zuru/core/entities/base.entity.dart';
 import 'package:zuru/core/entities/profile_clip.entity.dart';
 import 'package:zuru/core/entities/session_pricing.entity.dart';
@@ -61,5 +62,7 @@ abstract class Profile extends BaseEntity {
     return last.isNotEmpty ? '$first $last.' : first;
   }
 
-  String get fullName => '${firstName ?? ''} ${lastName ?? ''}'.trim();
+  String get fullName =>
+      '${firstName?.capitalizeFirst ?? ''} ${lastName?.capitalizeFirst ?? ''}'
+          .trim();
 }

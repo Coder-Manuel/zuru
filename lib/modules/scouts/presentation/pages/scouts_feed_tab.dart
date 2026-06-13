@@ -105,40 +105,6 @@ class _FeedHeader extends GetView<ScoutsFeedController> {
                   fontWeight: FontWeight.w800,
                 ),
               ),
-              Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 14,
-                  vertical: 5,
-                ),
-                decoration: BoxDecoration(
-                  color: ClientColors.primary.withAlpha(28),
-                  borderRadius: BorderRadius.circular(20),
-                  border: Border.all(color: ClientColors.primary.withAlpha(90)),
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Container(
-                      width: 7,
-                      height: 7,
-                      decoration: const BoxDecoration(
-                        color: ClientColors.primary,
-                        shape: BoxShape.circle,
-                      ),
-                    ),
-                    6.horizontalSpace,
-                    const Text(
-                      'GPS VERIFIED',
-                      style: TextStyle(
-                        color: ClientColors.primary,
-                        fontSize: 11,
-                        fontWeight: FontWeight.w800,
-                        letterSpacing: 0.5,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
             ],
           ),
           6.verticalSpace,

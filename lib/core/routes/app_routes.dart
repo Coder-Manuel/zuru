@@ -47,6 +47,13 @@ abstract final class AppRoutes {
   static const navigation = '/navigation';
   static const gpsVerification = '/gps-verification';
 
+  /// Client-only: "Request a Live" — create a live-request mission for a scout.
+  /// Pass the target scout's [Profile] as [Get.arguments].
+  static const liveRequest = '/live-request';
+
+  /// Client-only: live-request confirmation screen.
+  static const requestSent = '/request-sent';
+
   // ── Stream (role-dispatched) ──────────────────────────────────────────────
   /// Single canonical entry-point for live-stream sessions.
   /// [StreamRoleMiddleware] swaps the rendered widget based on role:

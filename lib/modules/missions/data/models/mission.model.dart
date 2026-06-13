@@ -28,6 +28,7 @@ class MissionModel extends MissionEntity {
     super.longitude,
     super.status,
     super.type,
+    super.scheduledAt,
     super.mapX,
     super.mapY,
     super.acceptedAt,
@@ -66,6 +67,7 @@ class MissionModel extends MissionEntity {
               orElse: () => MissionType.surveillance,
             )
           : null,
+      scheduledAt: m['scheduled_at']?.toString(),
       ratings:
           m['ratings']
               ?.map<RatingEntity>((data) => RatingModel.fromMap(data))
@@ -129,6 +131,7 @@ class MissionModel extends MissionEntity {
         (v) => v.name == map['status'],
         orElse: () => MissionStatus.open,
       ),
+      scheduledAt: map['scheduled_at'] as String?,
       ratings:
           map['ratings']
               ?.map<RatingEntity>((data) => RatingModel.fromMap(data))

@@ -1,5 +1,6 @@
 import 'package:get/get.dart';
 import 'package:zuru/core/entities/user.entity.dart';
+import 'package:zuru/core/routes/app_routes.dart';
 import 'package:zuru/core/utils/toast.dart';
 import 'package:zuru/modules/scouts/domain/usecases/get_scout_detail.usecase.dart';
 
@@ -42,6 +43,11 @@ class ScoutDetailController extends GetxController {
   }
 
   void requestLive() {
-    Toast.info('Booking a live session is coming soon');
+    final profile = scout.value?.scoutProfile;
+    if (profile == null) {
+      Toast.error('Scout details unavailable, please retry');
+      return;
+    }
+    Get.toNamed(AppRoutes.liveRequest, arguments: profile);
   }
 }

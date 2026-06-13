@@ -7,9 +7,11 @@ import 'package:zuru/modules/missions/presentation/pages/finding_scouts_page.dar
 import 'package:zuru/modules/missions/presentation/pages/gps_verification_page.dart';
 import 'package:zuru/modules/missions/presentation/pages/location_picker_page.dart';
 import 'package:zuru/modules/missions/presentation/pages/mission_complete_page.dart';
+import 'package:zuru/modules/missions/presentation/pages/live_request_page.dart';
 import 'package:zuru/modules/missions/presentation/pages/mission_details_page.dart';
 import 'package:zuru/modules/missions/presentation/pages/navigation_page.dart';
 import 'package:zuru/modules/missions/presentation/pages/post_mission_page.dart';
+import 'package:zuru/modules/missions/presentation/pages/request_sent_page.dart';
 
 class MissionsRoutes implements AppRoute {
   @override
@@ -32,6 +34,19 @@ class MissionsRoutes implements AppRoute {
       page: () => const LocationPickerPage(),
       binding: MissionsBindings(),
       transition: Transition.rightToLeft,
+      middlewares: [ClientOnlyMiddleware()],
+    ),
+    GetPage(
+      name: LiveRequestPage.route,
+      page: () => const LiveRequestPage(),
+      binding: MissionsBindings(),
+      transition: Transition.rightToLeft,
+      middlewares: [ClientOnlyMiddleware()],
+    ),
+    GetPage(
+      name: RequestSentPage.route,
+      page: () => const RequestSentPage(),
+      transition: Transition.fadeIn,
       middlewares: [ClientOnlyMiddleware()],
     ),
 

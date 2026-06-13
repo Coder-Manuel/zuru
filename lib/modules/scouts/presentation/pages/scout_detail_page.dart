@@ -61,102 +61,112 @@ class _DetailBody extends StatelessWidget {
 
     final meta = _metaLine(profile);
 
-    return SingleChildScrollView(
-      padding: const EdgeInsets.fromLTRB(24, 16, 24, 24),
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           animate(const _TopBar()),
-          20.verticalSpace,
-          animate(
-            AnimatedAvatarRing(
-              initials: _initials(profile.fullName),
-              imageUrl: profile.avatarUrl,
-              size: 150,
-            ),
-          ),
-          12.verticalSpace,
-          animate(
-            Text(
-              profile.fullName.isNotEmpty ? profile.fullName : 'Scout',
-              style: const TextStyle(
-                color: ClientColors.textPrimary,
-                fontSize: 26,
-                fontWeight: FontWeight.w800,
-              ),
-            ),
-          ),
-          if (profile.locality != null && profile.locality!.isNotEmpty) ...[
-            8.verticalSpace,
-            animate(
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
+          4.verticalSpace,
+          Expanded(
+            child: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Icon(
-                    Icons.location_on,
-                    color: ClientColors.primary,
-                    size: 16,
-                  ),
-                  4.horizontalSpace,
-                  Text(
-                    profile.locality!,
-                    style: const TextStyle(
-                      color: ClientColors.textSecondary,
-                      fontSize: 14,
+                  10.verticalSpace,
+                  animate(
+                    AnimatedAvatarRing(
+                      initials: _initials(profile.fullName),
+                      imageUrl: profile.avatarUrl,
+                      size: 150,
                     ),
                   ),
+                  12.verticalSpace,
+                  animate(
+                    Text(
+                      profile.fullName.isNotEmpty ? profile.fullName : 'Scout',
+                      style: const TextStyle(
+                        color: ClientColors.textPrimary,
+                        fontSize: 26,
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
+                  ),
+                  if (profile.locality != null &&
+                      profile.locality!.isNotEmpty) ...[
+                    8.verticalSpace,
+                    animate(
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.location_on,
+                            color: ClientColors.primary,
+                            size: 16,
+                          ),
+                          4.horizontalSpace,
+                          Text(
+                            profile.locality!,
+                            style: const TextStyle(
+                              color: ClientColors.textSecondary,
+                              fontSize: 14,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                  18.verticalSpace,
+                  animate(_PillsRow(profile: profile)),
+                  if (meta != null) ...[
+                    16.verticalSpace,
+                    animate(
+                      Text(
+                        meta,
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(
+                          color: ClientColors.textSecondary,
+                          fontSize: 14,
+                        ),
+                      ),
+                    ),
+                  ],
+
+                  if (profile.clips.isNotEmpty) ...[
+                    28.verticalSpace,
+                    animate(
+                      _SectionLabel(
+                        'PROFILE CATALOGUE · ${profile.clips.length} CLIPS',
+                      ),
+                    ),
+                    14.verticalSpace,
+                    animate(_ClipsCatalogue(clips: profile.clips)),
+                  ],
+
+                  if (profile.bio != null && profile.bio!.isNotEmpty) ...[
+                    24.verticalSpace,
+                    animate(_BioQuote(bio: profile.bio!)),
+                  ],
+
+                  24.verticalSpace,
+                  animate(_StatsCard(profile: profile)),
+
+                  if (profile.tags.isNotEmpty) ...[
+                    28.verticalSpace,
+                    animate(const _SectionLabel('MISSION ZONES')),
+                    14.verticalSpace,
+                    animate(_MissionZones(zones: profile.tags)),
+                  ],
+                  16.verticalSpace,
+
+                  // Request a Live — last item in the page (not floating).
+                  _RequestLiveFooter(
+                    profile: profile,
+                    onTap: onRequestLive,
+                  ).animate().fadeIn(delay: 200.ms, duration: 400.ms),
                 ],
               ),
             ),
-          ],
-          18.verticalSpace,
-          animate(_PillsRow(profile: profile)),
-          if (meta != null) ...[
-            16.verticalSpace,
-            animate(
-              Text(
-                meta,
-                textAlign: TextAlign.center,
-                style: const TextStyle(
-                  color: ClientColors.textSecondary,
-                  fontSize: 14,
-                ),
-              ),
-            ),
-          ],
-
-          if (profile.clips.isNotEmpty) ...[
-            28.verticalSpace,
-            animate(
-              _SectionLabel(
-                'PROFILE CATALOGUE · ${profile.clips.length} CLIPS',
-              ),
-            ),
-            14.verticalSpace,
-            animate(_ClipsCatalogue(clips: profile.clips)),
-          ],
-
-          if (profile.bio != null && profile.bio!.isNotEmpty) ...[
-            24.verticalSpace,
-            animate(_BioQuote(bio: profile.bio!)),
-          ],
-
-          24.verticalSpace,
-          animate(_StatsCard(profile: profile)),
-
-          if (profile.tags.isNotEmpty) ...[
-            28.verticalSpace,
-            animate(const _SectionLabel('MISSION ZONES')),
-            14.verticalSpace,
-            animate(_MissionZones(zones: profile.tags)),
-          ],
-          16.verticalSpace,
-
-          // Request a Live — last item in the page (not floating).
-          _RequestLiveFooter(
-            profile: profile,
-            onTap: onRequestLive,
-          ).animate().fadeIn(delay: 200.ms, duration: 400.ms),
+          ),
         ],
       ),
     );
@@ -614,14 +624,14 @@ class _RequestLiveFooter extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.fromLTRB(24, 12, 24, 16),
+      padding: const EdgeInsets.only(top: 12),
       decoration: const BoxDecoration(color: ClientColors.background),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           SizedBox(
             width: double.infinity,
-            height: 56,
+            height: 50,
             child: ElevatedButton(
               onPressed: onTap,
               style: ElevatedButton.styleFrom(

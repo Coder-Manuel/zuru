@@ -8,6 +8,7 @@ import 'package:zuru/modules/missions/data/models/enum.dart';
 abstract class RemoteMissionsDatasource {
   // ── Client ────────────────────────────────────────────────────────────────
   Future<Map<String, dynamic>> postMission(Map<String, dynamic> data);
+  Future<Map<String, dynamic>> createLiveRequest(Map<String, dynamic> data);
   Future<List<Map<String, dynamic>>> getNearbyScouts(Map<String, dynamic> data);
   Future<List<Map<String, dynamic>>> getMyMissions();
   Stream<List<Map<String, dynamic>>> watchActiveMissions();
@@ -33,6 +34,11 @@ class RemoteMissionsDatasourceImpl extends RemoteMissionsDatasource {
 
   @override
   Future<Map<String, dynamic>> postMission(Map<String, dynamic> data) {
+    return client.from('missions').insert(data).select().single();
+  }
+
+  @override
+  Future<Map<String, dynamic>> createLiveRequest(Map<String, dynamic> data) {
     return client.from('missions').insert(data).select().single();
   }
 

@@ -23,8 +23,7 @@ class RemoteScoutsDatasourceImpl extends RemoteScoutsDatasource {
   // Embed the parent user alongside the scout profile row so the repository
   // can reconstruct a full [User]/[Profile].
   static const _feedSelect = '*, users(*)';
-  static const _detailSelect = '*, users(*)';
-  // static const _detailSelect = '*, users(is_online), profile_clips(*)';
+  static const _detailSelect = '*, users(is_online), profile_clips(*)';
 
   @override
   Future<List<Map<String, dynamic>>> getScoutsFeed({
@@ -37,7 +36,8 @@ class RemoteScoutsDatasourceImpl extends RemoteScoutsDatasource {
         .from('profiles')
         .select(_feedSelect)
         .eq('role', UserRole.scout.name)
-        .eq('status', UserStatus.active.name);
+        .eq('status', UserStatus.active.name)
+        .neq('user_id', client.auth.currentUser?.id ?? '');
 
     if (availableOnly) {
       query = query.eq('availability', ScoutAvailability.available.name);

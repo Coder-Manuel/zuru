@@ -1,5 +1,6 @@
 import 'package:zuru/core/types/repo_reponse.type.dart';
 import 'package:zuru/core/utils/error_wrapper.dart';
+import 'package:zuru/modules/missions/data/models/live_request.input.dart';
 import 'package:zuru/modules/missions/data/models/mission.inputs.dart';
 import 'package:zuru/modules/missions/data/models/mission.model.dart';
 import 'package:zuru/modules/missions/data/models/nearby_scout.model.dart';
@@ -28,6 +29,23 @@ class MissionsRepositoryImpl extends MissionsRepository {
       onError: (_) => FailureResponse('Failed to post mission, kindly retry'),
       library: _library,
       description: 'while posting mission',
+    );
+    return response!;
+  }
+
+  @override
+  Future<RepoResponse<MissionEntity>> createLiveRequest(
+    LiveRequestInput input,
+  ) async {
+    final response = await ErrorWrapper.async<RepoResponse<MissionEntity>>(
+      () async {
+        final data = await remoteDatasource.createLiveRequest(input.toMap());
+        return SuccessResponse(MissionModel.fromMap(data));
+      },
+      onError: (_) =>
+          FailureResponse('Failed to send request, kindly retry'),
+      library: _library,
+      description: 'while creating live request',
     );
     return response!;
   }

@@ -32,6 +32,9 @@ abstract class MissionEntity extends BaseEntity {
   final MissionStatus status;
   final MissionType? type;
 
+  /// Scheduled start time for a [MissionType.liveRequest]; null = "now".
+  final String? scheduledAt;
+
   // ── Scout radar canvas coordinates ────────────────────────────────────────
   /// Fractional X position on the scout's radar canvas (0–1).
   final double mapX;
@@ -61,6 +64,7 @@ abstract class MissionEntity extends BaseEntity {
     this.longitude,
     this.status = MissionStatus.open,
     this.type,
+    this.scheduledAt,
     this.mapX = 0,
     this.mapY = 0,
     this.acceptedAt,

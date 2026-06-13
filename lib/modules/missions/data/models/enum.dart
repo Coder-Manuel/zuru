@@ -6,7 +6,10 @@ enum MissionType {
   perimeterCheck,
   extractionSupport,
   eventVerification,
-  customTask;
+  customTask,
+
+  /// A client-initiated live session request targeted at a specific scout.
+  liveRequest;
 
   String get label => switch (this) {
     MissionType.surveillance => 'Surveillance',
@@ -15,6 +18,7 @@ enum MissionType {
     MissionType.extractionSupport => 'Extraction Support',
     MissionType.eventVerification => 'Event Verification',
     MissionType.customTask => 'Custom Task',
+    MissionType.liveRequest => 'Live Request',
   };
 
   String get apiValue => switch (this) {
@@ -24,5 +28,6 @@ enum MissionType {
     MissionType.extractionSupport => 'extraction_support',
     MissionType.eventVerification => 'event_verification',
     MissionType.customTask => 'custom_task',
+    MissionType.liveRequest => 'live_request',
   };
 }
