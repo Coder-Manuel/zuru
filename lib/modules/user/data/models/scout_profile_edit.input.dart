@@ -25,7 +25,7 @@ class ScoutProfileEditInput {
   Map<String, dynamic> toMap() => {
     'bio': bio,
     'tags': tags.join(','),
-    'locality': locality,
+    'locality_address': locality,
     'availability': availability.name,
     if (avatarUrl != null) 'avatar_url': avatarUrl,
     'session_pricing': sessionPricing

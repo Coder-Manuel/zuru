@@ -1087,7 +1087,7 @@ class _PricingRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 18),
+      padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 15),
       decoration: BoxDecoration(
         color: fillColor?.withAlpha(178),
         borderRadius: BorderRadius.circular(14),
@@ -1099,7 +1099,7 @@ class _PricingRow extends StatelessWidget {
               tier.label,
               style: TextStyle(
                 color: scheme.onSurface,
-                fontSize: 16,
+                fontSize: 14,
                 fontWeight: FontWeight.w700,
               ),
             ),
@@ -1108,7 +1108,7 @@ class _PricingRow extends StatelessWidget {
             tier.currency,
             style: TextStyle(
               color: scheme.primary,
-              fontSize: 15,
+              fontSize: 14,
               fontWeight: FontWeight.w700,
             ),
           ),
@@ -1117,7 +1117,7 @@ class _PricingRow extends StatelessWidget {
             '${tier.price}',
             style: TextStyle(
               color: scheme.primary,
-              fontSize: 16,
+              fontSize: 14,
               fontWeight: FontWeight.w700,
             ),
           ),

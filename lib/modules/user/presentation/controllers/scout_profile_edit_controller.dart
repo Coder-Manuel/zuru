@@ -126,7 +126,7 @@ class ScoutProfileEditController extends GetxController {
   // ── Avatar ─────────────────────────────────────────────────────────────────
 
   Future<void> pickAvatar() async {
-    final file = await _pickImage();
+    final file = await _pickFile();
     if (file != null) pickedAvatar.value = file;
   }
 
@@ -237,7 +237,7 @@ class ScoutProfileEditController extends GetxController {
       return;
     }
 
-    final file = await _pickImage();
+    final file = await _pickFile(isVideo: true);
     if (file == null) return;
 
     isAddingClip.value = true;
@@ -296,13 +296,16 @@ class ScoutProfileEditController extends GetxController {
       final uploadResult = await _uploadMedia(
         UploadMediaParams(file: picked, folder: 'avatar'),
       );
-      final failed = uploadResult.fold((err) {
-        Toast.error(err.message);
-        return true;
-      }, (url) {
-        resolvedAvatarUrl = url;
-        return false;
-      });
+      final failed = uploadResult.fold(
+        (err) {
+          Toast.error(err.message);
+          return true;
+        },
+        (url) {
+          resolvedAvatarUrl = url;
+          return false;
+        },
+      );
       if (failed) {
         Loader.dismiss();
         isSaving.value = false;
@@ -331,7 +334,6 @@ class ScoutProfileEditController extends GetxController {
       // Refresh the shared user state so the profile tab reflects changes.
       await _userController.getUserDetails();
       Toast.success('Profile saved');
-      Get.back();
     });
   }
 
@@ -341,11 +343,19 @@ class ScoutProfileEditController extends GetxController {
 
   // ── Helpers ──────────────────────────────────────────────────────────────
 
-  Future<File?> _pickImage() async {
-    final picked = await _picker.pickImage(
-      source: ImageSource.gallery,
-      imageQuality: 80,
-    );
+  Future<File?> _pickFile({bool isVideo = false}) async {
+    final XFile? picked;
+    if (isVideo) {
+      picked = await _picker.pickVideo(
+        source: ImageSource.gallery,
+        maxDuration: const Duration(minutes: 10),
+      );
+    } else {
+      picked = await _picker.pickImage(
+        source: ImageSource.gallery,
+        imageQuality: 80,
+      );
+    }
     if (picked == null) return null;
     return File(picked.path);
   }

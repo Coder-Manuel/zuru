@@ -17,7 +17,7 @@ class ProfileClipModel extends ProfileClip {
         updatedAt: data['updated_at']?.toString(),
         profileId: data['profile_id']?.toString(),
         title: data['title']?.toString(),
-        mediaUrl: data['media_url']?.toString(),
+        mediaUrl: data['url']?.toString(),
       );
 
   /// Payload for inserting a new clip row. Omits `id`/timestamps so the DB can
@@ -25,6 +25,6 @@ class ProfileClipModel extends ProfileClip {
   Map<String, dynamic> toInsertMap() => {
     'profile_id': profileId,
     if (title != null) 'title': title,
-    if (mediaUrl != null) 'media_url': mediaUrl,
+    if (mediaUrl != null) 'url': mediaUrl,
   };
 }
