@@ -24,6 +24,7 @@ class RemoteScoutsDatasourceImpl extends RemoteScoutsDatasource {
   // can reconstruct a full [User]/[Profile].
   static const _feedSelect = '*, users(*)';
   static const _detailSelect = '*, users(*)';
+  // static const _detailSelect = '*, users(is_online), profile_clips(*)';
 
   @override
   Future<List<Map<String, dynamic>>> getScoutsFeed({
