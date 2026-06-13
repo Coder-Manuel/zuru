@@ -22,7 +22,7 @@ class RegisterController extends GetxController {
   final _verifyPhoneOtpUsecase = Get.find<VerifyPhoneOtpUseCase>();
   final _verifyEmailOtpUsecase = Get.find<VerifyEmailOtpUseCase>();
   final _setupNamesUsecase = Get.find<SetupNamesUseCase>();
-  final _updateScoutProfileUsecase = Get.find<UpdateScoutProfileUseCase>();
+  final _updateScoutProfileUsecase = Get.find<UpdateScoutBioUseCase>();
 
   // ─── Step 1 — Credentials ─────────────────────────────────────────────────
   final emailCTRL = TextEditingController();

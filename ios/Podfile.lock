@@ -140,6 +140,8 @@ PODS:
   - GTMSessionFetcher/Core (3.5.0)
   - GTMSessionFetcher/Full (3.5.0):
     - GTMSessionFetcher/Core
+  - image_picker_ios (0.0.1):
+    - Flutter
   - json-enum (1.2.3)
   - jsonlogic (1.2.4):
     - json-enum (~> 1.2.3)
@@ -214,6 +216,7 @@ DEPENDENCIES:
   - geolocator_apple (from `.symlinks/plugins/geolocator_apple/darwin`)
   - google_maps_flutter_ios (from `.symlinks/plugins/google_maps_flutter_ios/ios`)
   - google_sign_in_ios (from `.symlinks/plugins/google_sign_in_ios/darwin`)
+  - image_picker_ios (from `.symlinks/plugins/image_picker_ios/ios`)
   - livekit_client (from `.symlinks/plugins/livekit_client/ios`)
   - mixpanel_flutter (from `.symlinks/plugins/mixpanel_flutter/ios`)
   - shared_preferences_foundation (from `.symlinks/plugins/shared_preferences_foundation/darwin`)
@@ -286,6 +289,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/google_maps_flutter_ios/ios"
   google_sign_in_ios:
     :path: ".symlinks/plugins/google_sign_in_ios/darwin"
+  image_picker_ios:
+    :path: ".symlinks/plugins/image_picker_ios/ios"
   livekit_client:
     :path: ".symlinks/plugins/livekit_client/ios"
   mixpanel_flutter:
@@ -328,6 +333,7 @@ SPEC CHECKSUMS:
   GoogleUtilities: 00c88b9a86066ef77f0da2fab05f65d7768ed8e1
   GTMAppAuth: 217a876b249c3c585a54fd6f73e6b58c4f5c4238
   GTMSessionFetcher: 5aea5ba6bd522a239e236100971f10cb71b96ab6
+  image_picker_ios: e0ece4aa2a75771a7de3fa735d26d90817041326
   json-enum: 57ad746d2f0d7852796e9aa50267bd84a778222e
   jsonlogic: 006f892470384401b8ca5b5d8d4cdadb3a0d5c9b
   livekit_client: 9b9a08c5c78f694ac6a9e70c1c269704ba574b73

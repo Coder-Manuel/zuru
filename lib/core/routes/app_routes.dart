@@ -64,4 +64,7 @@ abstract final class AppRoutes {
 
   // ── User / Profile ────────────────────────────────────────────────────────
   static const profile = '/profile';
+
+  /// Scout-only World Profile editor. Guarded by [ScoutOnlyMiddleware].
+  static const scoutProfileEdit = '/scout/profile/edit';
 }

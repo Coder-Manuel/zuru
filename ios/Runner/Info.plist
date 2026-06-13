@@ -79,6 +79,10 @@
 	<key>NSMicrophoneUsageDescription</key>
 	<string>Zuru World uses your microphone to capture audio during live mission streams.</string>
 
+	<!-- Photo library — profile photo & World Profile clips -->
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Zuru World needs access to your photos to set your profile picture and World Profile clips.</string>
+
 	<!-- Biometrics — profile settings -->
 	<key>NSFaceIDUsageDescription</key>
 	<string>Zuru World uses Face ID to authenticate you quickly.</string>

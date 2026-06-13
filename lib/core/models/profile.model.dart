@@ -1,5 +1,7 @@
 import 'package:zuru/core/entities/profile.entity.dart';
 import 'package:zuru/core/models/enums.dart';
+import 'package:zuru/core/models/profile_clip.model.dart';
+import 'package:zuru/core/models/session_pricing.model.dart';
 
 class ProfileModel extends Profile {
   ProfileModel({
@@ -15,6 +17,11 @@ class ProfileModel extends Profile {
     super.bio,
     super.tags,
     super.userId,
+    super.avatarUrl,
+    super.locality,
+    super.availability,
+    super.sessionPricing,
+    super.clips,
   });
 
   factory ProfileModel.fromMap(Map<String, dynamic> data) => ProfileModel(
@@ -35,6 +42,42 @@ class ProfileModel extends Profile {
     totalReviews: data['total_reviews'] as int?,
     bio: data['bio']?.toString(),
     userId: data['user_id']?.toString(),
-    tags: (data['tags']?.toString() ?? '').split(','),
+    tags: _parseTags(data['tags']),
+    avatarUrl: data['avatar_url']?.toString(),
+    locality: data['locality']?.toString(),
+    availability: data['availability'] == null
+        ? null
+        : ScoutAvailability.values.firstWhere(
+            (a) => a.name == data['availability'],
+            orElse: () => ScoutAvailability.offline,
+          ),
+    sessionPricing: _parsePricing(data['session_pricing']),
+    clips: _parseClips(data['profile_clips']),
   );
+
+  static List<String> _parseTags(dynamic raw) {
+    if (raw == null) return const [];
+    return raw
+        .toString()
+        .split(',')
+        .map((t) => t.trim())
+        .where((t) => t.isNotEmpty)
+        .toList();
+  }
+
+  static List<SessionPricingModel> _parsePricing(dynamic raw) {
+    if (raw is! List) return const [];
+    return raw
+        .whereType<Map>()
+        .map((m) => SessionPricingModel.fromMap(Map<String, dynamic>.from(m)))
+        .toList();
+  }
+
+  static List<ProfileClipModel> _parseClips(dynamic raw) {
+    if (raw is! List) return const [];
+    return raw
+        .whereType<Map>()
+        .map((m) => ProfileClipModel.fromMap(Map<String, dynamic>.from(m)))
+        .toList();
+  }
 }

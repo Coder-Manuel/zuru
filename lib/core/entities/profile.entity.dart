@@ -1,4 +1,6 @@
 import 'package:zuru/core/entities/base.entity.dart';
+import 'package:zuru/core/entities/profile_clip.entity.dart';
+import 'package:zuru/core/entities/session_pricing.entity.dart';
 import 'package:zuru/core/models/enums.dart';
 
 abstract class Profile extends BaseEntity {
@@ -11,6 +13,13 @@ abstract class Profile extends BaseEntity {
   final String? bio;
   final String? userId;
   final List<String> tags;
+
+  // ── Scout World Profile ────────────────────────────────────────────────────
+  final String? avatarUrl;
+  final String? locality;
+  final ScoutAvailability? availability;
+  final List<SessionPricing> sessionPricing;
+  final List<ProfileClip> clips;
 
   Profile({
     super.id,
@@ -25,6 +34,11 @@ abstract class Profile extends BaseEntity {
     this.bio,
     this.userId,
     this.tags = const [],
+    this.avatarUrl,
+    this.locality,
+    this.availability,
+    this.sessionPricing = const [],
+    this.clips = const [],
   });
 
   String get displayName {

@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:zuru/config/client_colors.dart';
 import 'package:zuru/config/scout_colors.dart';
+import 'package:zuru/core/routes/app_routes.dart';
 import 'package:zuru/core/services/role_service/role_service.dart';
 import 'package:zuru/core/utils/size.util.dart';
 import 'package:zuru/modules/payments/presentation/pages/statements_page.dart';
@@ -380,48 +381,87 @@ class _ProfileHeader extends StatelessWidget {
     final fillColor = Theme.of(context).inputDecorationTheme.fillColor;
     return Obx(() {
       final user = controller.currentUser.value;
-      final name = user?.profile?.fullName ?? '';
+      final profile = user?.profile;
+      final name = profile?.fullName ?? '';
       final initial = name.isNotEmpty ? name[0].toUpperCase() : 'S';
-      final rating = user?.profile?.rating?.toStringAsFixed(1) ?? '—';
+      final rating = profile?.rating?.toStringAsFixed(1) ?? '—';
+      final locality = profile?.locality;
+      final avatarUrl = profile?.avatarUrl;
+      final isScout = RoleService.instance.isScout;
 
       return Column(
         children: [
-          Container(
-            width: 100,
-            height: 100,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              border: Border.all(color: scheme.primary, width: 3),
-              boxShadow: [
-                BoxShadow(
-                  color: scheme.primary.withAlpha(50),
-                  blurRadius: 24,
-                  spreadRadius: 2,
+          Stack(
+            clipBehavior: Clip.none,
+            children: [
+              Container(
+                width: 100,
+                height: 100,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  border: Border.all(color: scheme.primary, width: 3),
+                  boxShadow: [
+                    BoxShadow(
+                      color: scheme.primary.withAlpha(50),
+                      blurRadius: 24,
+                      spreadRadius: 2,
+                    ),
+                  ],
+                  image: (avatarUrl != null && avatarUrl.isNotEmpty)
+                      ? DecorationImage(
+                          image: NetworkImage(avatarUrl),
+                          fit: BoxFit.cover,
+                        )
+                      : null,
                 ),
-              ],
-            ),
-            child: ClipOval(
-              child: Container(
-                color: fillColor,
-                child: Center(
-                  child: Text(
-                    initial,
-                    style: TextStyle(
-                      color: scheme.onSurface,
-                      fontSize: 36,
-                      fontWeight: FontWeight.w700,
+                child: (avatarUrl != null && avatarUrl.isNotEmpty)
+                    ? null
+                    : ClipOval(
+                        child: Container(
+                          color: fillColor,
+                          child: Center(
+                            child: Text(
+                              initial,
+                              style: TextStyle(
+                                color: scheme.onSurface,
+                                fontSize: 36,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+              ),
+              if (isScout)
+                Positioned(
+                  right: -2,
+                  bottom: 2,
+                  child: GestureDetector(
+                    onTap: () => Get.toNamed(AppRoutes.scoutProfileEdit),
+                    child: Container(
+                      width: 30,
+                      height: 30,
+                      decoration: BoxDecoration(
+                        color: scheme.primary,
+                        shape: BoxShape.circle,
+                        border: Border.all(color: scheme.surface, width: 3),
+                      ),
+                      child: const Icon(
+                        Icons.edit,
+                        size: 14,
+                        color: Colors.black,
+                      ),
                     ),
                   ),
                 ),
-              ),
-            ),
+            ],
           ),
-          18.verticalSpace,
+          12.verticalSpace,
           Text(
             name.isNotEmpty ? name : 'Scout',
             style: TextStyle(
               color: scheme.onSurface,
-              fontSize: 28,
+              fontSize: 25,
               fontWeight: FontWeight.w700,
               fontStyle: FontStyle.italic,
             ),
@@ -430,20 +470,77 @@ class _ProfileHeader extends StatelessWidget {
           Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text('Scout', style: TextStyle(color: bodyColor, fontSize: 14)),
-              Text(' · ', style: TextStyle(color: bodyColor, fontSize: 14)),
-              Text(rating, style: TextStyle(color: bodyColor, fontSize: 14)),
+              Text(
+                isScout ? 'Scout' : 'Client',
+                style: TextStyle(color: bodyColor, fontSize: 13),
+              ),
+              Text(' · ', style: TextStyle(color: bodyColor, fontSize: 13)),
+              Text(rating, style: TextStyle(color: bodyColor, fontSize: 13)),
               const SizedBox(width: 4),
               const Icon(
                 Icons.star_rounded,
                 color: Color(0xFFFFD700),
                 size: 16,
               ),
+              if (locality != null && locality.isNotEmpty) ...[
+                Text(' · ', style: TextStyle(color: bodyColor, fontSize: 13)),
+                Text(
+                  locality,
+                  style: TextStyle(color: bodyColor, fontSize: 13),
+                ),
+              ],
             ],
           ),
+          if (isScout) ...[
+            12.verticalSpace,
+            _EditProfileButton(
+              scheme: scheme,
+              onTap: () => Get.toNamed(AppRoutes.scoutProfileEdit),
+            ),
+          ],
         ],
       );
     });
+  }
+}
+
+// ── Edit profile button ───────────────────────────────────────────────────────
+
+class _EditProfileButton extends StatelessWidget {
+  final ColorScheme scheme;
+  final VoidCallback onTap;
+
+  const _EditProfileButton({required this.scheme, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+        decoration: BoxDecoration(
+          color: scheme.primary.withAlpha(20),
+          borderRadius: BorderRadius.circular(24),
+          border: Border.all(color: scheme.primary.withAlpha(110)),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(Icons.edit_outlined, color: scheme.primary, size: 16),
+            8.horizontalSpace,
+            Text(
+              'EDIT MY WORLD PROFILE',
+              style: TextStyle(
+                color: scheme.primary,
+                fontSize: 12,
+                fontWeight: FontWeight.w700,
+                letterSpacing: 0.8,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }
 

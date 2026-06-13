@@ -64,8 +64,8 @@ class AuthBindings extends Bindings {
       () => SetupNamesUseCase(repo: Get.find<AuthRepository>()),
       fenix: true,
     );
-    Get.lazyPut<UpdateScoutProfileUseCase>(
-      () => UpdateScoutProfileUseCase(repo: Get.find<AuthRepository>()),
+    Get.lazyPut<UpdateScoutBioUseCase>(
+      () => UpdateScoutBioUseCase(repo: Get.find<AuthRepository>()),
       fenix: true,
     );
     Get.lazyPut<LogoutUseCase>(

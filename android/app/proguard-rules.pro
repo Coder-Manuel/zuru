@@ -14,6 +14,10 @@
 # Firebase
 -keep class com.google.firebase.** { *; }
 
+# Gson internal types used by Mapbox geocoding SDK
+-keep class com.google.gson.** { *; }
+-dontwarn com.google.gson.**
+
 # Mapbox
 -keep class com.mapbox.** { *; }
 
