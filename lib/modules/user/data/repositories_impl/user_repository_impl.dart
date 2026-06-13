@@ -126,9 +126,8 @@ class UserRepositoryImpl extends UserRepository {
   }
 
   @override
-  Future<RepoResponse<ProfileClip>> upsertProfileClip({
+  Future<RepoResponse<ProfileClip>> addProfileClip({
     required String profileId,
-    required ClipType type,
     required String mediaUrl,
     String? title,
   }) async {
@@ -136,17 +135,16 @@ class UserRepositoryImpl extends UserRepository {
       () async {
         final payload = ProfileClipModel(
           profileId: profileId,
-          type: type,
           mediaUrl: mediaUrl,
-          title: title ?? type.label,
-        ).toUpsertMap();
+          title: title,
+        ).toInsertMap();
 
-        final data = await remoteDatasource.upsertProfileClip(payload);
+        final data = await remoteDatasource.addProfileClip(payload);
         return SuccessResponse(ProfileClipModel.fromMap(data));
       },
       onError: (_) => FailureResponse('Could not save clip, please retry'),
       library: _library,
-      description: 'while upserting profile clip',
+      description: 'while adding profile clip',
     );
     return response!;
   }

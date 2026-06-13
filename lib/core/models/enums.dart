@@ -8,21 +8,10 @@ enum UserStatus { active, inactive, suspended }
 /// whether clients can see and book the scout right now.
 enum ScoutAvailability { available, bookable, offline }
 
-/// The three fixed slots a scout can fill with a [ProfileClip].
-enum ClipType { world, speciality, personal }
-
 extension ScoutAvailabilityX on ScoutAvailability {
   String get label => switch (this) {
     ScoutAvailability.available => 'Available',
     ScoutAvailability.bookable => 'Bookable',
     ScoutAvailability.offline => 'Offline',
-  };
-}
-
-extension ClipTypeX on ClipType {
-  String get label => switch (this) {
-    ClipType.world => 'World Clip',
-    ClipType.speciality => 'Speciality',
-    ClipType.personal => 'Personal',
   };
 }

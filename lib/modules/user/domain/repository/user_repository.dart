@@ -23,9 +23,8 @@ abstract class UserRepository {
 
   Future<RepoResponse<List<ProfileClip>>> getProfileClips(String profileId);
 
-  Future<RepoResponse<ProfileClip>> upsertProfileClip({
+  Future<RepoResponse<ProfileClip>> addProfileClip({
     required String profileId,
-    required ClipType type,
     required String mediaUrl,
     String? title,
   });

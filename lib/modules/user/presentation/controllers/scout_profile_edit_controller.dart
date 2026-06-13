@@ -9,18 +9,18 @@ import 'package:zuru/core/models/enums.dart';
 import 'package:zuru/core/utils/loader.dart';
 import 'package:zuru/core/utils/toast.dart';
 import 'package:zuru/modules/user/data/models/scout_profile_edit.input.dart';
+import 'package:zuru/modules/user/domain/usecases/add_profile_clip.usecase.dart';
 import 'package:zuru/modules/user/domain/usecases/delete_profile_clip.usecase.dart';
 import 'package:zuru/modules/user/domain/usecases/get_profile_clips.usecase.dart';
 import 'package:zuru/modules/user/domain/usecases/update_scout_profile.usecase.dart';
 import 'package:zuru/modules/user/domain/usecases/upload_media.usecase.dart';
-import 'package:zuru/modules/user/domain/usecases/upsert_profile_clip.usecase.dart';
 import 'package:zuru/modules/user/presentation/controllers/user_controller.dart';
 
 class ScoutProfileEditController extends GetxController {
   final UpdateScoutProfileUseCase _updateScoutProfile;
   final UploadMediaUseCase _uploadMedia;
   final GetProfileClipsUseCase _getProfileClips;
-  final UpsertProfileClipUseCase _upsertProfileClip;
+  final AddProfileClipUseCase _addProfileClip;
   final DeleteProfileClipUseCase _deleteProfileClip;
   final UserController _userController;
 
@@ -28,18 +28,19 @@ class ScoutProfileEditController extends GetxController {
     required UpdateScoutProfileUseCase updateScoutProfile,
     required UploadMediaUseCase uploadMedia,
     required GetProfileClipsUseCase getProfileClips,
-    required UpsertProfileClipUseCase upsertProfileClip,
+    required AddProfileClipUseCase addProfileClip,
     required DeleteProfileClipUseCase deleteProfileClip,
     required UserController userController,
   }) : _updateScoutProfile = updateScoutProfile,
        _uploadMedia = uploadMedia,
        _getProfileClips = getProfileClips,
-       _upsertProfileClip = upsertProfileClip,
+       _addProfileClip = addProfileClip,
        _deleteProfileClip = deleteProfileClip,
        _userController = userController;
 
   static const int maxTags = 5;
   static const int maxBioChars = 280;
+  static const int maxClips = 3;
 
   /// Duration options (minutes) offered when adding a session price tier.
   static const List<int> durationOptions = [10, 15, 20, 30, 45, 60];
@@ -63,7 +64,7 @@ class ScoutProfileEditController extends GetxController {
 
   // ── UI state ────────────────────────────────────────────────────────────
   final RxBool isSaving = false.obs;
-  final Rx<ClipType?> uploadingClip = Rx<ClipType?>(null);
+  final RxBool isAddingClip = false.obs;
   final RxBool showAddPricing = false.obs;
   final RxnInt newDuration = RxnInt();
 
@@ -221,20 +222,25 @@ class ScoutProfileEditController extends GetxController {
 
   // ── Clips ────────────────────────────────────────────────────────────────
 
-  ProfileClip? clipFor(ClipType type) =>
-      clips.firstWhereOrNull((c) => c.type == type);
+  /// Whether another clip can still be added (cap at [maxClips]).
+  bool get canAddClip => clips.length < maxClips;
 
-  Future<void> pickClip(ClipType type) async {
+  /// Picks an image, uploads it, and appends a new clip — up to [maxClips].
+  Future<void> addClip() async {
     final id = _profileId;
     if (id == null) {
       Toast.error('Profile not ready yet, please retry');
+      return;
+    }
+    if (!canAddClip) {
+      Toast.warning('You can add up to $maxClips clips');
       return;
     }
 
     final file = await _pickImage();
     if (file == null) return;
 
-    uploadingClip.value = type;
+    isAddingClip.value = true;
 
     final uploadResult = await _uploadMedia(
       UploadMediaParams(file: file, folder: 'clips'),
@@ -242,37 +248,32 @@ class ScoutProfileEditController extends GetxController {
 
     await uploadResult.fold(
       (err) async {
-        uploadingClip.value = null;
+        isAddingClip.value = false;
         Toast.error(err.message);
       },
       (url) async {
-        final result = await _upsertProfileClip(
-          UpsertClipParams(profileId: id, type: type, mediaUrl: url),
+        final result = await _addProfileClip(
+          AddClipParams(profileId: id, mediaUrl: url),
         );
-        uploadingClip.value = null;
-        result.fold((err) => Toast.error(err.message), (clip) {
-          final existing = clips.indexWhere((c) => c.type == type);
-          if (existing == -1) {
-            clips.add(clip);
-          } else {
-            clips[existing] = clip;
-          }
-        });
+        isAddingClip.value = false;
+        result.fold((err) => Toast.error(err.message), clips.add);
       },
     );
   }
 
-  Future<void> removeClip(ClipType type) async {
-    final clip = clipFor(type);
-    if (clip?.id == null) return;
+  Future<void> removeClip(ProfileClip clip) async {
+    if (clip.id == null) {
+      clips.remove(clip);
+      return;
+    }
 
     Loader.show();
-    final result = await _deleteProfileClip(clip!.id!);
+    final result = await _deleteProfileClip(clip.id!);
     Loader.dismiss();
 
     result.fold(
       (err) => Toast.error(err.message),
-      (_) => clips.removeWhere((c) => c.type == type),
+      (_) => clips.removeWhere((c) => c.id == clip.id),
     );
   }
 

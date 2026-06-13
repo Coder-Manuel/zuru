@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:get/get.dart';
-import 'package:zuru/core/entities/profile_clip.entity.dart';
 import 'package:zuru/core/entities/session_pricing.entity.dart';
 import 'package:zuru/core/models/enums.dart';
 import 'package:zuru/core/utils/size.util.dart';
@@ -29,6 +29,27 @@ class ScoutProfileEditPage extends GetView<ScoutProfileEditController> {
     final bodyColor = Theme.of(context).textTheme.bodyMedium?.color;
     final fillColor = Theme.of(context).inputDecorationTheme.fillColor;
 
+    // Staggered slide-in: each section fades + slides up, offset by its order.
+    var step = 0;
+    Widget animate(Widget child) {
+      final delay = (step++ * 70).ms;
+      return child
+          .animate()
+          .fadeIn(delay: delay, duration: 450.ms)
+          .slideY(begin: 0.12, end: 0, delay: delay, duration: 450.ms);
+    }
+
+    Widget section(String label, Widget content, {Widget? header}) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          header ?? _SectionLabel(label, color: bodyColor),
+          10.verticalSpace,
+          content,
+        ],
+      );
+    }
+
     return Scaffold(
       body: SafeArea(
         child: SingleChildScrollView(
@@ -37,63 +58,78 @@ class ScoutProfileEditPage extends GetView<ScoutProfileEditController> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               16.verticalSpace,
-              _Header(scheme: scheme),
+              animate(_Header(scheme: scheme)),
               24.verticalSpace,
 
-              _PreviewCard(
-                scheme: scheme,
-                bodyColor: bodyColor,
-                fillColor: fillColor,
+              animate(
+                _PreviewCard(
+                  scheme: scheme,
+                  bodyColor: bodyColor,
+                  fillColor: fillColor,
+                ),
               ),
               28.verticalSpace,
 
-              _SectionLabel('PROFILE CLIPS (3 MAX)', color: bodyColor),
-              10.verticalSpace,
-              _ClipsRow(
-                scheme: scheme,
-                bodyColor: bodyColor,
-                fillColor: fillColor,
+              animate(
+                section(
+                  'PROFILE CLIPS (3 MAX)',
+                  _ClipsRow(scheme: scheme, bodyColor: bodyColor),
+                ),
               ),
               28.verticalSpace,
 
-              _SectionLabel('YOUR BIO · YOUR WORDS', color: bodyColor),
-              10.verticalSpace,
-              _BioField(
-                scheme: scheme,
-                bodyColor: bodyColor,
-                fillColor: fillColor,
+              animate(
+                section(
+                  'YOUR BIO · YOUR WORDS',
+                  _BioField(
+                    scheme: scheme,
+                    bodyColor: bodyColor,
+                    fillColor: fillColor,
+                  ),
+                ),
               ),
               28.verticalSpace,
 
-              _TagsHeader(bodyColor: bodyColor),
-              10.verticalSpace,
-              _TagsSection(
-                scheme: scheme,
-                bodyColor: bodyColor,
-                fillColor: fillColor,
+              animate(
+                section(
+                  '',
+                  _TagsSection(
+                    scheme: scheme,
+                    bodyColor: bodyColor,
+                    fillColor: fillColor,
+                  ),
+                  header: _TagsHeader(bodyColor: bodyColor),
+                ),
               ),
               28.verticalSpace,
 
-              _SectionLabel('AVAILABILITY STATUS', color: bodyColor),
-              10.verticalSpace,
-              _AvailabilityRow(
-                scheme: scheme,
-                bodyColor: bodyColor,
-                fillColor: fillColor,
+              animate(
+                section(
+                  'AVAILABILITY STATUS',
+                  _AvailabilityRow(
+                    scheme: scheme,
+                    bodyColor: bodyColor,
+                    fillColor: fillColor,
+                  ),
+                ),
               ),
               28.verticalSpace,
 
-              _SectionLabel('MY SESSION PRICING', color: bodyColor),
-              10.verticalSpace,
-              _PricingSection(
-                scheme: scheme,
-                bodyColor: bodyColor,
-                fillColor: fillColor,
+              animate(
+                section(
+                  'MY SESSION PRICING',
+                  _PricingSection(
+                    scheme: scheme,
+                    bodyColor: bodyColor,
+                    fillColor: fillColor,
+                  ),
+                ),
               ),
               32.verticalSpace,
-              _SaveButton(scheme: scheme),
+
+              animate(_SaveButton(scheme: scheme)),
               12.verticalSpace,
-              _PreviewButton(scheme: scheme, fillColor: fillColor),
+              animate(_PreviewButton(scheme: scheme, fillColor: fillColor)),
             ],
           ),
         ),
@@ -131,7 +167,7 @@ class _Header extends StatelessWidget {
           'My World Profile',
           style: TextStyle(
             color: scheme.onSurface,
-            fontSize: 24,
+            fontSize: 20,
             fontWeight: FontWeight.w700,
             fontStyle: FontStyle.italic,
           ),
@@ -360,183 +396,216 @@ class _AvailabilityPill extends StatelessWidget {
 
 // ── Profile clips ────────────────────────────────────────────────────────────────
 
+/// A flat row of up to [ScoutProfileEditController.maxClips] clip slots:
+/// filled clips first, then a single "Add Clip" tile, then faint placeholders
+/// showing remaining capacity.
 class _ClipsRow extends GetView<ScoutProfileEditController> {
   final ColorScheme scheme;
   final Color? bodyColor;
-  final Color? fillColor;
 
-  const _ClipsRow({
-    required this.scheme,
-    required this.bodyColor,
-    required this.fillColor,
-  });
+  const _ClipsRow({required this.scheme, required this.bodyColor});
 
   @override
   Widget build(BuildContext context) {
-    return Obx(
-      () => Row(
-        children: ClipType.values.map((type) {
+    return Obx(() {
+      final clips = controller.clips;
+      final count = clips.length;
+      const max = ScoutProfileEditController.maxClips;
+
+      return Row(
+        children: List.generate(max, (i) {
+          final isLast = i == max - 1;
+
+          Widget tile;
+          if (i < count) {
+            tile = _FilledClipTile(
+              key: ValueKey(clips[i].id ?? clips[i].mediaUrl),
+              mediaUrl: clips[i].mediaUrl ?? '',
+              index: i,
+              onRemove: () => controller.removeClip(clips[i]),
+            );
+          } else if (i == count) {
+            tile = _AddClipTile(
+              scheme: scheme,
+              isUploading: controller.isAddingClip.value,
+              onTap: controller.addClip,
+            );
+          } else {
+            tile = _EmptyClipTile(bodyColor: bodyColor);
+          }
+
           return Expanded(
             child: Padding(
-              padding: EdgeInsets.only(
-                right: type == ClipType.values.last ? 0 : 12,
-              ),
-              child: _ClipSlot(
-                type: type,
-                clip: controller.clipFor(type),
-                isUploading: controller.uploadingClip.value == type,
-                scheme: scheme,
-                bodyColor: bodyColor,
-                fillColor: fillColor,
-                onTap: () => controller.pickClip(type),
-                onRemove: () => controller.removeClip(type),
-              ),
+              padding: EdgeInsets.only(right: isLast ? 0 : 12),
+              child: AspectRatio(aspectRatio: 0.92, child: tile),
             ),
           );
-        }).toList(),
-      ),
-    );
+        }),
+      );
+    });
   }
 }
 
-class _ClipSlot extends StatelessWidget {
-  final ClipType type;
-  final ProfileClip? clip;
-  final bool isUploading;
-  final ColorScheme scheme;
-  final Color? bodyColor;
-  final Color? fillColor;
-  final VoidCallback onTap;
+class _FilledClipTile extends StatelessWidget {
+  final String mediaUrl;
+  final int index;
   final VoidCallback onRemove;
 
-  const _ClipSlot({
-    required this.type,
-    required this.clip,
-    required this.isUploading,
-    required this.scheme,
-    required this.bodyColor,
-    required this.fillColor,
-    required this.onTap,
+  const _FilledClipTile({
+    super.key,
+    required this.mediaUrl,
+    required this.index,
     required this.onRemove,
   });
 
   @override
   Widget build(BuildContext context) {
-    final mediaUrl = clip?.mediaUrl;
-    final hasClip = mediaUrl != null && mediaUrl.isNotEmpty;
+    return Container(
+      clipBehavior: Clip.antiAlias,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(14),
+        image: DecorationImage(
+          image: NetworkImage(mediaUrl),
+          fit: BoxFit.cover,
+        ),
+      ),
+      child: Stack(
+        children: [
+          Positioned.fill(
+            child: DecoratedBox(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [Colors.transparent, Colors.black.withAlpha(150)],
+                ),
+              ),
+            ),
+          ),
+          Positioned(
+            top: 6,
+            right: 6,
+            child: GestureDetector(
+              onTap: onRemove,
+              child: Container(
+                width: 26,
+                height: 26,
+                decoration: BoxDecoration(
+                  color: Colors.black.withAlpha(150),
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(
+                  Icons.close_rounded,
+                  size: 15,
+                  color: Colors.white,
+                ),
+              ),
+            ),
+          ),
+          Positioned(
+            left: 10,
+            bottom: 8,
+            child: Text(
+              'CLIP ${index + 1}',
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 11,
+                fontWeight: FontWeight.w700,
+                letterSpacing: 0.6,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
 
+class _AddClipTile extends StatelessWidget {
+  final ColorScheme scheme;
+  final bool isUploading;
+  final VoidCallback onTap;
+
+  const _AddClipTile({
+    required this.scheme,
+    required this.isUploading,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
     return GestureDetector(
       onTap: isUploading ? null : onTap,
-      child: AspectRatio(
-        aspectRatio: 0.92,
-        child: Container(
-          decoration: BoxDecoration(
-            color: fillColor?.withAlpha(178),
-            borderRadius: BorderRadius.circular(14),
-            border: hasClip
-                ? null
-                : Border.all(
-                    color: bodyColor?.withAlpha(70) ?? Colors.grey,
-                    width: 1.4,
-                    style: BorderStyle.solid,
-                  ),
-            image: hasClip
-                ? DecorationImage(
-                    image: NetworkImage(mediaUrl),
-                    fit: BoxFit.cover,
-                  )
-                : null,
-          ),
-          child: Stack(
-            children: [
-              if (hasClip)
-                Positioned.fill(
-                  child: DecoratedBox(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(14),
-                      gradient: LinearGradient(
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                        colors: [
-                          Colors.transparent,
-                          Colors.black.withAlpha(150),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-
-              // Center content: + for empty, edit badge for filled.
-              if (isUploading)
-                Center(
-                  child: SizedBox(
-                    width: 22,
-                    height: 22,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 2,
-                      color: scheme.primary,
-                    ),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        decoration: BoxDecoration(
+          color: scheme.primary.withAlpha(20),
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(color: scheme.primary.withAlpha(110), width: 1.4),
+        ),
+        child: Center(
+          child: isUploading
+              ? SizedBox(
+                  width: 22,
+                  height: 22,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    color: scheme.primary,
                   ),
                 )
-              else if (!hasClip)
-                Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(Icons.add_rounded, color: bodyColor, size: 26),
-                      6.verticalSpace,
-                      Text(
-                        type.label.toUpperCase(),
-                        style: TextStyle(
-                          color: bodyColor,
-                          fontSize: 11,
-                          fontWeight: FontWeight.w700,
-                          letterSpacing: 0.6,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-
-              // Edit / remove affordance for a filled slot.
-              if (hasClip && !isUploading)
-                Positioned(
-                  top: 6,
-                  right: 6,
-                  child: GestureDetector(
-                    onTap: onRemove,
-                    child: Container(
-                      width: 26,
-                      height: 26,
+              : Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Container(
+                      width: 34,
+                      height: 34,
                       decoration: BoxDecoration(
-                        color: Colors.black.withAlpha(140),
+                        color: scheme.primary.withAlpha(40),
                         shape: BoxShape.circle,
                       ),
-                      child: const Icon(
-                        Icons.edit,
-                        size: 13,
-                        color: Colors.white,
+                      child: Icon(
+                        Icons.add_rounded,
+                        color: scheme.primary,
+                        size: 22,
                       ),
                     ),
-                  ),
-                ),
-
-              if (hasClip)
-                Positioned(
-                  left: 10,
-                  bottom: 8,
-                  child: Text(
-                    type.label.toUpperCase(),
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 11,
-                      fontWeight: FontWeight.w700,
-                      letterSpacing: 0.6,
+                    8.verticalSpace,
+                    Text(
+                      'ADD CLIP',
+                      style: TextStyle(
+                        color: scheme.primary,
+                        fontSize: 11,
+                        fontWeight: FontWeight.w700,
+                        letterSpacing: 0.6,
+                      ),
                     ),
-                  ),
+                  ],
                 ),
-            ],
-          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _EmptyClipTile extends StatelessWidget {
+  final Color? bodyColor;
+  const _EmptyClipTile({required this.bodyColor});
+
+  @override
+  Widget build(BuildContext context) {
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(
+          color: bodyColor?.withAlpha(45) ?? Colors.grey,
+          width: 1.4,
+        ),
+      ),
+      child: Center(
+        child: Icon(
+          Icons.image_outlined,
+          color: bodyColor?.withAlpha(70),
+          size: 22,
         ),
       ),
     );

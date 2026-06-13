@@ -18,9 +18,8 @@ abstract class RemoteUserDatasource {
   /// Fetches all clip rows for [profileId].
   Future<List<Map<String, dynamic>>> getProfileClips(String profileId);
 
-  /// Inserts or updates a clip row (unique on `profile_id, type`) and returns
-  /// the persisted record.
-  Future<Map<String, dynamic>> upsertProfileClip(Map<String, dynamic> data);
+  /// Inserts a new clip row and returns the persisted record.
+  Future<Map<String, dynamic>> addProfileClip(Map<String, dynamic> data);
 
   Future<void> deleteProfileClip(String id);
 }
@@ -87,12 +86,8 @@ class RemoteUserDatasourceImpl extends RemoteUserDatasource {
   }
 
   @override
-  Future<Map<String, dynamic>> upsertProfileClip(Map<String, dynamic> data) {
-    return client
-        .from('profile_clips')
-        .upsert(data, onConflict: 'profile_id,type')
-        .select()
-        .single();
+  Future<Map<String, dynamic>> addProfileClip(Map<String, dynamic> data) {
+    return client.from('profile_clips').insert(data).select().single();
   }
 
   @override
