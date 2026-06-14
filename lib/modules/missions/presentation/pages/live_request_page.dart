@@ -88,6 +88,7 @@ class LiveRequestPage extends GetView<LiveRequestController> {
                       20.verticalSpace,
                       // Submit — last item in the page.
                       const _SubmitBar(),
+                      25.verticalSpace,
                     ],
                   ),
                 ),
@@ -575,7 +576,7 @@ class _DateChip extends StatelessWidget {
               letterSpacing: 0.5,
             ),
           ),
-          6.verticalSpace,
+          4.verticalSpace,
           Text(
             DateFormat('d').format(date),
             style: TextStyle(
@@ -585,7 +586,7 @@ class _DateChip extends StatelessWidget {
               height: 1,
             ),
           ),
-          4.verticalSpace,
+          2.verticalSpace,
           Text(
             DateFormat('MMM').format(date).toUpperCase(),
             style: const TextStyle(

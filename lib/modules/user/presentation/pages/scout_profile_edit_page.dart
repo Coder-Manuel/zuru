@@ -132,8 +132,7 @@ class ScoutProfileEditPage extends GetView<ScoutProfileEditController> {
               32.verticalSpace,
 
               animate(_SaveButton(scheme: scheme)),
-              12.verticalSpace,
-              animate(_PreviewButton(scheme: scheme, fillColor: fillColor)),
+              24.verticalSpace,
             ],
           ),
         ),
@@ -1369,37 +1368,37 @@ class _SaveButton extends GetView<ScoutProfileEditController> {
   }
 }
 
-class _PreviewButton extends GetView<ScoutProfileEditController> {
-  final ColorScheme scheme;
-  final Color? fillColor;
+// class _PreviewButton extends GetView<ScoutProfileEditController> {
+//   final ColorScheme scheme;
+//   final Color? fillColor;
 
-  const _PreviewButton({required this.scheme, required this.fillColor});
+//   const _PreviewButton({required this.scheme, required this.fillColor});
 
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      width: double.infinity,
-      height: 45,
-      child: TextButton(
-        onPressed: controller.previewAsClient,
-        style: TextButton.styleFrom(
-          backgroundColor: fillColor?.withAlpha(178),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(14),
-          ),
-        ),
-        child: Text(
-          'Preview as Client',
-          style: TextStyle(
-            color: scheme.onSurface,
-            fontSize: 16,
-            fontWeight: FontWeight.w700,
-          ),
-        ),
-      ),
-    );
-  }
-}
+//   @override
+//   Widget build(BuildContext context) {
+//     return SizedBox(
+//       width: double.infinity,
+//       height: 45,
+//       child: TextButton(
+//         onPressed: controller.previewAsClient,
+//         style: TextButton.styleFrom(
+//           backgroundColor: fillColor?.withAlpha(178),
+//           shape: RoundedRectangleBorder(
+//             borderRadius: BorderRadius.circular(14),
+//           ),
+//         ),
+//         child: Text(
+//           'Preview as Client',
+//           style: TextStyle(
+//             color: scheme.onSurface,
+//             fontSize: 16,
+//             fontWeight: FontWeight.w700,
+//           ),
+//         ),
+//       ),
+//     );
+//   }
+// }
 
 // ── Shared bits ────────────────────────────────────────────────────────────────────
 
