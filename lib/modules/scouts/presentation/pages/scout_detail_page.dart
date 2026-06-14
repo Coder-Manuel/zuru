@@ -6,7 +6,8 @@ import 'package:zuru/core/entities/profile.entity.dart';
 import 'package:zuru/core/entities/profile_clip.entity.dart';
 import 'package:zuru/core/models/enums.dart';
 import 'package:zuru/core/utils/size.util.dart';
-import 'package:zuru/core/utils/toast.dart';
+import 'package:zuru/core/widgets/reels_player_page.dart';
+import 'package:zuru/core/widgets/video_thumbnail_view.dart';
 import 'package:zuru/modules/scouts/presentation/controllers/scout_detail_controller.dart';
 import 'package:zuru/modules/scouts/presentation/widgets/animated_avatar_ring.dart';
 import 'package:zuru/modules/scouts/presentation/widgets/scout_detail_skeleton.dart';
@@ -322,59 +323,84 @@ class _ClipsCatalogue extends StatelessWidget {
         return Expanded(
           child: Padding(
             padding: EdgeInsets.only(right: isLast ? 0 : 12),
-            child: _ClipTile(label: label),
+            child: AspectRatio(
+              aspectRatio: 2.8,
+              child: _ClipTile(
+                mediaUrl: clip.mediaUrl,
+                label: label,
+                onTap: () => _play(i),
+              ),
+            ),
           ),
         );
       }),
     );
   }
+
+  void _play(int index) {
+    final urls = clips
+        .map((c) => c.mediaUrl)
+        .whereType<String>()
+        .where((u) => u.isNotEmpty)
+        .toList();
+    if (urls.isEmpty) return;
+    final titles = clips
+        .map((c) => (c.title?.isNotEmpty ?? false) ? c.title! : 'Clip')
+        .toList();
+    ReelsPlayerPage.open(urls, initialIndex: index, titles: titles);
+  }
 }
 
 class _ClipTile extends StatelessWidget {
+  final String? mediaUrl;
   final String label;
-  const _ClipTile({required this.label});
+  final VoidCallback onTap;
+
+  const _ClipTile({
+    required this.mediaUrl,
+    required this.label,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
+    final url = mediaUrl;
     return GestureDetector(
-      onTap: () => Toast.info('Clip playback is coming soon'),
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 18),
-        decoration: BoxDecoration(
-          color: ClientColors.inputBg.withAlpha(120),
-          borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: ClientColors.divider.withAlpha(120)),
-        ),
-        child: Column(
-          children: [
-            Container(
-              width: 48,
-              height: 48,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                border: Border.all(color: ClientColors.primary, width: 1.5),
-                color: ClientColors.primary.withAlpha(28),
-              ),
-              child: const Icon(
-                Icons.play_arrow_rounded,
-                color: ClientColors.primary,
-                size: 26,
-              ),
-            ),
-            12.verticalSpace,
-            Text(
+      onTap: onTap,
+      child: Stack(
+        children: [
+          Positioned.fill(
+            child: (url != null && url.isNotEmpty)
+                ? VideoThumbnailView(
+                    url: url,
+                    borderRadius: BorderRadius.circular(14),
+                  )
+                : DecoratedBox(
+                    decoration: BoxDecoration(
+                      color: ClientColors.inputBg.withAlpha(120),
+                      borderRadius: BorderRadius.circular(14),
+                      border: Border.all(
+                        color: ClientColors.divider.withAlpha(120),
+                      ),
+                    ),
+                  ),
+          ),
+          Positioned(
+            left: 10,
+            bottom: 8,
+            child: Text(
               label,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: const TextStyle(
-                color: ClientColors.textPrimary,
-                fontSize: 12,
+                color: Colors.white,
+                fontSize: 11,
                 fontWeight: FontWeight.w700,
                 letterSpacing: 0.4,
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

@@ -33,7 +33,11 @@ class ScoutFeedCard extends StatelessWidget {
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _FeedAvatar(name: name, availability: profile?.availability),
+                _FeedAvatar(
+                  name: name,
+                  avatarUrl: profile?.avatarUrl,
+                  availability: profile?.availability,
+                ),
                 14.horizontalSpace,
                 Expanded(
                   child: Column(
@@ -169,9 +173,14 @@ class ScoutFeedCard extends StatelessWidget {
 
 class _FeedAvatar extends StatelessWidget {
   final String name;
+  final String? avatarUrl;
   final ScoutAvailability? availability;
 
-  const _FeedAvatar({required this.name, required this.availability});
+  const _FeedAvatar({
+    required this.name,
+    required this.availability,
+    this.avatarUrl,
+  });
 
   String get _initials {
     final parts = name.trim().split(RegExp(r'\s+'));
@@ -201,14 +210,23 @@ class _FeedAvatar extends StatelessWidget {
               ),
             ),
             child: Center(
-              child: Text(
-                _initials,
-                style: const TextStyle(
-                  color: ClientColors.textPrimary,
-                  fontSize: 18,
-                  fontWeight: FontWeight.w800,
-                ),
-              ),
+              child: avatarUrl != null
+                  ? SizedBox(
+                      width: 60,
+                      height: 60,
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(30),
+                        child: Image.network(avatarUrl!, fit: BoxFit.cover),
+                      ),
+                    )
+                  : Text(
+                      _initials,
+                      style: const TextStyle(
+                        color: ClientColors.textPrimary,
+                        fontSize: 18,
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
             ),
           ),
           if (availability != null && availability != ScoutAvailability.offline)

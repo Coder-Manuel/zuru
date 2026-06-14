@@ -41,6 +41,9 @@ dependencies:
   cupertino_icons: ^1.0.8
   image_picker: ^1.1.2
   infinite_scroll_pagination: ^4.1.0
+  cached_network_image: ^3.4.1
+  video_player: ^2.9.2
+  video_thumbnail: ^0.5.3
 
   # ── Utils ─────────────────────────────────────────────────────────────────
   intl: ^0.20.2

@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:get/get.dart';
+import 'package:zuru/core/entities/profile_clip.entity.dart';
 import 'package:zuru/core/entities/session_pricing.entity.dart';
 import 'package:zuru/core/models/enums.dart';
 import 'package:zuru/core/utils/size.util.dart';
+import 'package:zuru/core/widgets/app_cached_image.dart';
+import 'package:zuru/core/widgets/reels_player_page.dart';
+import 'package:zuru/core/widgets/video_thumbnail_view.dart';
 import 'package:zuru/modules/user/presentation/controllers/scout_profile_edit_controller.dart';
 import 'package:zuru/modules/user/presentation/widgets/locality_search_sheet.dart';
 
@@ -313,11 +317,24 @@ class _AvatarPicker extends StatelessWidget {
         final url = controller.avatarUrl.value;
         final name = controller.currentUserName;
 
-        ImageProvider? image;
+        final initials = Center(
+          child: Text(
+            name.isNotEmpty ? name[0].toUpperCase() : 'S',
+            style: TextStyle(
+              color: scheme.onSurface,
+              fontSize: 24,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+        );
+
+        Widget avatarContent;
         if (file != null) {
-          image = FileImage(file);
+          avatarContent = Image.file(file, fit: BoxFit.cover);
         } else if (url != null && url.isNotEmpty) {
-          image = NetworkImage(url);
+          avatarContent = AppCachedImage(url: url, fallback: initials);
+        } else {
+          avatarContent = initials;
         }
 
         return Stack(
@@ -330,22 +347,8 @@ class _AvatarPicker extends StatelessWidget {
                 shape: BoxShape.circle,
                 color: fillColor,
                 border: Border.all(color: scheme.primary, width: 2),
-                image: image == null
-                    ? null
-                    : DecorationImage(image: image, fit: BoxFit.cover),
               ),
-              child: image == null
-                  ? Center(
-                      child: Text(
-                        name.isNotEmpty ? name[0].toUpperCase() : 'S',
-                        style: TextStyle(
-                          color: scheme.onSurface,
-                          fontSize: 24,
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                    )
-                  : null,
+              child: ClipOval(child: avatarContent),
             ),
             Positioned(
               right: -2,
@@ -422,6 +425,7 @@ class _ClipsRow extends GetView<ScoutProfileEditController> {
               key: ValueKey(clips[i].id ?? clips[i].mediaUrl),
               mediaUrl: clips[i].mediaUrl ?? '',
               index: i,
+              onTap: () => _playClips(clips, i),
               onRemove: () => controller.removeClip(clips[i]),
             );
           } else if (i == count) {
@@ -444,42 +448,46 @@ class _ClipsRow extends GetView<ScoutProfileEditController> {
       );
     });
   }
+
+  void _playClips(List<ProfileClip> clips, int index) {
+    final urls = clips
+        .map((c) => c.mediaUrl)
+        .whereType<String>()
+        .where((u) => u.isNotEmpty)
+        .toList();
+    if (urls.isEmpty) return;
+    final titles = clips
+        .map((c) => (c.title?.isNotEmpty ?? false) ? c.title! : 'Clip')
+        .toList();
+    ReelsPlayerPage.open(urls, initialIndex: index, titles: titles);
+  }
 }
 
 class _FilledClipTile extends StatelessWidget {
   final String mediaUrl;
   final int index;
+  final VoidCallback onTap;
   final VoidCallback onRemove;
 
   const _FilledClipTile({
     super.key,
     required this.mediaUrl,
     required this.index,
+    required this.onTap,
     required this.onRemove,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      clipBehavior: Clip.antiAlias,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(14),
-        image: DecorationImage(
-          image: NetworkImage(mediaUrl),
-          fit: BoxFit.cover,
-        ),
-      ),
+    return GestureDetector(
+      onTap: onTap,
       child: Stack(
         children: [
           Positioned.fill(
-            child: DecoratedBox(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [Colors.transparent, Colors.black.withAlpha(150)],
-                ),
-              ),
+            child: VideoThumbnailView(
+              url: mediaUrl,
+              borderRadius: BorderRadius.circular(14),
+              playIconSize: 34,
             ),
           ),
           Positioned(

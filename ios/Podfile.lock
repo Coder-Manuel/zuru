@@ -145,6 +145,18 @@ PODS:
   - json-enum (1.2.3)
   - jsonlogic (1.2.4):
     - json-enum (~> 1.2.3)
+  - libwebp (1.5.0):
+    - libwebp/demux (= 1.5.0)
+    - libwebp/mux (= 1.5.0)
+    - libwebp/sharpyuv (= 1.5.0)
+    - libwebp/webp (= 1.5.0)
+  - libwebp/demux (1.5.0):
+    - libwebp/webp
+  - libwebp/mux (1.5.0):
+    - libwebp/demux
+  - libwebp/sharpyuv (1.5.0)
+  - libwebp/webp (1.5.0):
+    - libwebp/sharpyuv
   - livekit_client (2.7.0):
     - Flutter
     - flutter_webrtc
@@ -198,9 +210,18 @@ PODS:
   - sign_in_with_apple (0.0.1):
     - Flutter
   - Solar-dev (3.0.1)
+  - sqflite_darwin (0.0.4):
+    - Flutter
+    - FlutterMacOS
   - Turf (2.8.0)
   - url_launcher_ios (0.0.1):
     - Flutter
+  - video_player_avfoundation (0.0.1):
+    - Flutter
+    - FlutterMacOS
+  - video_thumbnail (0.0.1):
+    - Flutter
+    - libwebp
   - WebRTC-SDK (144.7559.01)
 
 DEPENDENCIES:
@@ -221,7 +242,10 @@ DEPENDENCIES:
   - mixpanel_flutter (from `.symlinks/plugins/mixpanel_flutter/ios`)
   - shared_preferences_foundation (from `.symlinks/plugins/shared_preferences_foundation/darwin`)
   - sign_in_with_apple (from `.symlinks/plugins/sign_in_with_apple/ios`)
+  - sqflite_darwin (from `.symlinks/plugins/sqflite_darwin/darwin`)
   - url_launcher_ios (from `.symlinks/plugins/url_launcher_ios/ios`)
+  - video_player_avfoundation (from `.symlinks/plugins/video_player_avfoundation/darwin`)
+  - video_thumbnail (from `.symlinks/plugins/video_thumbnail/ios`)
 
 SPEC REPOS:
   trunk:
@@ -245,6 +269,7 @@ SPEC REPOS:
     - GTMSessionFetcher
     - json-enum
     - jsonlogic
+    - libwebp
     - MapboxCommon
     - MapboxCoreMaps
     - MapboxCoreNavigation
@@ -299,8 +324,14 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/shared_preferences_foundation/darwin"
   sign_in_with_apple:
     :path: ".symlinks/plugins/sign_in_with_apple/ios"
+  sqflite_darwin:
+    :path: ".symlinks/plugins/sqflite_darwin/darwin"
   url_launcher_ios:
     :path: ".symlinks/plugins/url_launcher_ios/ios"
+  video_player_avfoundation:
+    :path: ".symlinks/plugins/video_player_avfoundation/darwin"
+  video_thumbnail:
+    :path: ".symlinks/plugins/video_thumbnail/ios"
 
 SPEC CHECKSUMS:
   app_links: a754cbec3c255bd4bbb4d236ecc06f28cd9a7ce8
@@ -336,6 +367,7 @@ SPEC CHECKSUMS:
   image_picker_ios: e0ece4aa2a75771a7de3fa735d26d90817041326
   json-enum: 57ad746d2f0d7852796e9aa50267bd84a778222e
   jsonlogic: 006f892470384401b8ca5b5d8d4cdadb3a0d5c9b
+  libwebp: 02b23773aedb6ff1fd38cec7a77b81414c6842a8
   livekit_client: 9b9a08c5c78f694ac6a9e70c1c269704ba574b73
   MapboxCommon: 9fe257ddc7385d55106345d4520a7fec3f4c0465
   MapboxCoreMaps: 35685edba03e44468aed57c3dfd7f8795edafda8
@@ -356,8 +388,11 @@ SPEC CHECKSUMS:
   shared_preferences_foundation: 7036424c3d8ec98dfe75ff1667cb0cd531ec82bb
   sign_in_with_apple: c5dcc141574c8c54d5ac99dd2163c0c72ad22418
   Solar-dev: 4612dc9878b9fed2667d23b327f1d4e54e16e8d0
+  sqflite_darwin: 20b2a3a3b70e43edae938624ce550a3cbf66a3d0
   Turf: aa2ede4298009639d10db36aba1a7ebaad072a5e
   url_launcher_ios: 7a95fa5b60cc718a708b8f2966718e93db0cef1b
+  video_player_avfoundation: 3453f792138786248960ca029747fcd9f318ef52
+  video_thumbnail: b637e0ad5f588ca9945f6e2c927f73a69a661140
   WebRTC-SDK: ab9b5319e458c2bfebdc92b3600740da35d5630d
 
 PODFILE CHECKSUM: 53a6aebc29ccee84c41f92f409fc20cd4ca011f1

@@ -2,6 +2,7 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:zuru/config/client_colors.dart';
+import 'package:zuru/core/widgets/app_cached_image.dart';
 
 /// Large scout avatar with a continuously-rotating green "comet" ring, a
 /// static gold ring, and an optional verified badge — as on the scout profile.
@@ -42,6 +43,18 @@ class _AnimatedAvatarRingState extends State<AnimatedAvatarRing>
     super.dispose();
   }
 
+  Widget _initials(double inner) => Center(
+    child: Text(
+      widget.initials,
+      style: TextStyle(
+        color: ClientColors.textPrimary,
+        fontSize: inner * 0.34,
+        fontWeight: FontWeight.w800,
+        letterSpacing: 1,
+      ),
+    ),
+  );
+
   @override
   Widget build(BuildContext context) {
     final size = widget.size;
@@ -71,26 +84,15 @@ class _AnimatedAvatarRingState extends State<AnimatedAvatarRing>
               shape: BoxShape.circle,
               color: ClientColors.inputBg,
               border: Border.all(color: ClientColors.primary, width: 2),
-              image: hasImage
-                  ? DecorationImage(
-                      image: NetworkImage(widget.imageUrl!),
-                      fit: BoxFit.cover,
-                    )
-                  : null,
             ),
-            child: hasImage
-                ? null
-                : Center(
-                    child: Text(
-                      widget.initials,
-                      style: TextStyle(
-                        color: ClientColors.textPrimary,
-                        fontSize: inner * 0.34,
-                        fontWeight: FontWeight.w800,
-                        letterSpacing: 1,
-                      ),
-                    ),
-                  ),
+            child: ClipOval(
+              child: hasImage
+                  ? AppCachedImage(
+                      url: widget.imageUrl,
+                      fallback: _initials(inner),
+                    )
+                  : _initials(inner),
+            ),
           ),
 
           // Verified badge.

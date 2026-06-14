@@ -7,6 +7,7 @@ import 'package:zuru/config/scout_colors.dart';
 import 'package:zuru/core/routes/app_routes.dart';
 import 'package:zuru/core/services/role_service/role_service.dart';
 import 'package:zuru/core/utils/size.util.dart';
+import 'package:zuru/core/widgets/app_cached_image.dart';
 import 'package:zuru/modules/payments/presentation/pages/statements_page.dart';
 import 'package:zuru/modules/user/presentation/controllers/profile_controller.dart';
 import 'package:zuru/modules/user/presentation/controllers/user_controller.dart';
@@ -407,30 +408,25 @@ class _ProfileHeader extends StatelessWidget {
                       spreadRadius: 2,
                     ),
                   ],
-                  image: (avatarUrl != null && avatarUrl.isNotEmpty)
-                      ? DecorationImage(
-                          image: NetworkImage(avatarUrl),
-                          fit: BoxFit.cover,
-                        )
-                      : null,
                 ),
-                child: (avatarUrl != null && avatarUrl.isNotEmpty)
-                    ? null
-                    : ClipOval(
-                        child: Container(
-                          color: fillColor,
-                          child: Center(
-                            child: Text(
-                              initial,
-                              style: TextStyle(
-                                color: scheme.onSurface,
-                                fontSize: 36,
-                                fontWeight: FontWeight.w700,
-                              ),
-                            ),
+                child: ClipOval(
+                  child: AppCachedImage(
+                    url: avatarUrl,
+                    fallback: Container(
+                      color: fillColor,
+                      child: Center(
+                        child: Text(
+                          initial,
+                          style: TextStyle(
+                            color: scheme.onSurface,
+                            fontSize: 36,
+                            fontWeight: FontWeight.w700,
                           ),
                         ),
                       ),
+                    ),
+                  ),
+                ),
               ),
               if (isScout)
                 Positioned(

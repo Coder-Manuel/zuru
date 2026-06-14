@@ -36,8 +36,8 @@ class RemoteScoutsDatasourceImpl extends RemoteScoutsDatasource {
         .from('profiles')
         .select(_feedSelect)
         .eq('role', UserRole.scout.name)
-        .eq('status', UserStatus.active.name)
-        .neq('user_id', client.auth.currentUser?.id ?? '');
+        .eq('status', UserStatus.active.name);
+    // .neq('user_id', client.auth.currentUser?.id ?? '');
 
     if (availableOnly) {
       query = query.eq('availability', ScoutAvailability.available.name);
