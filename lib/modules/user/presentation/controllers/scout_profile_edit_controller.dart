@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/widgets.dart';
@@ -8,6 +9,8 @@ import 'package:zuru/core/entities/session_pricing.entity.dart';
 import 'package:zuru/core/models/enums.dart';
 import 'package:zuru/core/utils/loader.dart';
 import 'package:zuru/core/utils/toast.dart';
+import 'package:zuru/modules/missions/data/sources/remote_places_datasource.dart';
+import 'package:zuru/modules/missions/domain/entities/place_suggestion.entity.dart';
 import 'package:zuru/modules/user/data/models/scout_profile_edit.input.dart';
 import 'package:zuru/modules/user/domain/usecases/add_profile_clip.usecase.dart';
 import 'package:zuru/modules/user/domain/usecases/delete_profile_clip.usecase.dart';
@@ -42,10 +45,20 @@ class ScoutProfileEditController extends GetxController {
   static const int maxBioChars = 280;
   static const int maxClips = 3;
 
+  /// Maximum allowed clip upload size (30 MB).
+  static const int maxClipBytes = 30 * 1024 * 1024;
+
   /// Duration options (minutes) offered when adding a session price tier.
   static const List<int> durationOptions = [10, 15, 20, 30, 45, 60];
 
   final _picker = ImagePicker();
+  final _placesDatasource = Get.find<RemotePlacesDatasource>();
+
+  /// Debounce window before firing the Google autocomplete request.
+  static const _searchDebounce = Duration(milliseconds: 450);
+
+  /// Bias the autocomplete around the current locality (or a Kenya default).
+  static const _defaultBias = (lat: -1.2921, lng: 36.8219);
 
   // ── Editable state ────────────────────────────────────────────────────────
   final bioCTRL = TextEditingController();
@@ -53,7 +66,21 @@ class ScoutProfileEditController extends GetxController {
   final priceCTRL = TextEditingController();
 
   final RxList<String> selectedTags = <String>[].obs;
+
+  /// Human-readable locality address (e.g. "Westlands, Nairobi, Kenya").
   final RxnString locality = RxnString();
+
+  /// Resolved coordinates for the locality (drives the PostGIS column).
+  final Rxn<({double lat, double lng})> localityGeo =
+      Rxn<({double lat, double lng})>();
+
+  // ── Locality search ────────────────────────────────────────────────────────
+  final RxList<PlaceSuggestionEntity> localitySuggestions =
+      <PlaceSuggestionEntity>[].obs;
+  final RxBool isSearchingLocality = false.obs;
+  final RxBool isResolvingLocality = false.obs;
+  Timer? _searchDebounceTimer;
+
   final Rx<ScoutAvailability> availability = ScoutAvailability.available.obs;
   final RxList<SessionPricing> sessionPricing = <SessionPricing>[].obs;
   final RxList<ProfileClip> clips = <ProfileClip>[].obs;
@@ -91,6 +118,7 @@ class ScoutProfileEditController extends GetxController {
 
   @override
   void onClose() {
+    _searchDebounceTimer?.cancel();
     bioCTRL.dispose();
     customTagCTRL.dispose();
     priceCTRL.dispose();
@@ -106,6 +134,7 @@ class ScoutProfileEditController extends GetxController {
     bioCTRL.text = profile.bio ?? '';
     selectedTags.assignAll(profile.tags.where((t) => t.isNotEmpty));
     locality.value = profile.locality;
+    localityGeo.value = profile.localityGeo;
     availability.value = profile.availability ?? ScoutAvailability.available;
     avatarUrl.value = profile.avatarUrl;
     sessionPricing.assignAll(profile.sessionPricing);
@@ -130,9 +159,66 @@ class ScoutProfileEditController extends GetxController {
     if (file != null) pickedAvatar.value = file;
   }
 
-  // ── Locality ─────────────────────────────────────────────────────────────
+  // ── Locality (Google Places autocomplete → address + coordinates) ─────────
 
-  void setLocality(String value) => locality.value = value.trim();
+  /// Debounced Google Places autocomplete for the locality search field.
+  void searchLocality(String query) {
+    _searchDebounceTimer?.cancel();
+
+    final q = query.trim();
+    if (q.isEmpty) {
+      localitySuggestions.clear();
+      isSearchingLocality.value = false;
+      return;
+    }
+
+    _searchDebounceTimer = Timer(_searchDebounce, () async {
+      isSearchingLocality.value = true;
+      try {
+        final bias = localityGeo.value ?? _defaultBias;
+        final results = await _placesDatasource.getAutocompleteSuggestions(
+          query: q,
+          latitude: bias.lat,
+          longitude: bias.lng,
+        );
+        localitySuggestions.assignAll(results);
+      } catch (_) {
+        localitySuggestions.clear();
+      } finally {
+        isSearchingLocality.value = false;
+      }
+    });
+  }
+
+  /// Resolves a tapped suggestion to its formatted address + coordinates and
+  /// stores them, then closes the search sheet.
+  Future<void> selectLocalitySuggestion(PlaceSuggestionEntity suggestion) async {
+    isResolvingLocality.value = true;
+    try {
+      final details = await _placesDatasource.getPlaceDetails(
+        suggestion.placeId,
+      );
+      locality.value = details.address.isNotEmpty
+          ? details.address
+          : suggestion.description;
+      localityGeo.value = (lat: details.latitude, lng: details.longitude);
+      _clearLocalitySearch();
+      Get.back();
+    } catch (_) {
+      Toast.error('Could not resolve that location, please try again');
+    } finally {
+      isResolvingLocality.value = false;
+    }
+  }
+
+  void _clearLocalitySearch() {
+    _searchDebounceTimer?.cancel();
+    localitySuggestions.clear();
+    isSearchingLocality.value = false;
+  }
+
+  /// Clears transient search state when the sheet is dismissed.
+  void onLocalitySheetClosed() => _clearLocalitySearch();
 
   // ── Tags ─────────────────────────────────────────────────────────────────
 
@@ -240,6 +326,13 @@ class ScoutProfileEditController extends GetxController {
     final file = await _pickFile(isVideo: true);
     if (file == null) return;
 
+    // Reject oversized clips before uploading.
+    final sizeBytes = await file.length();
+    if (sizeBytes > maxClipBytes) {
+      Toast.error('Max file upload is 30MB');
+      return;
+    }
+
     isAddingClip.value = true;
 
     final uploadResult = await _uploadMedia(
@@ -317,7 +410,8 @@ class ScoutProfileEditController extends GetxController {
     final input = ScoutProfileEditInput(
       bio: bio,
       tags: selectedTags.toList(),
-      locality: locality.value,
+      localityAddress: locality.value,
+      localityGeo: localityGeo.value,
       availability: availability.value,
       avatarUrl: resolvedAvatarUrl,
       sessionPricing: sessionPricing.toList(),

@@ -2,6 +2,7 @@ import 'package:zuru/core/entities/profile.entity.dart';
 import 'package:zuru/core/models/enums.dart';
 import 'package:zuru/core/models/profile_clip.model.dart';
 import 'package:zuru/core/models/session_pricing.model.dart';
+import 'package:zuru/core/utils/ewkb_parser.dart';
 
 class ProfileModel extends Profile {
   ProfileModel({
@@ -19,6 +20,7 @@ class ProfileModel extends Profile {
     super.userId,
     super.avatarUrl,
     super.locality,
+    super.localityGeo,
     super.availability,
     super.sessionPricing,
     super.clips,
@@ -27,39 +29,48 @@ class ProfileModel extends Profile {
     super.languages,
   });
 
-  factory ProfileModel.fromMap(Map<String, dynamic> data) => ProfileModel(
-    id: data['id']?.toString(),
-    createdAt: data['created_at']?.toString(),
-    updatedAt: data['updated_at']?.toString(),
-    firstName: data['first_name']?.toString(),
-    lastName: data['last_name']?.toString(),
-    role: UserRole.values.firstWhere(
-      (v) => v.name == data['role'],
-      orElse: () => UserRole.client,
-    ),
-    status: UserStatus.values.firstWhere(
-      (s) => s.name == data['status'],
-      orElse: () => UserStatus.inactive,
-    ),
-    rating: (data['rating'] as num?)?.toDouble(),
-    totalReviews: data['total_reviews'] as int?,
-    bio: data['bio']?.toString(),
-    userId: data['user_id']?.toString(),
-    tags: _parseTags(data['tags']),
-    avatarUrl: data['avatar_url']?.toString(),
-    locality: data['locality_address']?.toString(),
-    availability: data['availability'] == null
-        ? null
-        : ScoutAvailability.values.firstWhere(
-            (a) => a.name == data['availability'],
-            orElse: () => ScoutAvailability.offline,
-          ),
-    sessionPricing: _parsePricing(data['session_pricing']),
-    clips: _parseClips(data['profile_clips']),
-    fulfillmentRate: (data['fulfillment_rate'] as num?)?.toDouble(),
-    avgResponseMinutes: (data['avg_response_minutes'] as num?)?.toDouble(),
-    languages: _parseLanguages(data['languages']),
-  );
+  factory ProfileModel.fromMap(Map<String, dynamic> data) {
+    final (:latitude, :longitude) = EwkbParser.parsePoint(
+      data['locality_geo']?.toString(),
+    );
+
+    return ProfileModel(
+      id: data['id']?.toString(),
+      createdAt: data['created_at']?.toString(),
+      updatedAt: data['updated_at']?.toString(),
+      firstName: data['first_name']?.toString(),
+      lastName: data['last_name']?.toString(),
+      role: UserRole.values.firstWhere(
+        (v) => v.name == data['role'],
+        orElse: () => UserRole.client,
+      ),
+      status: UserStatus.values.firstWhere(
+        (s) => s.name == data['status'],
+        orElse: () => UserStatus.inactive,
+      ),
+      rating: (data['rating'] as num?)?.toDouble(),
+      totalReviews: data['total_reviews'] as int?,
+      bio: data['bio']?.toString(),
+      userId: data['user_id']?.toString(),
+      tags: _parseTags(data['tags']),
+      avatarUrl: data['avatar_url']?.toString(),
+      locality: data['locality_address']?.toString(),
+      localityGeo: latitude != null && longitude != null
+          ? (lat: latitude, lng: longitude)
+          : null,
+      availability: data['availability'] == null
+          ? null
+          : ScoutAvailability.values.firstWhere(
+              (a) => a.name == data['availability'],
+              orElse: () => ScoutAvailability.offline,
+            ),
+      sessionPricing: _parsePricing(data['session_pricing']),
+      clips: _parseClips(data['profile_clips']),
+      fulfillmentRate: (data['fulfillment_rate'] as num?)?.toDouble(),
+      avgResponseMinutes: (data['avg_response_minutes'] as num?)?.toDouble(),
+      languages: _parseLanguages(data['languages']),
+    );
+  }
 
   static List<String> _parseLanguages(dynamic raw) {
     if (raw is List) {

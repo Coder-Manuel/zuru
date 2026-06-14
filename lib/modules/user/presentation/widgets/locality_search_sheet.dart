@@ -1,30 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:zuru/core/utils/size.util.dart';
+import 'package:zuru/modules/user/presentation/controllers/scout_profile_edit_controller.dart';
 
-/// Preset localities offered before falling back to a custom entry.
-const _kPresetLocalities = [
-  'Nairobi',
-  'Mombasa',
-  'Kisumu',
-  'Nakuru',
-  'Eldoret',
-  'Homabay',
-  'Kisii',
-  'Nyeri',
-  'Thika',
-  'Machakos',
-  'Kakamega',
-  'Meru',
-];
-
-/// Opens the "Search Locality" bottom sheet. Calls [onSelected] with the
-/// chosen (preset or custom) locality.
-Future<void> showLocalitySearchSheet(
-  BuildContext context, {
-  String? initial,
-  required ValueChanged<String> onSelected,
-}) {
+/// Opens the "Search Locality" bottom sheet — a live Google Places autocomplete
+/// that resolves the chosen place to a formatted address + coordinates on the
+/// [ScoutProfileEditController].
+Future<void> showLocalitySearchSheet(BuildContext context) {
+  final controller = Get.find<ScoutProfileEditController>();
   return showModalBottomSheet(
     context: context,
     isScrollControlled: true,
@@ -32,30 +15,20 @@ Future<void> showLocalitySearchSheet(
     shape: const RoundedRectangleBorder(
       borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
     ),
-    builder: (_) => _LocalitySearchSheet(initial: initial, onSelected: onSelected),
-  );
+    builder: (_) => const _LocalitySearchSheet(),
+  ).whenComplete(controller.onLocalitySheetClosed);
 }
 
 class _LocalitySearchSheet extends StatefulWidget {
-  final String? initial;
-  final ValueChanged<String> onSelected;
-
-  const _LocalitySearchSheet({this.initial, required this.onSelected});
+  const _LocalitySearchSheet();
 
   @override
   State<_LocalitySearchSheet> createState() => _LocalitySearchSheetState();
 }
 
 class _LocalitySearchSheetState extends State<_LocalitySearchSheet> {
-  late final TextEditingController _searchCTRL;
-  String _query = '';
-
-  @override
-  void initState() {
-    super.initState();
-    _searchCTRL = TextEditingController(text: widget.initial ?? '');
-    _query = widget.initial ?? '';
-  }
+  final controller = Get.find<ScoutProfileEditController>();
+  final _searchCTRL = TextEditingController();
 
   @override
   void dispose() {
@@ -63,25 +36,10 @@ class _LocalitySearchSheetState extends State<_LocalitySearchSheet> {
     super.dispose();
   }
 
-  List<String> get _matches {
-    final q = _query.trim().toLowerCase();
-    if (q.isEmpty) return _kPresetLocalities;
-    return _kPresetLocalities
-        .where((l) => l.toLowerCase().contains(q))
-        .toList();
-  }
-
-  void _select(String value) {
-    widget.onSelected(value);
-    Get.back();
-  }
-
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
     final bodyColor = Theme.of(context).textTheme.bodyMedium?.color;
-    final matches = _matches;
-    final query = _query.trim();
 
     return Padding(
       padding: EdgeInsets.fromLTRB(
@@ -111,7 +69,7 @@ class _LocalitySearchSheetState extends State<_LocalitySearchSheet> {
                     ),
                     4.verticalSpace,
                     Text(
-                      'Select from suggestions or enter custom location',
+                      'Search a place — we’ll save the address and pin it on the map',
                       style: TextStyle(color: bodyColor, fontSize: 13),
                     ),
                   ],
@@ -139,12 +97,28 @@ class _LocalitySearchSheetState extends State<_LocalitySearchSheet> {
           TextField(
             controller: _searchCTRL,
             autofocus: true,
+            textInputAction: TextInputAction.search,
             style: TextStyle(color: scheme.onSurface, fontSize: 15),
-            onChanged: (v) => setState(() => _query = v),
+            onChanged: controller.searchLocality,
             decoration: InputDecoration(
-              hintText: 'Search…',
+              hintText: 'Search town, area or address…',
               hintStyle: TextStyle(color: bodyColor),
               prefixIcon: Icon(Icons.search_rounded, color: bodyColor),
+              suffixIcon: Obx(
+                () => controller.isSearchingLocality.value
+                    ? Padding(
+                        padding: const EdgeInsets.all(14),
+                        child: SizedBox(
+                          width: 16,
+                          height: 16,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: scheme.primary,
+                          ),
+                        ),
+                      )
+                    : const SizedBox.shrink(),
+              ),
               filled: true,
               fillColor: scheme.surface,
               contentPadding: const EdgeInsets.symmetric(vertical: 16),
@@ -154,104 +128,78 @@ class _LocalitySearchSheetState extends State<_LocalitySearchSheet> {
               ),
             ),
           ),
-          20.verticalSpace,
-          Text(
-            'SUGGESTED LOCALITIES',
-            style: TextStyle(
-              color: bodyColor,
-              fontSize: 11,
-              fontWeight: FontWeight.w700,
-              letterSpacing: 1,
-            ),
-          ),
           16.verticalSpace,
-          if (matches.isNotEmpty)
-            Wrap(
-              spacing: 8,
-              runSpacing: 8,
-              children: matches
-                  .map(
-                    (l) => GestureDetector(
-                      onTap: () => _select(l),
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 10,
-                        ),
-                        decoration: BoxDecoration(
-                          color: scheme.surface,
-                          borderRadius: BorderRadius.circular(20),
-                          border: Border.all(
-                            color: bodyColor?.withAlpha(50) ?? Colors.grey,
-                          ),
-                        ),
-                        child: Text(
-                          l,
-                          style: TextStyle(
-                            color: scheme.onSurface,
-                            fontSize: 14,
-                          ),
-                        ),
+          Flexible(
+            child: Obx(() {
+              final suggestions = controller.localitySuggestions;
+              final query = _searchCTRL.text.trim();
+
+              if (controller.isResolvingLocality.value) {
+                return Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 24),
+                  child: Center(
+                    child: SizedBox(
+                      width: 22,
+                      height: 22,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: scheme.primary,
                       ),
                     ),
-                  )
-                  .toList(),
-            )
-          else
-            Center(
-              child: Column(
-                children: [
-                  Text(
-                    'No presets match "$query"',
+                  ),
+                );
+              }
+
+              if (suggestions.isEmpty) {
+                return Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 18),
+                  child: Text(
+                    query.isEmpty
+                        ? 'Start typing to search locations'
+                        : controller.isSearchingLocality.value
+                        ? 'Searching…'
+                        : 'No matches for "$query"',
                     style: TextStyle(color: bodyColor, fontSize: 14),
                   ),
-                  16.verticalSpace,
-                  GestureDetector(
-                    onTap: () => _select(query),
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 20,
-                        vertical: 12,
-                      ),
-                      decoration: BoxDecoration(
-                        color: scheme.primary.withAlpha(30),
-                        borderRadius: BorderRadius.circular(14),
-                        border: Border.all(color: scheme.primary.withAlpha(120)),
-                      ),
-                      child: Text(
-                        'Use Custom: "$query"',
-                        style: TextStyle(
-                          color: scheme.primary,
-                          fontSize: 14,
-                          fontWeight: FontWeight.w700,
-                        ),
+                );
+              }
+
+              return ListView.separated(
+                shrinkWrap: true,
+                padding: EdgeInsets.zero,
+                itemCount: suggestions.length,
+                separatorBuilder: (_, _) =>
+                    Divider(color: bodyColor?.withAlpha(30), height: 1),
+                itemBuilder: (_, i) {
+                  final s = suggestions[i];
+                  return ListTile(
+                    contentPadding: EdgeInsets.zero,
+                    leading: Icon(
+                      Icons.place_rounded,
+                      color: scheme.primary,
+                      size: 20,
+                    ),
+                    title: Text(
+                      s.mainText,
+                      style: TextStyle(
+                        color: scheme.onSurface,
+                        fontSize: 15,
+                        fontWeight: FontWeight.w600,
                       ),
                     ),
-                  ),
-                ],
-              ),
-            ),
-          24.verticalSpace,
-          SizedBox(
-            width: double.infinity,
-            child: TextButton(
-              onPressed: Get.back,
-              style: TextButton.styleFrom(
-                backgroundColor: scheme.surface,
-                padding: const EdgeInsets.symmetric(vertical: 16),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(14),
-                ),
-              ),
-              child: Text(
-                'Cancel',
-                style: TextStyle(
-                  color: scheme.onSurface,
-                  fontSize: 15,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-            ),
+                    subtitle: s.secondaryText.isEmpty
+                        ? null
+                        : Text(
+                            s.secondaryText,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(color: bodyColor, fontSize: 13),
+                          ),
+                    onTap: () => controller.selectLocalitySuggestion(s),
+                  );
+                },
+              );
+            }),
           ),
         ],
       ),

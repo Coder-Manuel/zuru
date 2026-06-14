@@ -294,11 +294,7 @@ class _PreviewCard extends GetView<ScoutProfileEditController> {
   }
 
   void _openLocalitySheet(BuildContext context) {
-    showLocalitySearchSheet(
-      context,
-      initial: controller.locality.value,
-      onSelected: controller.setLocality,
-    );
+    showLocalitySearchSheet(context);
   }
 }
 

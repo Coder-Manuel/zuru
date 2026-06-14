@@ -138,6 +138,9 @@ class LiveRequestController extends GetxController {
         price: total.toDouble(),
         durationInSec: tier.durationMinutes * 60,
         scheduledAt: schedule,
+        address: scout.locality,
+        lat: scout.localityGeo?.lat,
+        lng: scout.localityGeo?.lng,
       ),
     );
 

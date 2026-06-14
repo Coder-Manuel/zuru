@@ -18,6 +18,7 @@ abstract class Profile extends BaseEntity {
   // ── Scout World Profile ────────────────────────────────────────────────────
   final String? avatarUrl;
   final String? locality;
+  final ({double lat, double lng})? localityGeo;
   final ScoutAvailability? availability;
   final List<SessionPricing> sessionPricing;
   final List<ProfileClip> clips;
@@ -47,6 +48,7 @@ abstract class Profile extends BaseEntity {
     this.tags = const [],
     this.avatarUrl,
     this.locality,
+    this.localityGeo,
     this.availability,
     this.sessionPricing = const [],
     this.clips = const [],

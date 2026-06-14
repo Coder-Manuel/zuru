@@ -23,6 +23,9 @@ class LiveRequestInput {
 
   /// Scheduled start time. Null means "now".
   final DateTime? scheduledAt;
+  final String? address;
+  final double? lat;
+  final double? lng;
 
   const LiveRequestInput({
     required this.scoutId,
@@ -31,6 +34,9 @@ class LiveRequestInput {
     required this.price,
     required this.durationInSec,
     this.scheduledAt,
+    this.address,
+    this.lat,
+    this.lng,
   });
 
   Map<String, dynamic> toMap() => {
@@ -42,5 +48,7 @@ class LiveRequestInput {
     'type': MissionType.liveRequest.apiValue,
     // location is intentionally omitted (null) for live requests.
     'scheduled_at': scheduledAt?.toUtc().toIso8601String(),
+    'address': address,
+    'location': 'POINT($lng $lat)',
   };
 }

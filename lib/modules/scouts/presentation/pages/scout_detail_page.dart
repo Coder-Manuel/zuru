@@ -323,8 +323,8 @@ class _ClipsCatalogue extends StatelessWidget {
         return Expanded(
           child: Padding(
             padding: EdgeInsets.only(right: isLast ? 0 : 12),
-            child: AspectRatio(
-              aspectRatio: 2.8,
+            child: SizedBox(
+              height: 100,
               child: _ClipTile(
                 mediaUrl: clip.mediaUrl,
                 label: label,

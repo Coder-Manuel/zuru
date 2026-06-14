@@ -8,7 +8,8 @@ import 'package:zuru/core/models/session_pricing.model.dart';
 class ScoutProfileEditInput {
   final String bio;
   final List<String> tags;
-  final String? locality;
+  final String? localityAddress;
+  final ({double lat, double lng})? localityGeo;
   final ScoutAvailability availability;
   final String? avatarUrl;
   final List<SessionPricing> sessionPricing;
@@ -16,7 +17,8 @@ class ScoutProfileEditInput {
   const ScoutProfileEditInput({
     required this.bio,
     required this.tags,
-    required this.locality,
+    this.localityAddress,
+    this.localityGeo,
     required this.availability,
     required this.avatarUrl,
     required this.sessionPricing,
@@ -25,7 +27,10 @@ class ScoutProfileEditInput {
   Map<String, dynamic> toMap() => {
     'bio': bio,
     'tags': tags.join(','),
-    'locality_address': locality,
+    'locality_address': localityAddress,
+    'locality_geo': localityGeo == null
+        ? null
+        : 'POINT(${localityGeo!.lng} ${localityGeo!.lat})',
     'availability': availability.name,
     if (avatarUrl != null) 'avatar_url': avatarUrl,
     'session_pricing': sessionPricing
