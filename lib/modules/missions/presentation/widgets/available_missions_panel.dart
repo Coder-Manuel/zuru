@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:zuru/config/scout_colors.dart';
-import 'package:zuru/core/utils/extensions.dart';
 import 'package:zuru/core/utils/size.util.dart';
-import 'package:zuru/core/widgets/location_listener.builder.dart';
-import 'package:zuru/modules/missions/domain/entities/mission.entity.dart';
 import 'package:zuru/modules/missions/presentation/controllers/radar_controller.dart';
-import 'package:zuru/modules/missions/presentation/pages/mission_details_page.dart';
+import 'package:zuru/modules/missions/presentation/widgets/all_missions_sheet.dart';
+import 'package:zuru/modules/missions/presentation/widgets/mission_card.dart';
 
 class MissionsPanel extends GetView<RadarController> {
   const MissionsPanel({super.key});
@@ -19,8 +17,8 @@ class MissionsPanel extends GetView<RadarController> {
         id: controller.missionsBuilder,
         builder: (_) {
           final all = controller.missions;
-          // Show at most 4 missions in the bottom list per design
-          final preview = all.take(4).toList();
+          // Show at most 3 missions in the bottom list per design
+          final preview = all.take(3).toList();
           final count = all.length;
 
           return Column(
@@ -44,6 +42,11 @@ class MissionsPanel extends GetView<RadarController> {
 
               // List or empty placeholder
               Obx(() {
+                // Append a trailing "See All" row when there are more missions
+                // than the preview shows.
+                final hasMore = count > preview.length;
+                final itemCount = preview.length + (hasMore ? 1 : 0);
+
                 return Expanded(
                   child: controller.isLoading.value
                       ? const _LoadingShimmer()
@@ -51,17 +54,67 @@ class MissionsPanel extends GetView<RadarController> {
                       ? const _NoMissionsPlaceholder()
                       : ListView.separated(
                           padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-                          itemCount: preview.length,
+                          itemCount: itemCount,
                           separatorBuilder: (_, _) =>
                               const SizedBox(height: 10),
-                          itemBuilder: (_, i) =>
-                              _MissionCard(mission: preview[i]),
+                          itemBuilder: (_, i) {
+                            if (hasMore && i == preview.length) {
+                              return _SeeAllButton(
+                                count: count,
+                                onTap: () => showAllMissionsSheet(context),
+                              );
+                            }
+                            return MissionCard(mission: preview[i]);
+                          },
                         ),
                 );
               }),
             ],
           );
         },
+      ),
+    );
+  }
+}
+
+// ── "See all" button ──────────────────────────────────────────────────────────
+class _SeeAllButton extends StatelessWidget {
+  final int count;
+  final VoidCallback onTap;
+
+  const _SeeAllButton({required this.count, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.symmetric(vertical: 16),
+        decoration: BoxDecoration(
+          color: ScoutColors.surface,
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(color: ScoutColors.primary.withAlpha(60)),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              'See all $count missions',
+              style: TextStyle(
+                color: ScoutColors.textAccent,
+                fontWeight: FontWeight.w700,
+                fontSize: 14,
+              ),
+            ),
+            6.horizontalSpace,
+            Icon(
+              Icons.arrow_forward_rounded,
+              color: ScoutColors.textAccent,
+              size: 18,
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -130,92 +183,6 @@ class _LoadingShimmer extends StatelessWidget {
         decoration: BoxDecoration(
           color: ScoutColors.surface,
           borderRadius: BorderRadius.circular(14),
-        ),
-      ),
-    );
-  }
-}
-
-// ── Mission card ──────────────────────────────────────────────────────────────
-class _MissionCard extends StatelessWidget {
-  final MissionEntity mission;
-
-  const _MissionCard({required this.mission});
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () => Get.toNamed(MissionDetailsPage.route, arguments: mission),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
-        decoration: BoxDecoration(
-          color: ScoutColors.surface,
-          borderRadius: BorderRadius.circular(14),
-        ),
-        child: Row(
-          children: [
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    '${mission.type?.label} \n${mission.address}',
-                    style: TextStyle(
-                      color: ScoutColors.textPrimary,
-                      fontWeight: FontWeight.w600,
-                      fontSize: 15,
-                    ),
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  6.verticalSpace,
-                  Row(
-                    children: [
-                      Row(
-                        children: [
-                          Icon(
-                            Icons.timer_outlined,
-                            size: 15,
-                            color: ScoutColors.primary,
-                          ),
-                          5.horizontalSpace,
-                          Text(
-                            '${((mission.durationInSec / 60).round())}min',
-                            style: TextStyle(
-                              color: ScoutColors.textSecondary,
-                              fontSize: 13,
-                            ),
-                          ),
-                        ],
-                      ),
-                      10.horizontalSpace,
-                      LocationListenerBuilder(
-                        latitude: mission.latitude ?? 0.0,
-                        longitude: mission.longitude ?? 0.0,
-                        builder: (_, distance) {
-                          return Text(
-                            '${distance?.formatDistance} away',
-                            style: TextStyle(
-                              color: ScoutColors.textSecondary,
-                              fontSize: 13,
-                            ),
-                          );
-                        },
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-            16.horizontalSpace,
-            Text(
-              mission.formattedPrice,
-              style: TextStyle(
-                color: ScoutColors.textAccent,
-                fontWeight: FontWeight.w700,
-                fontSize: 16,
-              ),
-            ),
-          ],
         ),
       ),
     );
