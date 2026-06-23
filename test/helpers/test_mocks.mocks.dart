@@ -613,6 +613,28 @@ class MockMissionsRepository extends _i1.Mock
                 ),
           )
           as _i6.Future<_i2.Either<_i7.ApiFail, void>>);
+
+  @override
+  _i6.Future<_i2.Either<_i7.ApiFail, void>> declineMission(
+    _i12.DeclineMissionInput? input,
+  ) =>
+      (super.noSuchMethod(
+            Invocation.method(#declineMission, [input]),
+            returnValue: _i6.Future<_i2.Either<_i7.ApiFail, void>>.value(
+              _FakeEither_0<_i7.ApiFail, void>(
+                this,
+                Invocation.method(#declineMission, [input]),
+              ),
+            ),
+            returnValueForMissingStub:
+                _i6.Future<_i2.Either<_i7.ApiFail, void>>.value(
+                  _FakeEither_0<_i7.ApiFail, void>(
+                    this,
+                    Invocation.method(#declineMission, [input]),
+                  ),
+                ),
+          )
+          as _i6.Future<_i2.Either<_i7.ApiFail, void>>);
 }
 
 /// A class which mocks [User].
@@ -1171,12 +1193,12 @@ class MockRemoteMissionsDatasource extends _i1.Mock
   @override
   _i6.Future<Map<String, dynamic>?> updateMissionStatus({
     required String? missionId,
-    required String? status,
+    required Map<String, dynamic>? values,
   }) =>
       (super.noSuchMethod(
             Invocation.method(#updateMissionStatus, [], {
               #missionId: missionId,
-              #status: status,
+              #values: values,
             }),
             returnValue: _i6.Future<Map<String, dynamic>?>.value(),
             returnValueForMissingStub:

@@ -8,6 +8,7 @@ import 'package:zuru/modules/missions/data/sources/remote_places_datasource.dart
 import 'package:zuru/modules/missions/domain/repository/missions_repository.dart';
 import 'package:zuru/modules/missions/domain/usecases/accept_mission.usecase.dart';
 import 'package:zuru/modules/missions/domain/usecases/create_live_request.usecase.dart';
+import 'package:zuru/modules/missions/domain/usecases/decline_mission.usecase.dart';
 import 'package:zuru/modules/missions/domain/usecases/get_my_missions.usecase.dart';
 import 'package:zuru/modules/missions/domain/usecases/get_nearby_scouts.usecase.dart';
 import 'package:zuru/modules/missions/domain/usecases/nearby_missions.usecase.dart';
@@ -89,6 +90,10 @@ class MissionsBindings extends Bindings {
     );
     Get.lazyPut<UpdateMissionStatusUseCase>(
       () => UpdateMissionStatusUseCase(repo: Get.find<MissionsRepository>()),
+      fenix: true,
+    );
+    Get.lazyPut<DeclineMissionUseCase>(
+      () => DeclineMissionUseCase(repo: Get.find<MissionsRepository>()),
       fenix: true,
     );
 

@@ -33,4 +33,5 @@ abstract class MissionsRepository {
   Future<RepoResponse<void>> updateMissionStatus(
     UpdateMissionStatusInput input,
   );
+  Future<RepoResponse<void>> declineMission(DeclineMissionInput input);
 }

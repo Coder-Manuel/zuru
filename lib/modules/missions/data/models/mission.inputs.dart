@@ -45,6 +45,19 @@ class UpdateMissionStatusInput {
   });
 }
 
+class DeclineMissionInput {
+  final String missionId;
+  final MissionStatus status;
+
+  const DeclineMissionInput({required this.missionId, required this.status});
+
+  Map<String, dynamic> toMap() => {
+    'status': status.name,
+    'scout_id': null,
+    'accepted_at': null,
+  };
+}
+
 // ── Client inputs ─────────────────────────────────────────────────────────────
 
 class PostMissionInput {

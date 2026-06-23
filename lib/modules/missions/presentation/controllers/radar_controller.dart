@@ -8,8 +8,8 @@ import 'package:zuru/modules/missions/data/models/enum.dart';
 import 'package:zuru/modules/missions/data/models/mission.inputs.dart';
 import 'package:zuru/modules/missions/domain/entities/mission.entity.dart';
 import 'package:zuru/modules/missions/domain/usecases/accept_mission.usecase.dart';
+import 'package:zuru/modules/missions/domain/usecases/decline_mission.usecase.dart';
 import 'package:zuru/modules/missions/domain/usecases/nearby_missions.usecase.dart';
-import 'package:zuru/modules/missions/domain/usecases/update_mission_status.usecase.dart';
 import 'package:zuru/modules/missions/domain/usecases/watch_active_mission.usecase.dart';
 import 'package:zuru/modules/missions/presentation/pages/mission_details_page.dart';
 import 'package:zuru/modules/user/presentation/controllers/user_controller.dart';
@@ -19,7 +19,7 @@ class RadarController extends GetxController
   final _watchNearbyUseCase = Get.find<NearbyMissionsUseCase>();
   final _watchActiveUseCase = Get.find<WatchActiveMissionUseCase>();
   final _acceptUseCase = Get.find<AcceptMissionUseCase>();
-  final _updateStatusUseCase = Get.find<UpdateMissionStatusUseCase>();
+  final _declineMissionUseCase = Get.find<DeclineMissionUseCase>();
   final _locationService = Get.find<LocationService>();
 
   late final AnimationController sweepController;
@@ -188,8 +188,8 @@ class RadarController extends GetxController
 
     isUpdatingStatus.value = true;
 
-    final result = await _updateStatusUseCase(
-      UpdateMissionStatusInput(
+    final result = await _declineMissionUseCase(
+      DeclineMissionInput(
         missionId: mission!.id!,
         status: MissionStatus.cancelled,
       ),

@@ -23,7 +23,7 @@ abstract class RemoteMissionsDatasource {
   Stream<Map<String, dynamic>?> watchScoutActiveMission(String? profileId);
   Future<Map<String, dynamic>?> updateMissionStatus({
     required String missionId,
-    required String status,
+    required Map<String, dynamic> values,
   });
 }
 
@@ -395,13 +395,9 @@ class RemoteMissionsDatasourceImpl extends RemoteMissionsDatasource {
   @override
   Future<Map<String, dynamic>?> updateMissionStatus({
     required String missionId,
-    required String status,
+    required Map<String, dynamic> values,
   }) {
-    return client
-        .from('missions')
-        .update({'status': status})
-        .eq('id', missionId)
-        .select("""
+    return client.from('missions').update(values).eq('id', missionId).select("""
           *,
           client:client_id (
             id,
@@ -411,7 +407,6 @@ class RemoteMissionsDatasourceImpl extends RemoteMissionsDatasource {
             rating,
             total_reviews
           )
-        """)
-        .single();
+        """).single();
   }
 }

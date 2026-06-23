@@ -42,8 +42,7 @@ class MissionsRepositoryImpl extends MissionsRepository {
         final data = await remoteDatasource.createLiveRequest(input.toMap());
         return SuccessResponse(MissionModel.fromMap(data));
       },
-      onError: (_) =>
-          FailureResponse('Failed to send request, kindly retry'),
+      onError: (_) => FailureResponse('Failed to send request, kindly retry'),
       library: _library,
       description: 'while creating live request',
     );
@@ -221,7 +220,7 @@ class MissionsRepositoryImpl extends MissionsRepository {
       () async {
         await remoteDatasource.updateMissionStatus(
           missionId: input.missionId,
-          status: input.status.name,
+          values: {'status': input.status.name},
         );
         return true;
       },
@@ -231,6 +230,26 @@ class MissionsRepositoryImpl extends MissionsRepository {
     );
     if (ok != true) {
       return FailureResponse('Failed to update mission. Please try again.');
+    }
+    return SuccessResponse(null);
+  }
+
+  @override
+  Future<RepoResponse<void>> declineMission(DeclineMissionInput input) async {
+    final ok = await ErrorWrapper.async<bool>(
+      () async {
+        await remoteDatasource.updateMissionStatus(
+          missionId: input.missionId,
+          values: input.toMap(),
+        );
+        return true;
+      },
+      onError: (_) => false,
+      library: _library,
+      description: 'while declining mission',
+    );
+    if (ok != true) {
+      return FailureResponse('Failed to decline mission. Please try again.');
     }
     return SuccessResponse(null);
   }
