@@ -101,9 +101,9 @@ void main() {
 
   group('getMyMissions', () {
     test('maps every returned row', () async {
-      when(ds.getMyMissions()).thenAnswer(
-        (_) async => [missionRow(id: 'm1'), missionRow(id: 'm2')],
-      );
+      when(
+        ds.getMyMissions(),
+      ).thenAnswer((_) async => [missionRow(id: 'm1'), missionRow(id: 'm2')]);
 
       final result = await repo.getMyMissions();
 
@@ -317,9 +317,9 @@ void main() {
 
   group('watchLiveSession', () {
     test('emits a mapped SessionEntity', () {
-      when(ds.watchLiveSessions(any)).thenAnswer(
-        (_) => Stream.value({'id': 's1', 'status': 'active'}),
-      );
+      when(
+        ds.watchLiveSessions(any),
+      ).thenAnswer((_) => Stream.value({'id': 's1', 'status': 'active'}));
 
       expect(
         repo.watchLiveSession(['m1']).map((e) => e.isRight()),

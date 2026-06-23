@@ -16,7 +16,11 @@ class SessionPricing {
   /// Human label used in the UI, e.g. "10 min session".
   String get label => '$durationMinutes min session';
 
-  SessionPricing copyWith({int? durationMinutes, num? price, String? currency}) {
+  SessionPricing copyWith({
+    int? durationMinutes,
+    num? price,
+    String? currency,
+  }) {
     return SessionPricing(
       durationMinutes: durationMinutes ?? this.durationMinutes,
       price: price ?? this.price,

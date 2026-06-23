@@ -31,9 +31,8 @@ class ScoutsBindings extends Bindings {
 
     // Feed controller backs the client "Scouts" tab (always alive).
     Get.lazyPut<ScoutsFeedController>(
-      () => ScoutsFeedController(
-        getScoutsFeed: Get.find<GetScoutsFeedUseCase>(),
-      ),
+      () =>
+          ScoutsFeedController(getScoutsFeed: Get.find<GetScoutsFeedUseCase>()),
       fenix: true,
     );
 

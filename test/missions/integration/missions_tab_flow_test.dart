@@ -43,34 +43,37 @@ void main() {
     return controller;
   }
 
-  testWidgets('a datasource row renders as a mission card through the full stack',
-      (tester) async {
-    when(ds.getMyMissions()).thenAnswer(
-      (_) async => [
-        {
-          'id': 'm1',
-          'description': 'Verify the venue',
-          'currency': 'KES',
-          'price': 1500,
-          'duration_in_sec': 1800,
-          'address': '123 Riverside',
-          'status': 'open',
-        },
-      ],
-    );
+  testWidgets(
+    'a datasource row renders as a mission card through the full stack',
+    (tester) async {
+      when(ds.getMyMissions()).thenAnswer(
+        (_) async => [
+          {
+            'id': 'm1',
+            'description': 'Verify the venue',
+            'currency': 'KES',
+            'price': 1500,
+            'duration_in_sec': 1800,
+            'address': '123 Riverside',
+            'status': 'open',
+          },
+        ],
+      );
 
-    final controller = await pumpTab(tester);
+      final controller = await pumpTab(tester);
 
-    verify(ds.getMyMissions()).called(1);
-    // Chain populated the controller…
-    expect(controller.isLoading.value, isFalse);
-    expect(controller.filteredMissions, hasLength(1));
-    // …and the card rendered the mission's description.
-    expect(find.text('Verify the venue'), findsOneWidget);
-  });
+      verify(ds.getMyMissions()).called(1);
+      // Chain populated the controller…
+      expect(controller.isLoading.value, isFalse);
+      expect(controller.filteredMissions, hasLength(1));
+      // …and the card rendered the mission's description.
+      expect(find.text('Verify the venue'), findsOneWidget);
+    },
+  );
 
-  testWidgets('a datasource failure leaves the list empty (error is handled)',
-      (tester) async {
+  testWidgets('a datasource failure leaves the list empty (error is handled)', (
+    tester,
+  ) async {
     when(ds.getMyMissions()).thenThrow(Exception('network down'));
 
     final controller = await pumpTab(tester);

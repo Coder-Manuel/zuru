@@ -110,16 +110,18 @@ void main() {
       verify(ds.logout()).called(1);
     });
 
-    test('maps a thrown invalid_credentials error to a friendly message',
-        () async {
-      when(
-        ds.loginWithPassword(data: anyNamed('data')),
-      ).thenThrow(Exception('invalid_credentials'));
+    test(
+      'maps a thrown invalid_credentials error to a friendly message',
+      () async {
+        when(
+          ds.loginWithPassword(data: anyNamed('data')),
+        ).thenThrow(Exception('invalid_credentials'));
 
-      final result = await repo.login(input);
+        final result = await repo.login(input);
 
-      expect(messageOf(result), 'Invalid credentials, kindly retry');
-    });
+        expect(messageOf(result), 'Invalid credentials, kindly retry');
+      },
+    );
 
     test('maps any other thrown error to the generic message', () async {
       when(
@@ -153,13 +155,17 @@ void main() {
 
     test('rejects a non-client role and logs back out', () async {
       when(ds.signupWithOAuth(data: anyNamed('data'))).thenAnswer(
-        (_) async => authResponse(accessToken: _fakeJwt({'user_role': 'scout'})),
+        (_) async =>
+            authResponse(accessToken: _fakeJwt({'user_role': 'scout'})),
       );
       when(ds.logout()).thenAnswer((_) async {});
 
       final result = await repo.loginWithOAuth(input);
 
-      expect(messageOf(result), 'This app is for Clients only. Use the Scout app.');
+      expect(
+        messageOf(result),
+        'This app is for Clients only. Use the Scout app.',
+      );
       verify(ds.logout()).called(1);
     });
 
@@ -183,20 +189,22 @@ void main() {
       role: UserRole.client,
     );
 
-    test('maps the returned user (no session needed pre-verification)',
-        () async {
-      when(ds.signUp(data: anyNamed('data'))).thenAnswer(
-        (_) async => authResponse(
-          withSession: false,
-          userJson: {'id': 'u1', 'email': 'new@b.com'},
-        ),
-      );
+    test(
+      'maps the returned user (no session needed pre-verification)',
+      () async {
+        when(ds.signUp(data: anyNamed('data'))).thenAnswer(
+          (_) async => authResponse(
+            withSession: false,
+            userJson: {'id': 'u1', 'email': 'new@b.com'},
+          ),
+        );
 
-      final result = await repo.signup(input);
+        final result = await repo.signup(input);
 
-      expect(result.isRight(), isTrue);
-      expect(result.getOrElse(() => throw 'x').email, 'new@b.com');
-    });
+        expect(result.isRight(), isTrue);
+        expect(result.getOrElse(() => throw 'x').email, 'new@b.com');
+      },
+    );
 
     test('fails when no user is returned', () async {
       when(
@@ -215,21 +223,24 @@ void main() {
     final input = VerifyOtpInput.email(otp: '123456', email: 'a@b.com');
 
     test('returns the user on a valid session', () async {
-      when(ds.verifyOTP(data: anyNamed('data'), otpType: anyNamed('otpType')))
-          .thenAnswer(
+      when(
+        ds.verifyOTP(data: anyNamed('data'), otpType: anyNamed('otpType')),
+      ).thenAnswer(
         (_) async => authResponse(userJson: {'id': 'u1', 'email': 'a@b.com'}),
       );
 
       final result = await repo.verifyEmailOtp(input);
 
       expect(result.isRight(), isTrue);
-      verify(ds.verifyOTP(data: input.toMap(), otpType: OtpType.email))
-          .called(1);
+      verify(
+        ds.verifyOTP(data: input.toMap(), otpType: OtpType.email),
+      ).called(1);
     });
 
     test('fails on a missing session (invalid/expired code)', () async {
-      when(ds.verifyOTP(data: anyNamed('data'), otpType: anyNamed('otpType')))
-          .thenAnswer((_) async => authResponse(withSession: false));
+      when(
+        ds.verifyOTP(data: anyNamed('data'), otpType: anyNamed('otpType')),
+      ).thenAnswer((_) async => authResponse(withSession: false));
 
       final result = await repo.verifyEmailOtp(input);
 
@@ -241,23 +252,27 @@ void main() {
     final input = VerifyOtpInput.phone(otp: '654321', phone: '+254700000000');
 
     test('returns the user on a valid session', () async {
-      when(ds.verifyOTP(data: anyNamed('data'), otpType: anyNamed('otpType')))
-          .thenAnswer((_) async => authResponse(userJson: {'id': 'u1'}));
+      when(
+        ds.verifyOTP(data: anyNamed('data'), otpType: anyNamed('otpType')),
+      ).thenAnswer((_) async => authResponse(userJson: {'id': 'u1'}));
 
       expect((await repo.verifyPhoneOtp(input)).isRight(), isTrue);
       verify(ds.verifyOTP(data: input.toMap(), otpType: OtpType.sms)).called(1);
     });
 
-    test('maps an "expired or is invalid" throw to the friendly message',
-        () async {
-      when(ds.verifyOTP(data: anyNamed('data'), otpType: anyNamed('otpType')))
-          .thenThrow(Exception('Token has expired or is invalid'));
+    test(
+      'maps an "expired or is invalid" throw to the friendly message',
+      () async {
+        when(
+          ds.verifyOTP(data: anyNamed('data'), otpType: anyNamed('otpType')),
+        ).thenThrow(Exception('Token has expired or is invalid'));
 
-      expect(
-        messageOf(await repo.verifyPhoneOtp(input)),
-        'Invalid or expired code, kindly retry',
-      );
-    });
+        expect(
+          messageOf(await repo.verifyPhoneOtp(input)),
+          'Invalid or expired code, kindly retry',
+        );
+      },
+    );
   });
 
   // ── boolean-result methods ───────────────────────────────────────────────────
@@ -266,7 +281,9 @@ void main() {
     final input = PhoneSetupInput(phone: '+254700000000');
 
     test('returns true on success', () async {
-      when(ds.updatePhone(input.phone)).thenAnswer((_) async => MockUserResponse());
+      when(
+        ds.updatePhone(input.phone),
+      ).thenAnswer((_) async => MockUserResponse());
 
       expect(await repo.setupPhone(input), Right<ApiFail, bool>(true));
       verify(ds.updatePhone(input.phone)).called(1);
@@ -332,10 +349,7 @@ void main() {
     test('fails when the datasource throws', () async {
       when(ds.logout()).thenThrow(Exception('boom'));
 
-      expect(
-        messageOf(await repo.logout()),
-        'An error occurred, kindly retry',
-      );
+      expect(messageOf(await repo.logout()), 'An error occurred, kindly retry');
     });
   });
 
@@ -347,7 +361,10 @@ void main() {
     test('returns true on success', () async {
       when(ds.sendPasswordResetOtp(input.email)).thenAnswer((_) async {});
 
-      expect(await repo.sendPasswordResetOtp(input), Right<ApiFail, bool>(true));
+      expect(
+        await repo.sendPasswordResetOtp(input),
+        Right<ApiFail, bool>(true),
+      );
       verify(ds.sendPasswordResetOtp('a@b.com')).called(1);
     });
 
@@ -386,8 +403,9 @@ void main() {
         await repo.verifyPasswordResetOtp(input),
         Right<ApiFail, bool>(true),
       );
-      verify(ds.verifyPasswordResetOtp(email: 'a@b.com', otp: '000111'))
-          .called(1);
+      verify(
+        ds.verifyPasswordResetOtp(email: 'a@b.com', otp: '000111'),
+      ).called(1);
     });
 
     test('fails on a missing session', () async {
@@ -423,8 +441,9 @@ void main() {
     final input = UpdatePasswordInput(newPassword: 'new-secret');
 
     test('returns true on success', () async {
-      when(ds.updatePassword(input.newPassword))
-          .thenAnswer((_) async => MockUserResponse());
+      when(
+        ds.updatePassword(input.newPassword),
+      ).thenAnswer((_) async => MockUserResponse());
 
       expect(await repo.updatePassword(input), Right<ApiFail, bool>(true));
       verify(ds.updatePassword('new-secret')).called(1);

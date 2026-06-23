@@ -136,11 +136,7 @@ class _CometRingPainter extends CustomPainter {
       ..strokeWidth = 3
       ..strokeCap = StrokeCap.round
       ..shader = SweepGradient(
-        colors: [
-          color.withAlpha(0),
-          color.withAlpha(40),
-          color.withAlpha(255),
-        ],
+        colors: [color.withAlpha(0), color.withAlpha(40), color.withAlpha(255)],
         stops: const [0.0, 0.65, 1.0],
       ).createShader(rect);
 

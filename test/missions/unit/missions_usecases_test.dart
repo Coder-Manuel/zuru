@@ -87,7 +87,9 @@ void main() {
     setUp(() => useCase = CreateLiveRequestUseCase(repo: repo));
 
     test('returns the created live-request mission on success', () async {
-      when(repo.createLiveRequest(input)).thenAnswer((_) async => Right(mission));
+      when(
+        repo.createLiveRequest(input),
+      ).thenAnswer((_) async => Right(mission));
 
       final result = await useCase(input);
 
@@ -96,7 +98,9 @@ void main() {
     });
 
     test('propagates the repository failure', () async {
-      when(repo.createLiveRequest(input)).thenAnswer((_) async => Left(failure));
+      when(
+        repo.createLiveRequest(input),
+      ).thenAnswer((_) async => Left(failure));
 
       expect((await useCase(input)).isLeft(), isTrue);
       verify(repo.createLiveRequest(input)).called(1);
@@ -161,11 +165,7 @@ void main() {
     test('defaults radiusKm to 5km when omitted', () async {
       const defaulted = NearbyScoutsInput(latitude: 0, longitude: 0);
       when(
-        repo.getNearbyScouts(
-          latitude: 0,
-          longitude: 0,
-          radiusKm: 5.0,
-        ),
+        repo.getNearbyScouts(latitude: 0, longitude: 0, radiusKm: 5.0),
       ).thenAnswer((_) async => Right(<NearbyScout>[]));
 
       await useCase(defaulted);
@@ -221,7 +221,9 @@ void main() {
     setUp(() => useCase = UpdateMissionStatusUseCase(repo: repo));
 
     test('resolves Right(void) on success', () async {
-      when(repo.updateMissionStatus(input)).thenAnswer((_) async => Right(null));
+      when(
+        repo.updateMissionStatus(input),
+      ).thenAnswer((_) async => Right(null));
 
       final result = await useCase(input);
 

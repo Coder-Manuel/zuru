@@ -32,23 +32,25 @@ void main() {
   tearDown(Get.reset);
 
   Future<void> pumpPage(WidgetTester tester) {
-    return tester.pumpWidget(
-      const GetMaterialApp(home: ForgotPasswordPage()),
-    );
+    return tester.pumpWidget(const GetMaterialApp(home: ForgotPasswordPage()));
   }
 
-  testWidgets('renders the heading, email field and submit button',
-      (tester) async {
+  testWidgets('renders the heading, email field and submit button', (
+    tester,
+  ) async {
     await pumpPage(tester);
 
     expect(find.text('Reset Password'), findsOneWidget);
     expect(find.byType(TextFormField), findsOneWidget);
-    expect(find.widgetWithText(ElevatedButton, 'Send Reset Code'),
-        findsOneWidget);
+    expect(
+      find.widgetWithText(ElevatedButton, 'Send Reset Code'),
+      findsOneWidget,
+    );
   });
 
-  testWidgets('shows a required-field error and does not call the repo',
-      (tester) async {
+  testWidgets('shows a required-field error and does not call the repo', (
+    tester,
+  ) async {
     await pumpPage(tester);
 
     await tester.tap(find.widgetWithText(ElevatedButton, 'Send Reset Code'));
@@ -58,8 +60,9 @@ void main() {
     verifyNever(repo.sendPasswordResetOtp(any));
   });
 
-  testWidgets('shows an invalid-email error and does not call the repo',
-      (tester) async {
+  testWidgets('shows an invalid-email error and does not call the repo', (
+    tester,
+  ) async {
     await pumpPage(tester);
 
     await tester.enterText(find.byType(TextFormField), 'not-an-email');

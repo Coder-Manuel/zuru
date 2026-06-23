@@ -23,8 +23,9 @@ void main() {
     Get.testMode = true;
     repo = MockMissionsRepository();
     // Stub before the controller is created — its onReady fetches immediately.
-    when(repo.getMyMissions())
-        .thenAnswer((_) async => Right<ApiFail, List<MissionEntity>>([]));
+    when(
+      repo.getMyMissions(),
+    ).thenAnswer((_) async => Right<ApiFail, List<MissionEntity>>([]));
     Get.put<GetMyMissionsUseCase>(GetMyMissionsUseCase(repo: repo));
     Get.put<MissionsTabController>(MissionsTabController());
   });
@@ -44,8 +45,9 @@ void main() {
     expect(find.text('Completed'), findsOneWidget);
   });
 
-  testWidgets('shows the empty state when there are no missions',
-      (tester) async {
+  testWidgets('shows the empty state when there are no missions', (
+    tester,
+  ) async {
     await tester.pumpWidget(const GetMaterialApp(home: MissionsTab()));
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 100));

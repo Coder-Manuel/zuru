@@ -62,23 +62,26 @@ void main() {
     );
   }
 
-  testWidgets('valid email reaches the datasource and advances to the OTP page',
-      (tester) async {
-    when(ds.sendPasswordResetOtp(any)).thenAnswer((_) async {});
+  testWidgets(
+    'valid email reaches the datasource and advances to the OTP page',
+    (tester) async {
+      when(ds.sendPasswordResetOtp(any)).thenAnswer((_) async {});
 
-    await pumpApp(tester);
-    await tester.enterText(find.byType(TextFormField), 'user@test.com');
-    await tester.tap(find.widgetWithText(ElevatedButton, 'Send Reset Code'));
-    await tester.pumpAndSettle();
+      await pumpApp(tester);
+      await tester.enterText(find.byType(TextFormField), 'user@test.com');
+      await tester.tap(find.widgetWithText(ElevatedButton, 'Send Reset Code'));
+      await tester.pumpAndSettle();
 
-    // Full chain executed down to the mocked datasource…
-    verify(ds.sendPasswordResetOtp('user@test.com')).called(1);
-    // …and the UI advanced to the next step.
-    expect(find.text('otp-page'), findsOneWidget);
-  });
+      // Full chain executed down to the mocked datasource…
+      verify(ds.sendPasswordResetOtp('user@test.com')).called(1);
+      // …and the UI advanced to the next step.
+      expect(find.text('otp-page'), findsOneWidget);
+    },
+  );
 
-  testWidgets('a datasource failure keeps the user on the page',
-      (tester) async {
+  testWidgets('a datasource failure keeps the user on the page', (
+    tester,
+  ) async {
     when(ds.sendPasswordResetOtp(any)).thenThrow(Exception('network down'));
 
     await pumpApp(tester);
@@ -91,7 +94,10 @@ void main() {
     expect(find.text('otp-page'), findsNothing);
     expect(find.byType(ForgotPasswordPage), findsOneWidget);
     // The repository's friendly error surfaces in a snackbar.
-    expect(find.text('Could not send reset code, kindly retry'), findsOneWidget);
+    expect(
+      find.text('Could not send reset code, kindly retry'),
+      findsOneWidget,
+    );
 
     // Drain the snackbar's auto-dismiss timer + exit animation so no ticker or
     // timer is left pending at teardown.
