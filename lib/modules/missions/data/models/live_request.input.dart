@@ -46,7 +46,6 @@ class LiveRequestInput {
     'price': price,
     'duration_in_sec': durationInSec,
     'type': MissionType.liveRequest.apiValue,
-    // location is intentionally omitted (null) for live requests.
     'scheduled_at': scheduledAt?.toUtc().toIso8601String(),
     'address': address,
     'location': 'POINT($lng $lat)',

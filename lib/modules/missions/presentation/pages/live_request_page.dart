@@ -611,67 +611,61 @@ class _TimePicker extends GetView<LiveRequestController> {
   Widget build(BuildContext context) {
     return SizedBox(
       height: 35,
-      child: Builder(
-        builder: (_) {
-          final slots = controller.timeSlots;
-          if (slots.isEmpty) {
-            return const Align(
-              alignment: Alignment.centerLeft,
-              child: Text(
-                'No more slots today — pick another day.',
-                style: TextStyle(
-                  color: ClientColors.textSecondary,
-                  fontSize: 13,
-                ),
-              ),
-            );
-          }
-          return ListView.separated(
-            scrollDirection: Axis.horizontal,
-            itemCount: slots.length,
-            separatorBuilder: (_, _) => 10.horizontalSpace,
-            itemBuilder: (_, i) {
-              return Obx(() {
-                final slot = slots[i];
-                final selected =
-                    controller.selectedSlot.value != null &&
-                    controller.selectedSlot.value!.isAtSameMomentAs(slot);
-                return GestureDetector(
-                  onTap: () => controller.selectSlot(slot),
-                  child: AnimatedContainer(
-                    duration: const Duration(milliseconds: 150),
-                    alignment: Alignment.center,
-                    padding: const EdgeInsets.symmetric(horizontal: 18),
-                    decoration: BoxDecoration(
+      child: Obx(() {
+        controller.selectedDate.value;
+        final slots = controller.timeSlots;
+        if (slots.isEmpty) {
+          return const Align(
+            alignment: Alignment.centerLeft,
+            child: Text(
+              'No more slots today — pick another day.',
+              style: TextStyle(color: ClientColors.textSecondary, fontSize: 13),
+            ),
+          );
+        }
+        return ListView.separated(
+          scrollDirection: Axis.horizontal,
+          itemCount: slots.length,
+          separatorBuilder: (_, _) => 10.horizontalSpace,
+          itemBuilder: (_, i) {
+            return Obx(() {
+              final slot = slots[i];
+              final selected =
+                  controller.selectedSlot.value != null &&
+                  controller.selectedSlot.value!.isAtSameMomentAs(slot);
+              return GestureDetector(
+                onTap: () => controller.selectSlot(slot),
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 150),
+                  alignment: Alignment.center,
+                  padding: const EdgeInsets.symmetric(horizontal: 18),
+                  decoration: BoxDecoration(
+                    color: selected
+                        ? ClientColors.primary.withAlpha(28)
+                        : ClientColors.inputBg.withAlpha(120),
+                    borderRadius: BorderRadius.circular(22),
+                    border: Border.all(
                       color: selected
-                          ? ClientColors.primary.withAlpha(28)
-                          : ClientColors.inputBg.withAlpha(120),
-                      borderRadius: BorderRadius.circular(22),
-                      border: Border.all(
-                        color: selected
-                            ? ClientColors.primary
-                            : ClientColors.divider,
-                      ),
-                    ),
-                    child: Text(
-                      DateFormat('HH:mm').format(slot),
-                      style: TextStyle(
-                        color: selected
-                            ? ClientColors.primary
-                            : ClientColors.textPrimary,
-                        fontSize: 13,
-                        fontWeight: selected
-                            ? FontWeight.w700
-                            : FontWeight.w500,
-                      ),
+                          ? ClientColors.primary
+                          : ClientColors.divider,
                     ),
                   ),
-                );
-              });
-            },
-          );
-        },
-      ),
+                  child: Text(
+                    DateFormat('HH:mm').format(slot),
+                    style: TextStyle(
+                      color: selected
+                          ? ClientColors.primary
+                          : ClientColors.textPrimary,
+                      fontSize: 13,
+                      fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
+                    ),
+                  ),
+                ),
+              );
+            });
+          },
+        );
+      }),
     );
   }
 }
