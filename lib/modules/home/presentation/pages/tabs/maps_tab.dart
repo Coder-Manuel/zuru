@@ -21,7 +21,7 @@ class MapsTab extends StatelessWidget {
 
 // ─── Map view ─────────────────────────────────────────────────────────────────
 
-class _MapView extends StatelessWidget {
+class _MapView extends GetView<MapsTabController> {
   const _MapView();
 
   // Map area occupies the upper portion of the screen
@@ -29,7 +29,6 @@ class _MapView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final ctrl = Get.find<MapsTabController>();
     final size = Get.mediaQuery.size;
     final mapHeight = size.height * _mapHeightFraction;
 
@@ -46,7 +45,7 @@ class _MapView extends StatelessWidget {
 
             // ── Mission markers (real-time) ──────────────────────────────────
             Obx(() {
-              final missions = ctrl.activeMissions
+              final missions = controller.activeMissions
                   .where((m) => m.latitude != null && m.longitude != null)
                   .toList();
 
@@ -98,12 +97,7 @@ class _MapView extends StatelessWidget {
             ),
 
             // ── Bottom overlay ───────────────────────────────────────────────
-            Positioned(
-              left: 0,
-              right: 0,
-              bottom: 0,
-              child: _BottomOverlay(ctrl: ctrl),
-            ),
+            Positioned(left: 0, right: 0, bottom: 0, child: _BottomOverlay()),
           ],
         ),
       ),
@@ -302,9 +296,8 @@ class _UserDot extends StatelessWidget {
 
 // ─── Bottom overlay ───────────────────────────────────────────────────────────
 
-class _BottomOverlay extends StatelessWidget {
-  final MapsTabController ctrl;
-  const _BottomOverlay({required this.ctrl});
+class _BottomOverlay extends GetView<MapsTabController> {
+  const _BottomOverlay();
 
   @override
   Widget build(BuildContext context) {
@@ -330,14 +323,14 @@ class _BottomOverlay extends StatelessWidget {
             'See anywhere.\nKnow everything.',
             style: TextStyle(
               color: ClientColors.textPrimary,
-              fontSize: 28,
+              fontSize: 26,
               fontWeight: FontWeight.w900,
               height: 1.15,
             ),
           ),
           const SizedBox(height: 6),
           Obx(() {
-            final count = ctrl.activeMissions.length;
+            final count = controller.activeMissions.length;
             return Text(
               count == 0
                   ? 'Tap map · Long-press to post a mission'

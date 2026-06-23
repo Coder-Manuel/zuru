@@ -213,6 +213,34 @@ class MissionsRepositoryImpl extends MissionsRepository {
   }
 
   @override
+  Stream<RepoResponse<List<MissionEntity>>> watchScoutRequests(
+    WatchActiveMissionInput input,
+  ) async* {
+    yield* ErrorWrapper.stream<RepoResponse<List<MissionEntity>>>(
+      () async* {
+        await for (final rows in remoteDatasource.watchScoutRequests(
+          input.profileId,
+        )) {
+          yield SuccessResponse(
+            rows
+                .map(
+                  (row) => MissionModel.fromScoutMap(
+                    row,
+                    scoutLat: input.scoutLat,
+                    scoutLng: input.scoutLng,
+                  ),
+                )
+                .toList(),
+          );
+        }
+      },
+      onError: (_) => FailureResponse('Failed to watch requests.'),
+      library: _library,
+      description: 'while streaming scout requests',
+    );
+  }
+
+  @override
   Future<RepoResponse<void>> updateMissionStatus(
     UpdateMissionStatusInput input,
   ) async {

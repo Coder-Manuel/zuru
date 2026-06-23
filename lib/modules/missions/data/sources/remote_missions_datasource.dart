@@ -21,6 +21,10 @@ abstract class RemoteMissionsDatasource {
   );
   Future<bool> acceptMission(String missionId);
   Stream<Map<String, dynamic>?> watchScoutActiveMission(String? profileId);
+
+  /// Streams the scout's pending client requests — [MissionStatus.requested]
+  /// missions pre-assigned to this scout, awaiting accept/decline.
+  Stream<List<Map<String, dynamic>>> watchScoutRequests(String? profileId);
   Future<Map<String, dynamic>?> updateMissionStatus({
     required String missionId,
     required Map<String, dynamic> values,
@@ -382,6 +386,90 @@ class RemoteMissionsDatasourceImpl extends RemoteMissionsDatasource {
     }
 
     fetchActive();
+
+    ctrl.onCancel = () {
+      debounceTimer?.cancel();
+      if (channel != null) client.removeChannel(channel);
+      ctrl.close();
+    };
+
+    return ctrl.stream;
+  }
+
+  @override
+  Stream<List<Map<String, dynamic>>> watchScoutRequests(String? profileId) {
+    final ctrl = StreamController<List<Map<String, dynamic>>>.broadcast();
+    Timer? debounceTimer;
+    RealtimeChannel? channel;
+
+    Future<void> fetchRequests() async {
+      if (ctrl.isClosed) return;
+      if (profileId == null) {
+        if (!ctrl.isClosed) ctrl.add(const []);
+        return;
+      }
+      try {
+        final res = await client
+            .from('missions')
+            .select("""
+              *,
+              scout:scout_id (
+                id,
+                user_id
+              ),
+              client:client_id (
+                id,
+                user_id,
+                first_name,
+                last_name,
+                avatar_url,
+                rating,
+                total_reviews
+              )
+            """)
+            .eq('scout_id', profileId)
+            .eq('status', MissionStatus.requested.name)
+            .order('created_at', ascending: false);
+
+        final rows = res
+            .map((e) => Map<String, dynamic>.from(e as Map))
+            .toList();
+
+        if (!ctrl.isClosed) ctrl.add(rows);
+      } catch (e, stack) {
+        MonitorService.report(
+          ex: e,
+          library: 'missions_datasource',
+          description: 'while fetching scout requests',
+          stack: stack,
+        );
+        if (!ctrl.isClosed) ctrl.addError(e);
+      }
+    }
+
+    void debouncedFetch() {
+      debounceTimer?.cancel();
+      debounceTimer = Timer(const Duration(milliseconds: 300), fetchRequests);
+    }
+
+    if (profileId != null) {
+      channel = client
+          .channel('scout_requests_watch_$profileId')
+          .onPostgresChanges(
+            event: PostgresChangeEvent.all,
+            schema: 'public',
+            table: 'missions',
+            filter: PostgresChangeFilter(
+              type: PostgresChangeFilterType.eq,
+              column: 'scout_id',
+              value: profileId,
+            ),
+            callback: (_) => debouncedFetch(),
+          )
+          .subscribe();
+    }
+
+    fetchRequests();
 
     ctrl.onCancel = () {
       debounceTimer?.cancel();

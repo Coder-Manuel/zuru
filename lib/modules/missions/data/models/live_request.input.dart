@@ -49,5 +49,6 @@ class LiveRequestInput {
     'scheduled_at': scheduledAt?.toUtc().toIso8601String(),
     'address': address,
     'location': 'POINT($lng $lat)',
+    'status': MissionStatus.requested.name,
   };
 }

@@ -19,16 +19,13 @@ class SplashPage extends GetView<SplashController> {
             width: Get.width,
             child:
                 Center(
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(200),
-                        child: Text(
-                          'Zuru World',
-                          style: TextStyle(
-                            color: ClientColors.textPrimary,
-                            fontSize: 48,
-                            fontWeight: FontWeight.bold,
-                            fontStyle: FontStyle.italic,
-                          ),
+                      child: Text(
+                        'Zuru World',
+                        style: TextStyle(
+                          color: ClientColors.textPrimary,
+                          fontSize: 48,
+                          fontWeight: FontWeight.bold,
+                          fontStyle: FontStyle.italic,
                         ),
                       ),
                     )

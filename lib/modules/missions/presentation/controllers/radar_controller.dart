@@ -11,6 +11,7 @@ import 'package:zuru/modules/missions/domain/usecases/accept_mission.usecase.dar
 import 'package:zuru/modules/missions/domain/usecases/decline_mission.usecase.dart';
 import 'package:zuru/modules/missions/domain/usecases/nearby_missions.usecase.dart';
 import 'package:zuru/modules/missions/domain/usecases/watch_active_mission.usecase.dart';
+import 'package:zuru/modules/missions/domain/usecases/watch_scout_requests.usecase.dart';
 import 'package:zuru/modules/missions/presentation/pages/mission_details_page.dart';
 import 'package:zuru/modules/user/presentation/controllers/user_controller.dart';
 
@@ -18,6 +19,7 @@ class RadarController extends GetxController
     with GetSingleTickerProviderStateMixin {
   final _watchNearbyUseCase = Get.find<NearbyMissionsUseCase>();
   final _watchActiveUseCase = Get.find<WatchActiveMissionUseCase>();
+  final _watchRequestsUseCase = Get.find<WatchScoutRequestsUseCase>();
   final _acceptUseCase = Get.find<AcceptMissionUseCase>();
   final _declineMissionUseCase = Get.find<DeclineMissionUseCase>();
   final _locationService = Get.find<LocationService>();
@@ -32,6 +34,13 @@ class RadarController extends GetxController
   /// The scout's currently accepted mission. Null when none is active.
   final activeMission = Rx<MissionEntity?>(null);
 
+  /// Pending client requests targeted at this scout (status `requested`),
+  /// awaiting accept/decline. Drives the radar "incoming requests" indicator.
+  final pendingRequests = <MissionEntity>[].obs;
+
+  bool get hasPendingRequests => pendingRequests.isNotEmpty;
+  int get pendingRequestCount => pendingRequests.length;
+
   /// Countdown string in HH:MM:SS format — counts down from 48 hrs.
   final countdown = '48:00:00'.obs;
 
@@ -39,6 +48,7 @@ class RadarController extends GetxController
 
   StreamSubscription<dynamic>? _missionsSub;
   StreamSubscription<dynamic>? _activeMissionSub;
+  StreamSubscription<dynamic>? _requestsSub;
   Timer? _countdownTimer;
 
   final missionsBuilder = Key('MissionsBuilder');
@@ -55,6 +65,10 @@ class RadarController extends GetxController
     // 1. Always start watching the active mission first.
     //    Nearby missions are only opened when no active mission is found.
     _watchActiveMission();
+
+    // Watch incoming client requests independently of active/nearby state —
+    // a scout can receive a direct request at any time.
+    _watchRequests();
 
     // 2. When location becomes ready (or changes), start nearby stream —
     //    only if the scout has no active mission.
@@ -77,9 +91,39 @@ class RadarController extends GetxController
   void onClose() {
     _missionsSub?.cancel();
     _activeMissionSub?.cancel();
+    _requestsSub?.cancel();
     _stopCountdown();
     sweepController.dispose();
     super.onClose();
+  }
+
+  // ── Pending requests stream ───────────────────────────────────────────────
+  void _watchRequests() {
+    _requestsSub?.cancel();
+
+    final lat = _locationService.latitude ?? 0;
+    final lng = _locationService.longitude ?? 0;
+    final user = Get.find<UserController>().currentUser.value;
+
+    final profileId = user?.scoutProfile?.id;
+    if (profileId == null) return;
+
+    _requestsSub =
+        _watchRequestsUseCase(
+          WatchActiveMissionInput(
+            scoutLat: lat,
+            scoutLng: lng,
+            profileId: profileId,
+          ),
+        ).listen(
+          (response) {
+            response.fold(
+              (_) {}, // keep the last known list on transient errors
+              (data) => pendingRequests.assignAll(data),
+            );
+          },
+          onError: (_) {},
+        );
   }
 
   // ── Active mission stream ─────────────────────────────────────────────────
@@ -180,6 +224,34 @@ class RadarController extends GetxController
       MissionDetailsPage.route,
       arguments: activeMission.value,
     );
+  }
+
+  /// Open the full details/review screen for a pending request.
+  void openRequest(MissionEntity request) {
+    Get.toNamed(MissionDetailsPage.route, arguments: request);
+  }
+
+  /// Id of the request currently being declined — drives the per-card spinner.
+  final decliningRequestId = RxnString();
+
+  /// Decline a pending client request. The realtime stream removes it from
+  /// [pendingRequests] automatically once the status changes.
+  Future<void> declineRequest(String missionId) async {
+    decliningRequestId.value = missionId;
+
+    final result = await _declineMissionUseCase(
+      DeclineMissionInput(
+        missionId: missionId,
+        status: MissionStatus.cancelled,
+      ),
+    );
+
+    result.fold(
+      (err) => Toast.error(err.message),
+      (_) => Toast.success('Request declined'),
+    );
+
+    decliningRequestId.value = null;
   }
 
   Future<void> abandonMission() async {

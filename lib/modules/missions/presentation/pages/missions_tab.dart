@@ -211,13 +211,14 @@ class _MissionCard extends StatelessWidget {
                 // Address as mission "title"
                 Expanded(
                   child: Text(
-                    '${mission.type?.label}\n${mission.address}',
+                    '${mission.type?.label}\n${mission.address}${mission.status == MissionStatus.requested ? '\n${mission.scout?.displayName ?? '--'}' : ''}'
+                        .trim(),
                     style: TextStyle(
                       color: ClientColors.textPrimary,
                       fontSize: 15,
                       fontWeight: FontWeight.w700,
                     ),
-                    maxLines: 2,
+                    maxLines: 3,
                     overflow: TextOverflow.ellipsis,
                   ),
                 ),
@@ -339,6 +340,7 @@ class _StatusBadge extends StatelessWidget {
       MissionStatus.accepted => ('Accepted', const Color(0xFF3B82F6)),
       MissionStatus.enroute => ('EnRoute', const Color(0xFF3B82F6)),
       MissionStatus.open => ('Pending', ClientColors.primary),
+      MissionStatus.requested => ('Requested', ClientColors.primary),
       MissionStatus.completed => ('Completed', ClientColors.textSecondary),
       MissionStatus.cancelled => ('Cancelled', const Color(0xFFEF4444)),
     };

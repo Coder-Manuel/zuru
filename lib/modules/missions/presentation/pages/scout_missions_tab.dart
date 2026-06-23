@@ -317,6 +317,7 @@ class _StatusBadge extends StatelessWidget {
         const Color.fromARGB(255, 42, 142, 248),
       ),
       MissionStatus.open => ('Pending', ScoutColors.primary),
+      MissionStatus.requested => ('Requested', ScoutColors.primary),
       MissionStatus.completed => ('Completed', ScoutColors.textSecondary),
       MissionStatus.cancelled => ('Cancelled', const Color(0xFFEF4444)),
     };

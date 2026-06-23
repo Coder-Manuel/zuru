@@ -17,6 +17,7 @@ import 'package:zuru/modules/missions/domain/usecases/update_mission_status.usec
 import 'package:zuru/modules/missions/domain/usecases/watch_active_mission.usecase.dart';
 import 'package:zuru/modules/missions/domain/usecases/watch_active_missions.usecase.dart';
 import 'package:zuru/modules/missions/domain/usecases/watch_active_session.usecase.dart';
+import 'package:zuru/modules/missions/domain/usecases/watch_scout_requests.usecase.dart';
 import 'package:zuru/modules/missions/presentation/controllers/finding_scouts_controller.dart';
 import 'package:zuru/modules/missions/presentation/controllers/live_request_controller.dart';
 import 'package:zuru/modules/missions/presentation/controllers/location_picker_controller.dart';
@@ -82,6 +83,10 @@ class MissionsBindings extends Bindings {
     );
     Get.lazyPut<WatchActiveMissionUseCase>(
       () => WatchActiveMissionUseCase(repo: Get.find<MissionsRepository>()),
+      fenix: true,
+    );
+    Get.lazyPut<WatchScoutRequestsUseCase>(
+      () => WatchScoutRequestsUseCase(repo: Get.find<MissionsRepository>()),
       fenix: true,
     );
     Get.lazyPut<AcceptMissionUseCase>(

@@ -37,7 +37,13 @@ class MissionsTabController extends GetxController {
             )
             .toList(),
       MissionFilter.pending =>
-        _missions.where((m) => m.status == MissionStatus.open).toList(),
+        _missions
+            .where(
+              (m) =>
+                  m.status == MissionStatus.open ||
+                  m.status == MissionStatus.requested,
+            )
+            .toList(),
       MissionFilter.completed =>
         _missions.where((m) => m.status == MissionStatus.completed).toList(),
     };
