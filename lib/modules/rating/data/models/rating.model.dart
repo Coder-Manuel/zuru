@@ -15,8 +15,8 @@ class RatingModel extends RatingEntity {
     id: data['id']?.toString(),
     createdAt: data['created_at']?.toString(),
     missionId: data['mission_id']?.toString(),
-    fromUserId: data['from_user_id']?.toString(),
-    toUserId: data['to_user_id']?.toString(),
+    fromUserId: data['from_profile_id']?.toString(),
+    toUserId: data['to_profile_id']?.toString(),
     score: data['score'] as int? ?? 0,
     comment: data['comment']?.toString(),
   );

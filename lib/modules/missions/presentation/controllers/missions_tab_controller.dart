@@ -69,7 +69,7 @@ class MissionsTabController extends GetxController {
 
   Future<void> fetchMissions() async {
     isLoading.value = true;
-    final response = await _getMyMissionsUseCase(null);
+    final response = await _getMyMissionsUseCase();
     isLoading.value = false;
 
     response.fold((err) => Toast.error(err.message), (data) {

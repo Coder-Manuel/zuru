@@ -168,7 +168,7 @@ class _FilterRow extends StatelessWidget {
 
 // ─── Mission card ─────────────────────────────────────────────────────────────
 
-class _MissionCard extends StatelessWidget {
+class _MissionCard extends GetView<MissionsTabController> {
   final MissionEntity mission;
   final bool hasActiveSession;
   final VoidCallback onJoinStream;
@@ -186,9 +186,10 @@ class _MissionCard extends StatelessWidget {
         : null;
 
     return GestureDetector(
-      onTap: () {
+      onTap: () async {
         if (mission.status == MissionStatus.completed && !mission.hasRated) {
-          Get.toNamed(RateScoutPage.route, arguments: mission);
+          await Get.toNamed(RateScoutPage.route, arguments: mission);
+          controller.fetchMissions();
         }
       },
       child: Container(
