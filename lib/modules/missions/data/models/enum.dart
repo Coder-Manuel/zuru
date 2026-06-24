@@ -1,6 +1,7 @@
 enum MissionStatus {
   open,
   requested,
+  declined,
   accepted,
   enroute,
   live,

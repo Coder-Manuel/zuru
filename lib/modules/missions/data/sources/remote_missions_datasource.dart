@@ -313,6 +313,7 @@ class RemoteMissionsDatasourceImpl extends RemoteMissionsDatasource {
     final ctrl = StreamController<Map<String, dynamic>?>.broadcast();
     Timer? debounceTimer;
     RealtimeChannel? channel;
+    RealtimeChannel? eventsChannel;
 
     final userId = client.auth.currentUser?.id;
 
@@ -369,6 +370,8 @@ class RemoteMissionsDatasourceImpl extends RemoteMissionsDatasource {
     }
 
     if (profileId != null) {
+      // Primary channel: catches the mission landing on this scout and any
+      // status change while it stays assigned (new row still matches scout_id).
       channel = client
           .channel('active_mission_watch_$profileId')
           .onPostgresChanges(
@@ -383,6 +386,25 @@ class RemoteMissionsDatasourceImpl extends RemoteMissionsDatasource {
             callback: (_) => debouncedFetch(),
           )
           .subscribe();
+
+      // Side-channel: the filter above can't observe a mission leaving this
+      // scout (scout_id -> null on reclaim/decline), because the new row no
+      // longer matches. A mission_scout_events row — an INSERT, which always
+      // matches its filter — signals that case so we refetch and emit null.
+      eventsChannel = client
+          .channel('active_mission_events_$profileId')
+          .onPostgresChanges(
+            event: PostgresChangeEvent.insert,
+            schema: 'public',
+            table: 'mission_scout_events',
+            filter: PostgresChangeFilter(
+              type: PostgresChangeFilterType.eq,
+              column: 'scout_profile_id',
+              value: profileId,
+            ),
+            callback: (_) => debouncedFetch(),
+          )
+          .subscribe();
     }
 
     fetchActive();
@@ -390,6 +412,7 @@ class RemoteMissionsDatasourceImpl extends RemoteMissionsDatasource {
     ctrl.onCancel = () {
       debounceTimer?.cancel();
       if (channel != null) client.removeChannel(channel);
+      if (eventsChannel != null) client.removeChannel(eventsChannel);
       ctrl.close();
     };
 
@@ -401,6 +424,7 @@ class RemoteMissionsDatasourceImpl extends RemoteMissionsDatasource {
     final ctrl = StreamController<List<Map<String, dynamic>>>.broadcast();
     Timer? debounceTimer;
     RealtimeChannel? channel;
+    RealtimeChannel? eventsChannel;
 
     Future<void> fetchRequests() async {
       if (ctrl.isClosed) return;
@@ -453,6 +477,8 @@ class RemoteMissionsDatasourceImpl extends RemoteMissionsDatasource {
     }
 
     if (profileId != null) {
+      // Primary channel: new requests and status changes while still assigned
+      // to this scout (new row matches scout_id).
       channel = client
           .channel('scout_requests_watch_$profileId')
           .onPostgresChanges(
@@ -467,6 +493,23 @@ class RemoteMissionsDatasourceImpl extends RemoteMissionsDatasource {
             callback: (_) => debouncedFetch(),
           )
           .subscribe();
+
+      // Side-channel: a declined/reclaimed request clears scout_id, which the
+      // filter above can't see. The mission_scout_events INSERT covers it.
+      eventsChannel = client
+          .channel('scout_requests_events_$profileId')
+          .onPostgresChanges(
+            event: PostgresChangeEvent.insert,
+            schema: 'public',
+            table: 'mission_scout_events',
+            filter: PostgresChangeFilter(
+              type: PostgresChangeFilterType.eq,
+              column: 'scout_profile_id',
+              value: profileId,
+            ),
+            callback: (_) => debouncedFetch(),
+          )
+          .subscribe();
     }
 
     fetchRequests();
@@ -474,6 +517,7 @@ class RemoteMissionsDatasourceImpl extends RemoteMissionsDatasource {
     ctrl.onCancel = () {
       debounceTimer?.cancel();
       if (channel != null) client.removeChannel(channel);
+      if (eventsChannel != null) client.removeChannel(eventsChannel);
       ctrl.close();
     };
 

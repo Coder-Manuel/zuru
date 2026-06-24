@@ -343,6 +343,7 @@ class _StatusBadge extends StatelessWidget {
       MissionStatus.requested => ('Requested', ClientColors.primary),
       MissionStatus.completed => ('Completed', ClientColors.textSecondary),
       MissionStatus.cancelled => ('Cancelled', const Color(0xFFEF4444)),
+      MissionStatus.declined => ('Declined', const Color(0xFFEF4444)),
     };
 
     return Container(

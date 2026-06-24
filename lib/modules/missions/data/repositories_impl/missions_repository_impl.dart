@@ -267,7 +267,7 @@ class MissionsRepositoryImpl extends MissionsRepository {
     final ok = await ErrorWrapper.async<bool>(
       () async {
         await remoteDatasource.updateMissionStatus(
-          missionId: input.missionId,
+          missionId: input.mission.id ?? '',
           values: input.toMap(),
         );
         return true;

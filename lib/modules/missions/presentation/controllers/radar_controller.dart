@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:zuru/core/services/location_service/location_service.dart';
 import 'package:zuru/core/utils/toast.dart';
-import 'package:zuru/modules/missions/data/models/enum.dart';
 import 'package:zuru/modules/missions/data/models/mission.inputs.dart';
 import 'package:zuru/modules/missions/domain/entities/mission.entity.dart';
 import 'package:zuru/modules/missions/domain/usecases/accept_mission.usecase.dart';
@@ -41,8 +40,8 @@ class RadarController extends GetxController
   bool get hasPendingRequests => pendingRequests.isNotEmpty;
   int get pendingRequestCount => pendingRequests.length;
 
-  /// Countdown string in HH:MM:SS format — counts down from 48 hrs.
-  final countdown = '48:00:00'.obs;
+  /// Countdown string in HH:MM:SS format — counts down from 12 hrs.
+  final countdown = '05:00:00'.obs;
 
   bool get hasActiveMission => activeMission.value != null;
 
@@ -115,15 +114,12 @@ class RadarController extends GetxController
             scoutLng: lng,
             profileId: profileId,
           ),
-        ).listen(
-          (response) {
-            response.fold(
-              (_) {}, // keep the last known list on transient errors
-              (data) => pendingRequests.assignAll(data),
-            );
-          },
-          onError: (_) {},
-        );
+        ).listen((response) {
+          response.fold(
+            (_) {}, // keep the last known list on transient errors
+            (data) => pendingRequests.assignAll(data),
+          );
+        }, onError: (_) {});
   }
 
   // ── Active mission stream ─────────────────────────────────────────────────
@@ -236,14 +232,11 @@ class RadarController extends GetxController
 
   /// Decline a pending client request. The realtime stream removes it from
   /// [pendingRequests] automatically once the status changes.
-  Future<void> declineRequest(String missionId) async {
-    decliningRequestId.value = missionId;
+  Future<void> declineRequest(MissionEntity mission) async {
+    decliningRequestId.value = mission.id;
 
     final result = await _declineMissionUseCase(
-      DeclineMissionInput(
-        missionId: missionId,
-        status: MissionStatus.cancelled,
-      ),
+      DeclineMissionInput(mission: mission),
     );
 
     result.fold(
@@ -261,10 +254,7 @@ class RadarController extends GetxController
     isUpdatingStatus.value = true;
 
     final result = await _declineMissionUseCase(
-      DeclineMissionInput(
-        missionId: mission!.id!,
-        status: MissionStatus.cancelled,
-      ),
+      DeclineMissionInput(mission: mission!),
     );
 
     result.fold((err) => Toast.error(err.message), (_) {
@@ -283,7 +273,7 @@ class RadarController extends GetxController
         ? (DateTime.tryParse(acceptedAtStr)?.toUtc() ?? DateTime.now().toUtc())
         : DateTime.now().toUtc();
 
-    final expiry = base.add(const Duration(hours: 48));
+    final expiry = base.add(const Duration(hours: 5));
 
     _tickCountdown(expiry);
     _countdownTimer = Timer.periodic(

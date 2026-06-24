@@ -275,7 +275,7 @@ class _RequestCard extends StatelessWidget {
                   return OutlinedButton(
                     onPressed: busy
                         ? null
-                        : () => controller.declineRequest(request.id!),
+                        : () => controller.declineRequest(request),
                     style: OutlinedButton.styleFrom(
                       foregroundColor: ScoutColors.textSecondary,
                       side: BorderSide(color: ScoutColors.divider, width: 1.2),

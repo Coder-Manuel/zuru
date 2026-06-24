@@ -330,7 +330,7 @@ class _CountdownCard extends StatelessWidget {
               ),
               6.verticalSpace,
               Text(
-                'Mission removed after 48 hours',
+                'Mission removed after 5 hours',
                 style: TextStyle(
                   color: ScoutColors.textSecondary,
                   fontSize: 12,

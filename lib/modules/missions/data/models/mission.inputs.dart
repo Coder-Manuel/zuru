@@ -1,4 +1,5 @@
 import 'package:zuru/modules/missions/data/models/enum.dart';
+import 'package:zuru/modules/missions/domain/entities/mission.entity.dart';
 
 // ── Scout inputs ──────────────────────────────────────────────────────────────
 
@@ -46,16 +47,25 @@ class UpdateMissionStatusInput {
 }
 
 class DeclineMissionInput {
-  final String missionId;
-  final MissionStatus status;
+  final MissionEntity mission;
 
-  const DeclineMissionInput({required this.missionId, required this.status});
+  const DeclineMissionInput({required this.mission});
 
-  Map<String, dynamic> toMap() => {
-    'status': status.name,
-    'scout_id': null,
-    'accepted_at': null,
-  };
+  Map<String, dynamic> toMap() {
+    if (mission.status == MissionStatus.requested) {
+      return {'status': MissionStatus.declined.name};
+    }
+
+    if (mission.type == MissionType.liveRequest) {
+      return {'status': MissionStatus.requested.name};
+    }
+
+    return {
+      'status': MissionStatus.cancelled.name,
+      'scout_id': null,
+      'accepted_at': null,
+    };
+  }
 }
 
 // ── Client inputs ─────────────────────────────────────────────────────────────
