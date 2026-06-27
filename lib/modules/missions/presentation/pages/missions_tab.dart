@@ -168,7 +168,7 @@ class _FilterRow extends StatelessWidget {
 
 // ─── Mission card ─────────────────────────────────────────────────────────────
 
-class _MissionCard extends StatelessWidget {
+class _MissionCard extends GetView<MissionsTabController> {
   final MissionEntity mission;
   final bool hasActiveSession;
   final VoidCallback onJoinStream;
@@ -186,9 +186,10 @@ class _MissionCard extends StatelessWidget {
         : null;
 
     return GestureDetector(
-      onTap: () {
+      onTap: () async {
         if (mission.status == MissionStatus.completed && !mission.hasRated) {
-          Get.toNamed(RateScoutPage.route, arguments: mission);
+          await Get.toNamed(RateScoutPage.route, arguments: mission);
+          controller.fetchMissions();
         }
       },
       child: Container(
@@ -211,13 +212,14 @@ class _MissionCard extends StatelessWidget {
                 // Address as mission "title"
                 Expanded(
                   child: Text(
-                    '${mission.type?.label}\n${mission.address}',
+                    '${mission.type?.label}\n${mission.address}${mission.status == MissionStatus.requested ? '\n${mission.scout?.displayName ?? '--'}' : ''}'
+                        .trim(),
                     style: TextStyle(
                       color: ClientColors.textPrimary,
                       fontSize: 15,
                       fontWeight: FontWeight.w700,
                     ),
-                    maxLines: 2,
+                    maxLines: 3,
                     overflow: TextOverflow.ellipsis,
                   ),
                 ),
@@ -339,8 +341,10 @@ class _StatusBadge extends StatelessWidget {
       MissionStatus.accepted => ('Accepted', const Color(0xFF3B82F6)),
       MissionStatus.enroute => ('EnRoute', const Color(0xFF3B82F6)),
       MissionStatus.open => ('Pending', ClientColors.primary),
+      MissionStatus.requested => ('Requested', ClientColors.primary),
       MissionStatus.completed => ('Completed', ClientColors.textSecondary),
       MissionStatus.cancelled => ('Cancelled', const Color(0xFFEF4444)),
+      MissionStatus.declined => ('Declined', const Color(0xFFEF4444)),
     };
 
     return Container(

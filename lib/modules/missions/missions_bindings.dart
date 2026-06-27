@@ -8,6 +8,7 @@ import 'package:zuru/modules/missions/data/sources/remote_places_datasource.dart
 import 'package:zuru/modules/missions/domain/repository/missions_repository.dart';
 import 'package:zuru/modules/missions/domain/usecases/accept_mission.usecase.dart';
 import 'package:zuru/modules/missions/domain/usecases/create_live_request.usecase.dart';
+import 'package:zuru/modules/missions/domain/usecases/decline_mission.usecase.dart';
 import 'package:zuru/modules/missions/domain/usecases/get_my_missions.usecase.dart';
 import 'package:zuru/modules/missions/domain/usecases/get_nearby_scouts.usecase.dart';
 import 'package:zuru/modules/missions/domain/usecases/nearby_missions.usecase.dart';
@@ -16,6 +17,7 @@ import 'package:zuru/modules/missions/domain/usecases/update_mission_status.usec
 import 'package:zuru/modules/missions/domain/usecases/watch_active_mission.usecase.dart';
 import 'package:zuru/modules/missions/domain/usecases/watch_active_missions.usecase.dart';
 import 'package:zuru/modules/missions/domain/usecases/watch_active_session.usecase.dart';
+import 'package:zuru/modules/missions/domain/usecases/watch_scout_requests.usecase.dart';
 import 'package:zuru/modules/missions/presentation/controllers/finding_scouts_controller.dart';
 import 'package:zuru/modules/missions/presentation/controllers/live_request_controller.dart';
 import 'package:zuru/modules/missions/presentation/controllers/location_picker_controller.dart';
@@ -83,12 +85,20 @@ class MissionsBindings extends Bindings {
       () => WatchActiveMissionUseCase(repo: Get.find<MissionsRepository>()),
       fenix: true,
     );
+    Get.lazyPut<WatchScoutRequestsUseCase>(
+      () => WatchScoutRequestsUseCase(repo: Get.find<MissionsRepository>()),
+      fenix: true,
+    );
     Get.lazyPut<AcceptMissionUseCase>(
       () => AcceptMissionUseCase(repo: Get.find<MissionsRepository>()),
       fenix: true,
     );
     Get.lazyPut<UpdateMissionStatusUseCase>(
       () => UpdateMissionStatusUseCase(repo: Get.find<MissionsRepository>()),
+      fenix: true,
+    );
+    Get.lazyPut<DeclineMissionUseCase>(
+      () => DeclineMissionUseCase(repo: Get.find<MissionsRepository>()),
       fenix: true,
     );
 

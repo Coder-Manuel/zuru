@@ -42,8 +42,7 @@ class MissionsRepositoryImpl extends MissionsRepository {
         final data = await remoteDatasource.createLiveRequest(input.toMap());
         return SuccessResponse(MissionModel.fromMap(data));
       },
-      onError: (_) =>
-          FailureResponse('Failed to send request, kindly retry'),
+      onError: (_) => FailureResponse('Failed to send request, kindly retry'),
       library: _library,
       description: 'while creating live request',
     );
@@ -214,6 +213,34 @@ class MissionsRepositoryImpl extends MissionsRepository {
   }
 
   @override
+  Stream<RepoResponse<List<MissionEntity>>> watchScoutRequests(
+    WatchActiveMissionInput input,
+  ) async* {
+    yield* ErrorWrapper.stream<RepoResponse<List<MissionEntity>>>(
+      () async* {
+        await for (final rows in remoteDatasource.watchScoutRequests(
+          input.profileId,
+        )) {
+          yield SuccessResponse(
+            rows
+                .map(
+                  (row) => MissionModel.fromScoutMap(
+                    row,
+                    scoutLat: input.scoutLat,
+                    scoutLng: input.scoutLng,
+                  ),
+                )
+                .toList(),
+          );
+        }
+      },
+      onError: (_) => FailureResponse('Failed to watch requests.'),
+      library: _library,
+      description: 'while streaming scout requests',
+    );
+  }
+
+  @override
   Future<RepoResponse<void>> updateMissionStatus(
     UpdateMissionStatusInput input,
   ) async {
@@ -221,7 +248,7 @@ class MissionsRepositoryImpl extends MissionsRepository {
       () async {
         await remoteDatasource.updateMissionStatus(
           missionId: input.missionId,
-          status: input.status.name,
+          values: {'status': input.status.name},
         );
         return true;
       },
@@ -231,6 +258,30 @@ class MissionsRepositoryImpl extends MissionsRepository {
     );
     if (ok != true) {
       return FailureResponse('Failed to update mission. Please try again.');
+    }
+    return SuccessResponse(null);
+  }
+
+  @override
+  Future<RepoResponse<void>> declineMission(DeclineMissionInput input) async {
+    final missionId = input.mission.id;
+    if (missionId == null || missionId.isEmpty) {
+      return FailureResponse('Failed to decline mission. Please try again.');
+    }
+    final ok = await ErrorWrapper.async<bool>(
+      () async {
+        await remoteDatasource.updateMissionStatus(
+          missionId: missionId,
+          values: input.toMap(),
+        );
+        return true;
+      },
+      onError: (_) => false,
+      library: _library,
+      description: 'while declining mission',
+    );
+    if (ok != true) {
+      return FailureResponse('Failed to decline mission. Please try again.');
     }
     return SuccessResponse(null);
   }

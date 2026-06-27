@@ -1,4 +1,13 @@
-enum MissionStatus { open, accepted, enroute, live, completed, cancelled }
+enum MissionStatus {
+  open,
+  requested,
+  declined,
+  accepted,
+  enroute,
+  live,
+  completed,
+  cancelled,
+}
 
 enum MissionType {
   surveillance,

@@ -37,7 +37,13 @@ class MissionsTabController extends GetxController {
             )
             .toList(),
       MissionFilter.pending =>
-        _missions.where((m) => m.status == MissionStatus.open).toList(),
+        _missions
+            .where(
+              (m) =>
+                  m.status == MissionStatus.open ||
+                  m.status == MissionStatus.requested,
+            )
+            .toList(),
       MissionFilter.completed =>
         _missions.where((m) => m.status == MissionStatus.completed).toList(),
     };
@@ -63,7 +69,7 @@ class MissionsTabController extends GetxController {
 
   Future<void> fetchMissions() async {
     isLoading.value = true;
-    final response = await _getMyMissionsUseCase(null);
+    final response = await _getMyMissionsUseCase();
     isLoading.value = false;
 
     response.fold((err) => Toast.error(err.message), (data) {

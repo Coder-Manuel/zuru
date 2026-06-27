@@ -192,7 +192,9 @@ class ScoutProfileEditController extends GetxController {
 
   /// Resolves a tapped suggestion to its formatted address + coordinates and
   /// stores them, then closes the search sheet.
-  Future<void> selectLocalitySuggestion(PlaceSuggestionEntity suggestion) async {
+  Future<void> selectLocalitySuggestion(
+    PlaceSuggestionEntity suggestion,
+  ) async {
     isResolvingLocality.value = true;
     try {
       final details = await _placesDatasource.getPlaceDetails(

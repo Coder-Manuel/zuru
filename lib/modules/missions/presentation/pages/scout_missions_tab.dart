@@ -39,6 +39,19 @@ class ScoutMissionsTab extends GetView<MissionsController> {
                           fontWeight: FontWeight.bold,
                         ),
                       ),
+                      GestureDetector(
+                        onTap: () => controller.fetchMissions(),
+                        child: Obx(() {
+                          return Icon(
+                            controller.isLoading.value
+                                ? Icons.circle_outlined
+                                : Icons.refresh_outlined,
+                            color: controller.isLoading.value
+                                ? ScoutColors.textSecondary
+                                : ScoutColors.primary,
+                          );
+                        }),
+                      ),
                     ],
                   ),
                 ),
@@ -317,8 +330,10 @@ class _StatusBadge extends StatelessWidget {
         const Color.fromARGB(255, 42, 142, 248),
       ),
       MissionStatus.open => ('Pending', ScoutColors.primary),
+      MissionStatus.requested => ('Requested', ScoutColors.primary),
       MissionStatus.completed => ('Completed', ScoutColors.textSecondary),
       MissionStatus.cancelled => ('Cancelled', const Color(0xFFEF4444)),
+      MissionStatus.declined => ('Declined', const Color(0xFFEF4444)),
     };
 
     return Container(

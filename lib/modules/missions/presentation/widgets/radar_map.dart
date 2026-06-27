@@ -10,6 +10,7 @@ import 'package:zuru/core/widgets/location_listener.builder.dart';
 import 'package:zuru/modules/missions/domain/entities/mission.entity.dart';
 import 'package:zuru/modules/missions/presentation/controllers/radar_controller.dart';
 import 'package:zuru/modules/missions/presentation/pages/mission_details_page.dart';
+import 'package:zuru/modules/missions/presentation/widgets/incoming_requests_beacon.dart';
 import 'package:zuru/modules/missions/presentation/widgets/mission_marker_widget.dart';
 import 'package:zuru/modules/missions/presentation/widgets/radar_grid_painter.dart';
 import 'package:zuru/modules/missions/presentation/widgets/radar_sweep_painter.dart';
@@ -246,6 +247,23 @@ class RadarMap extends GetView<RadarController> {
                 ),
               );
             }),
+
+            // Incoming client-request beacon — pinned near the top of the radar.
+            // Mounted only while the scout has pending requests so its repeating
+            // pulse animation ticker doesn't run idle when there's nothing to show.
+            Positioned(
+              top: 16,
+              left: 0,
+              right: 0,
+              child: Align(
+                alignment: Alignment.topCenter,
+                child: Obx(
+                  () => controller.hasPendingRequests
+                      ? const IncomingRequestsBeacon()
+                      : const SizedBox.shrink(),
+                ),
+              ),
+            ),
           ],
         );
       },

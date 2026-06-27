@@ -61,16 +61,11 @@ class RemoteUserDatasourceImpl extends RemoteUserDatasource {
   Future<String> uploadMedia(File file, {required String folder}) async {
     final dot = file.path.lastIndexOf('.');
     final ext = dot == -1 ? '' : file.path.substring(dot);
-    final path =
-        '$_uid/$folder/${DateTime.now().millisecondsSinceEpoch}$ext';
+    final path = '$_uid/$folder/${DateTime.now().millisecondsSinceEpoch}$ext';
 
     await client.storage
         .from('avatars')
-        .upload(
-          path,
-          file,
-          fileOptions: const FileOptions(upsert: true),
-        );
+        .upload(path, file, fileOptions: const FileOptions(upsert: true));
 
     return client.storage.from('avatars').getPublicUrl(path);
   }

@@ -30,7 +30,13 @@ abstract class MissionsRepository {
   Stream<RepoResponse<MissionEntity?>> watchActiveMission(
     WatchActiveMissionInput input,
   );
+
+  /// Live stream of the scout's pending client requests (status `requested`).
+  Stream<RepoResponse<List<MissionEntity>>> watchScoutRequests(
+    WatchActiveMissionInput input,
+  );
   Future<RepoResponse<void>> updateMissionStatus(
     UpdateMissionStatusInput input,
   );
+  Future<RepoResponse<void>> declineMission(DeclineMissionInput input);
 }

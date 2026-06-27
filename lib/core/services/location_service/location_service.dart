@@ -33,6 +33,7 @@ class LocationService extends GetxService with WidgetsBindingObserver {
   double? get longitude => position.value?.longitude;
 
   double? distanceTo(double targetLat, double targetLng) {
+    if (targetLat == 0 || targetLng == 0) return 0;
     final pos = position.value;
     if (pos == null) return null;
     return Geolocator.distanceBetween(
