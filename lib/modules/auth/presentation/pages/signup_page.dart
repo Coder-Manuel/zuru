@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:zuru/core/utils/extensions.dart';
 import 'package:zuru/core/utils/size.util.dart';
 import 'package:zuru/modules/auth/presentation/controllers/register_controller.dart';
+import 'package:zuru/modules/auth/presentation/pages/login_page.dart';
 import 'package:zuru/modules/auth/presentation/widgets/auth_widgets.dart';
 
 class SignupPage extends GetView<RegisterController> {
@@ -26,25 +27,7 @@ class SignupPage extends GetView<RegisterController> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                24.verticalSpace,
-                GestureDetector(
-                  onTap: () => Get.back(),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(
-                        Icons.chevron_left,
-                        color: scheme.onSurface,
-                        size: 22,
-                      ),
-                      Text(
-                        'Back to Login',
-                        style: TextStyle(color: scheme.onSurface, fontSize: 15),
-                      ),
-                    ],
-                  ),
-                ),
-                40.verticalSpace,
+                64.verticalSpace,
                 Text(
                   'Create Account',
                   style: TextStyle(
@@ -149,6 +132,30 @@ class SignupPage extends GetView<RegisterController> {
                   label:
                       'Continue with ${GetPlatform.isIOS ? 'Apple' : 'Google'}',
                   onPressed: () {},
+                ),
+                30.verticalSpace,
+
+                // ── Log in link ───────────────────────────────────────────────
+                Center(
+                  child: GestureDetector(
+                    onTap: () => Get.offNamed(LoginPage.route),
+                    child: RichText(
+                      text: TextSpan(
+                        text: 'Already have an account? ',
+                        style: TextStyle(color: bodyColor, fontSize: 15),
+                        children: [
+                          TextSpan(
+                            text: 'Log In',
+                            style: TextStyle(
+                              color: scheme.primary,
+                              fontWeight: FontWeight.w700,
+                              fontSize: 15,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
                 ),
                 32.verticalSpace,
               ],

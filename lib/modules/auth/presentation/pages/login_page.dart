@@ -179,7 +179,7 @@ class LoginPage extends GetView<LoginController> {
 
                 // ── Sign up link ──────────────────────────────────────────────
                 GestureDetector(
-                  onTap: () => Get.toNamed(SignupPage.route),
+                  onTap: () => Get.offNamed(SignupPage.route),
                   child: RichText(
                     text: TextSpan(
                       text: "Don't have an account? ",
