@@ -20,7 +20,7 @@ class LocationListenerBuilder extends StatelessWidget {
   Widget build(BuildContext context) {
     final locationService = Get.find<LocationService>();
     return Obx(() {
-      locationService.position.value;
+      final _ = locationService.position.value;
       final distance = locationService.distanceTo(latitude, longitude);
       return builder(context, distance);
     });
