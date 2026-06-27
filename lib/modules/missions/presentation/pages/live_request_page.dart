@@ -612,7 +612,7 @@ class _TimePicker extends GetView<LiveRequestController> {
     return SizedBox(
       height: 35,
       child: Obx(() {
-        controller.selectedDate.value;
+        final _ = controller.selectedDate.value;
         final slots = controller.timeSlots;
         if (slots.isEmpty) {
           return const Align(
