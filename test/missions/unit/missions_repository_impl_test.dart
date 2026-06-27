@@ -212,13 +212,16 @@ void main() {
       when(
         ds.updateMissionStatus(
           missionId: anyNamed('missionId'),
-          status: anyNamed('status'),
+          values: anyNamed('values'),
         ),
       ).thenAnswer((_) async => {'id': 'm1'});
 
       expect((await repo.updateMissionStatus(input)).isRight(), isTrue);
       verify(
-        ds.updateMissionStatus(missionId: 'm1', status: 'completed'),
+        ds.updateMissionStatus(
+          missionId: 'm1',
+          values: {'status': 'completed'},
+        ),
       ).called(1);
     });
 
@@ -226,7 +229,7 @@ void main() {
       when(
         ds.updateMissionStatus(
           missionId: anyNamed('missionId'),
-          status: anyNamed('status'),
+          values: anyNamed('values'),
         ),
       ).thenThrow(Exception('boom'));
 
