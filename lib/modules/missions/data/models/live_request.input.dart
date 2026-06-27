@@ -48,7 +48,10 @@ class LiveRequestInput {
     'type': MissionType.liveRequest.apiValue,
     'scheduled_at': scheduledAt?.toUtc().toIso8601String(),
     'address': address,
-    'location': 'POINT($lng $lat)',
+    // Only emit a PostGIS WKT point when both coordinates are present;
+    // 'POINT(null null)' is invalid and breaks inserts for live requests
+    // with an unknown/unscheduled location.
+    'location': (lat != null && lng != null) ? 'POINT($lng $lat)' : null,
     'status': MissionStatus.requested.name,
   };
 }

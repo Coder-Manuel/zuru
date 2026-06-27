@@ -264,10 +264,14 @@ class MissionsRepositoryImpl extends MissionsRepository {
 
   @override
   Future<RepoResponse<void>> declineMission(DeclineMissionInput input) async {
+    final missionId = input.mission.id;
+    if (missionId == null || missionId.isEmpty) {
+      return FailureResponse('Failed to decline mission. Please try again.');
+    }
     final ok = await ErrorWrapper.async<bool>(
       () async {
         await remoteDatasource.updateMissionStatus(
-          missionId: input.mission.id ?? '',
+          missionId: missionId,
           values: input.toMap(),
         );
         return true;

@@ -40,7 +40,7 @@ class RadarController extends GetxController
   bool get hasPendingRequests => pendingRequests.isNotEmpty;
   int get pendingRequestCount => pendingRequests.length;
 
-  /// Countdown string in HH:MM:SS format — counts down from 12 hrs.
+  /// Countdown string in HH:MM:SS format — counts down from 5 hrs.
   final countdown = '05:00:00'.obs;
 
   bool get hasActiveMission => activeMission.value != null;
