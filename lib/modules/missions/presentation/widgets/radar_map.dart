@@ -248,15 +248,20 @@ class RadarMap extends GetView<RadarController> {
               );
             }),
 
-            // Incoming client-request beacon — pinned near the top of the radar,
-            // shown only when the scout has pending requests.
-            const Positioned(
+            // Incoming client-request beacon — pinned near the top of the radar.
+            // Mounted only while the scout has pending requests so its repeating
+            // pulse animation ticker doesn't run idle when there's nothing to show.
+            Positioned(
               top: 16,
               left: 0,
               right: 0,
               child: Align(
                 alignment: Alignment.topCenter,
-                child: IncomingRequestsBeacon(),
+                child: Obx(
+                  () => controller.hasPendingRequests
+                      ? const IncomingRequestsBeacon()
+                      : const SizedBox.shrink(),
+                ),
               ),
             ),
           ],

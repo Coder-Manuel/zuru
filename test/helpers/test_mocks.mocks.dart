@@ -593,6 +593,22 @@ class MockMissionsRepository extends _i1.Mock
           as _i6.Stream<_i2.Either<_i7.ApiFail, _i11.MissionEntity?>>);
 
   @override
+  _i6.Stream<_i2.Either<_i7.ApiFail, List<_i11.MissionEntity>>>
+  watchScoutRequests(_i12.WatchActiveMissionInput? input) =>
+      (super.noSuchMethod(
+            Invocation.method(#watchScoutRequests, [input]),
+            returnValue:
+                _i6.Stream<
+                  _i2.Either<_i7.ApiFail, List<_i11.MissionEntity>>
+                >.empty(),
+            returnValueForMissingStub:
+                _i6.Stream<
+                  _i2.Either<_i7.ApiFail, List<_i11.MissionEntity>>
+                >.empty(),
+          )
+          as _i6.Stream<_i2.Either<_i7.ApiFail, List<_i11.MissionEntity>>>);
+
+  @override
   _i6.Future<_i2.Either<_i7.ApiFail, void>> updateMissionStatus(
     _i12.UpdateMissionStatusInput? input,
   ) =>
@@ -1189,6 +1205,18 @@ class MockRemoteMissionsDatasource extends _i1.Mock
                 _i6.Stream<Map<String, dynamic>?>.empty(),
           )
           as _i6.Stream<Map<String, dynamic>?>);
+
+  @override
+  _i6.Stream<List<Map<String, dynamic>>> watchScoutRequests(
+    String? profileId,
+  ) =>
+      (super.noSuchMethod(
+            Invocation.method(#watchScoutRequests, [profileId]),
+            returnValue: _i6.Stream<List<Map<String, dynamic>>>.empty(),
+            returnValueForMissingStub:
+                _i6.Stream<List<Map<String, dynamic>>>.empty(),
+          )
+          as _i6.Stream<List<Map<String, dynamic>>>);
 
   @override
   _i6.Future<Map<String, dynamic>?> updateMissionStatus({

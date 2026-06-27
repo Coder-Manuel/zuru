@@ -25,15 +25,15 @@ void main() {
     repo = MissionsRepositoryImpl(remoteDatasource: ds);
   });
 
-  // A minimal-but-valid mission row (the parser fills the rest with defaults).
-  Map<String, dynamic> missionRow({String id = 'm1', String? status}) => {
+  // A minimal-but-valid mission row (the parser fills the rest — including
+  // status — with defaults).
+  Map<String, dynamic> missionRow({String id = 'm1'}) => {
     'id': id,
     'description': 'Verify the venue',
     'currency': 'KES',
     'price': 1500,
     'duration_in_sec': 1800,
     'address': '123 Riverside',
-    'status': ?status,
   };
 
   String? messageOf(RepoResponse result) =>
