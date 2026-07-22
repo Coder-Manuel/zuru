@@ -4,6 +4,7 @@ import 'package:observe_internet_connectivity/observe_internet_connectivity.dart
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:zuru/core/remote/network_client.dart';
 import 'package:zuru/core/services/connectivity_service/connectivity_controller.dart';
+import 'package:zuru/core/services/fx_service/fx_service.dart';
 import 'package:zuru/core/services/location_service/location_service.dart';
 import 'package:zuru/core/services/role_service/role_service.dart';
 import 'package:zuru/core/services/url_launcher_service/url_launcher_service.dart';
@@ -36,5 +37,7 @@ class InitialBinding extends Bindings {
       LocationService(supabaseClient: Get.find<SupabaseClient>()),
       permanent: true,
     );
+    // FxService is permanent — fetches USD→KES on boot then hourly.
+    Get.put<FxService>(FxService(), permanent: true);
   }
 }

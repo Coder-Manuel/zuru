@@ -10,6 +10,7 @@ enum StorageKeys {
   biometricsKey,
   notificationKey,
   roleKey,
+  fxRatesKey,
 }
 
 class StorageService {

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:zuru/config/client_colors.dart';
+import 'package:zuru/core/services/fx_service/fx_service.dart';
+import 'package:zuru/core/utils/extensions.dart';
 import 'package:zuru/core/utils/size.util.dart';
 import 'package:zuru/core/widgets/custom_dropdown.dart';
 import 'package:zuru/modules/missions/data/models/enum.dart';
@@ -100,8 +102,7 @@ class PostMissionPage extends GetView<PostMissionController> {
                           items: controller.durations,
                           itemLabel: (v) => '$v min',
                           prefixIcon: Icons.timer_outlined,
-                          onChanged: (v) =>
-                              controller.selectedDuration.value = v,
+                          onChanged: controller.selectDuration,
                           validator: (v) =>
                               v == null ? 'Select a duration' : null,
                         ),
@@ -109,21 +110,29 @@ class PostMissionPage extends GetView<PostMissionController> {
                       20.verticalSpace,
 
                       // ── Offer price ───────────────────────────────────────
-                      _FieldLabel('OFFER PRICE'),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          _FieldLabel('OFFER PRICE'),
+                          const _CurrencyToggle(),
+                        ],
+                      ),
                       12.verticalSpace,
-                      Obx(
-                        () => Row(
+                      Obx(() {
+                        final options = controller.priceOptions;
+                        if (options.isEmpty) {
+                          return const _PriceHint();
+                        }
+                        return Row(
                           children: List.generate(
-                            controller.prices.length,
+                            options.length,
                             (i) => Expanded(
                               child: Padding(
                                 padding: EdgeInsets.only(
-                                  right: i < controller.prices.length - 1
-                                      ? 10
-                                      : 0,
+                                  right: i < options.length - 1 ? 10 : 0,
                                 ),
                                 child: _PriceChip(
-                                  label: '\$${controller.prices[i]}',
+                                  label: controller.priceLabel(options[i]),
                                   selected:
                                       controller.selectedPriceIndex.value == i,
                                   onTap: () => controller.selectPrice(i),
@@ -131,8 +140,26 @@ class PostMissionPage extends GetView<PostMissionController> {
                               ),
                             ),
                           ),
-                        ),
-                      ),
+                        );
+                      }),
+                      // Live FX hint (KES only).
+                      Obx(() {
+                        if (controller.currency.value != Currency.kes) {
+                          return const SizedBox.shrink();
+                        }
+                        return Padding(
+                          padding: const EdgeInsets.only(top: 10),
+                          child: Text(
+                            'Live rate · 1 USD ≈ KSh '
+                            '${controller.usdToKes.toInt().asCurrency}',
+                            style: TextStyle(
+                              color: ClientColors.textSecondary,
+                              fontSize: 12,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        );
+                      }),
                       32.verticalSpace,
 
                       // ── Post button ───────────────────────────────────────
@@ -340,13 +367,97 @@ class _PriceChip extends StatelessWidget {
           ),
         ),
         alignment: Alignment.center,
-        child: Text(
-          label,
-          style: TextStyle(
-            color: selected ? ClientColors.primary : ClientColors.textSecondary,
-            fontSize: 15,
-            fontWeight: FontWeight.w700,
+        padding: const EdgeInsets.symmetric(horizontal: 6),
+        child: FittedBox(
+          fit: BoxFit.scaleDown,
+          child: Text(
+            label,
+            maxLines: 1,
+            style: TextStyle(
+              color: selected
+                  ? ClientColors.primary
+                  : ClientColors.textSecondary,
+              fontSize: 15,
+              fontWeight: FontWeight.w700,
+            ),
           ),
+        ),
+      ),
+    );
+  }
+}
+
+// ─── Currency toggle ──────────────────────────────────────────────────────────
+
+class _CurrencyToggle extends StatelessWidget {
+  const _CurrencyToggle();
+
+  @override
+  Widget build(BuildContext context) {
+    final controller = Get.find<PostMissionController>();
+    return Obx(
+      () => Container(
+        padding: const EdgeInsets.all(3),
+        decoration: BoxDecoration(
+          color: ClientColors.inputBg,
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: Currency.values.map((c) {
+            final selected = controller.currency.value == c;
+            return GestureDetector(
+              onTap: () => controller.setCurrency(c),
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 180),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 14,
+                  vertical: 6,
+                ),
+                decoration: BoxDecoration(
+                  color: selected ? ClientColors.primary : Colors.transparent,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Text(
+                  c.code,
+                  style: TextStyle(
+                    color: selected ? Colors.black : ClientColors.textSecondary,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w800,
+                    letterSpacing: 0.5,
+                  ),
+                ),
+              ),
+            );
+          }).toList(),
+        ),
+      ),
+    );
+  }
+}
+
+// ─── Price hint (no duration yet) ─────────────────────────────────────────────
+
+class _PriceHint extends StatelessWidget {
+  const _PriceHint();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      height: 48,
+      alignment: Alignment.center,
+      decoration: BoxDecoration(
+        color: ClientColors.inputBg,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: ClientColors.divider.withAlpha(80)),
+      ),
+      child: Text(
+        'Select a duration to see offer prices',
+        style: TextStyle(
+          color: ClientColors.textSecondary,
+          fontSize: 13,
+          fontWeight: FontWeight.w600,
         ),
       ),
     );

@@ -1,5 +1,7 @@
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
+import 'package:zuru/core/services/fx_service/fx_service.dart';
+import 'package:zuru/core/utils/extensions.dart';
 import 'package:zuru/core/utils/loader.dart';
 import 'package:zuru/core/utils/toast.dart';
 import 'package:zuru/modules/missions/data/models/enum.dart';
@@ -10,15 +12,21 @@ import 'package:zuru/modules/missions/presentation/pages/location_picker_page.da
 
 class PostMissionController extends GetxController {
   final _postMissionUseCase = Get.find<PostMissionUseCase>();
+  final _fx = Get.find<FxService>();
 
   // ── Form fields ──────────────────────────────────────────────────────────
   final descriptionCTRL = TextEditingController();
 
   /// Duration options in minutes shown in the dropdown.
-  final List<int> durations = const [2, 5, 10, 15, 20, 30];
+  final List<int> durations = const [10, 15, 20, 30, 45, 60];
 
   /// Currently selected duration in minutes (null = nothing chosen yet).
   final Rxn<int> selectedDuration = Rxn<int>();
+
+  void selectDuration(int? v) {
+    selectedDuration.value = v;
+    selectedPriceIndex.value = 0; // ranges change with duration
+  }
 
   /// Mission type options.
   final List<MissionType> missionTypes = MissionType.values;
@@ -28,20 +36,58 @@ class PostMissionController extends GetxController {
 
   // ── Location (set via LocationPickerPage) ────────────────────────────────
   final RxString address = ''.obs;
-  final RxString currency = 'USD'.obs;
   final RxDouble latitude = 0.0.obs;
   final RxDouble longitude = 0.0.obs;
 
   /// True once the user has confirmed a location from the picker.
   final RxBool hasLocation = false.obs;
 
-  // ── Price ────────────────────────────────────────────────────────────────
-  final List<int> prices = const [10, 20, 35, 50];
-  final RxInt selectedPriceIndex = 1.obs;
+  // ── Currency ──────────────────────────────────────────────────────────────
+  final Rx<Currency> currency = Currency.usd.obs;
 
-  int get selectedPrice => prices[selectedPriceIndex.value];
+  void setCurrency(Currency c) {
+    currency.value = c;
+    selectedPriceIndex.value = 0;
+  }
+
+  /// Live USD → KES rate (whole number), for the "live rate" hint.
+  double get usdToKes => _fx.usdToKes.value;
+
+  // ── Price ────────────────────────────────────────────────────────────────
+  /// Offer presets in **USD**, keyed by duration (minutes). The range scales up
+  /// with duration (10 min ≈ \$3–5 … 60 min ≈ \$25–40). Edit freely.
+  static const Map<int, List<int>> _usdPriceOptions = {
+    10: [3, 4, 5],
+    15: [5, 7, 9],
+    20: [8, 10, 13],
+    30: [13, 17, 22],
+    45: [18, 24, 30],
+    60: [25, 32, 40],
+  };
+
+  final RxInt selectedPriceIndex = 0.obs;
+
+  List<int> get _usdOptions =>
+      _usdPriceOptions[selectedDuration.value] ?? const [];
+
+  /// Offer options in the **selected currency**, whole numbers. KES values are
+  /// derived live from [FxService]; reads here are reactive.
+  List<int> get priceOptions => currency.value == Currency.kes
+      ? _usdOptions.map((usd) => _fx.toKes(usd)).toList()
+      : _usdOptions;
+
+  int get selectedPrice {
+    final opts = priceOptions;
+    if (opts.isEmpty) return 0;
+    return opts[selectedPriceIndex.value.clamp(0, opts.length - 1)];
+  }
 
   void selectPrice(int index) => selectedPriceIndex.value = index;
+
+  /// Formatted chip/label for an amount in the selected currency.
+  String priceLabel(int amount) => currency.value == Currency.kes
+      ? 'KSh ${amount.asCurrency}'
+      : '\$$amount';
 
   // ── Location picker ──────────────────────────────────────────────────────
 
@@ -78,7 +124,7 @@ class PostMissionController extends GetxController {
         latitude: latitude.value,
         longitude: longitude.value,
         description: descriptionCTRL.text.trim(),
-        currency: currency.value,
+        currency: currency.value.code,
         price: selectedPrice.toDouble(),
         durationInSec: durationInSec,
         missionType: selectedMissionType.value ?? MissionType.surveillance,
