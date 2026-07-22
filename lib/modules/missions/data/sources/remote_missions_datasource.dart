@@ -133,7 +133,7 @@ class RemoteMissionsDatasourceImpl extends RemoteMissionsDatasource {
               id,
               user_id
             ),
-            scout:scout_id!inner (
+            scout:scout_id (
               id,
               user_id,
               first_name,
