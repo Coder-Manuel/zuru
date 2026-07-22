@@ -60,6 +60,9 @@ class RemoteMissionsDatasourceImpl extends RemoteMissionsDatasource {
     if (userId == null) return [];
 
     final role = RoleService.instance.role.value.name;
+    final scoutJoin = role == 'scout'
+        ? 'scout:scout_id!inner'
+        : 'scout:scout_id';
 
     var query = client
         .from('missions')
@@ -74,7 +77,7 @@ class RemoteMissionsDatasourceImpl extends RemoteMissionsDatasource {
           rating,
           total_reviews
         ),
-        scout:scout_id!inner (
+        $scoutJoin (
           id,
           user_id,
           first_name,

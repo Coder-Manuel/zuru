@@ -62,7 +62,16 @@ class PaymentSheet extends GetView<PaymentController> {
             Obx(() {
               return switch (controller.state.value) {
                 PaymentUiState.form => const _FormView(),
-                PaymentUiState.processing => const _ProcessingView(),
+                PaymentUiState.sending => const _ProcessingView(
+                  title: 'Sending STK push…',
+                  subtitle: 'Setting up your M-Pesa payment…',
+                ),
+                PaymentUiState.awaitingPin => const _ProcessingView(
+                  title: 'Enter M-PESA PIN to complete payment',
+                  subtitle:
+                      "STK sent · check your phone for the prompt.\n"
+                      "We're confirming your payment…",
+                ),
                 PaymentUiState.success => const _SuccessView(),
                 PaymentUiState.failed => const _FailedView(),
               };
@@ -214,7 +223,9 @@ class _FormView extends GetView<PaymentController> {
 }
 
 class _ProcessingView extends GetView<PaymentController> {
-  const _ProcessingView();
+  final String title;
+  final String subtitle;
+  const _ProcessingView({required this.title, required this.subtitle});
 
   @override
   Widget build(BuildContext context) {
@@ -253,7 +264,7 @@ class _ProcessingView extends GetView<PaymentController> {
         ),
         const SizedBox(height: 24),
         Text(
-          'Enter M-PESA PIN to complete payment',
+          title,
           textAlign: TextAlign.center,
           style: TextStyle(
             color: ClientColors.textPrimary,
@@ -263,7 +274,7 @@ class _ProcessingView extends GetView<PaymentController> {
         ),
         const SizedBox(height: 8),
         Text(
-          "Check your phone for the STK prompt.\nWe're confirming your payment…",
+          subtitle,
           textAlign: TextAlign.center,
           style: TextStyle(
             color: ClientColors.textSecondary,
