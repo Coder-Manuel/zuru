@@ -3,15 +3,20 @@ import 'package:get/get.dart';
 import 'package:zuru/core/entities/profile.entity.dart';
 import 'package:zuru/core/entities/session_pricing.entity.dart';
 import 'package:zuru/core/routes/app_routes.dart';
+import 'package:zuru/core/services/fx_service/fx_service.dart';
+import 'package:zuru/core/utils/extensions.dart';
 import 'package:zuru/core/utils/loader.dart';
 import 'package:zuru/core/utils/toast.dart';
 import 'package:zuru/modules/missions/data/models/live_request.input.dart';
 import 'package:zuru/modules/missions/domain/usecases/create_live_request.usecase.dart';
+import 'package:zuru/modules/payments/presentation/widgets/payment_sheet.dart';
+import 'package:zuru/modules/user/presentation/controllers/user_controller.dart';
 
 enum LiveWhen { now, schedule }
 
 class LiveRequestController extends GetxController {
   final _createLiveRequest = Get.find<CreateLiveRequestUseCase>();
+  final _fx = Get.find<FxService>();
 
   static const int maxDescriptionChars = 140;
   static const double platformFeeRate = 0.20;
@@ -40,6 +45,38 @@ class LiveRequestController extends GetxController {
   num get platformFee => sessionFee * platformFeeRate;
   num get total => sessionFee + platformFee;
 
+  /// The full total converted to whole KES — M-Pesa settles in KES, so we store
+  /// the KES amount on the request regardless of the tier's currency.
+  int get payableKes => _fx.convert(total, baseCurrency, Currency.kes);
+
+  // ── Display currency (view-only; storage/payment stays KES) ────────────────
+  /// The currency the amounts are defined in (what the scout set on their tier).
+  Currency get baseCurrency => Currency.fromCode(currency);
+
+  /// The currency the client chose to *view* prices in. Defaults to the scout's
+  /// tier currency; toggling only affects display, not what is charged.
+  final Rx<Currency> displayCurrency = Currency.kes.obs;
+
+  double get usdToKes => _fx.usdToKes.value;
+
+  void setDisplayCurrency(Currency c) => displayCurrency.value = c;
+
+  /// Formats a base-currency amount in the selected display currency.
+  String displayAmount(num baseAmount) {
+    final amount = _fx.convertPrecise(
+      baseAmount,
+      baseCurrency,
+      displayCurrency.value,
+    );
+    return displayCurrency.value == Currency.kes
+        ? 'KSh ${amount.round().asCurrency}'
+        : _formatUsd(amount);
+  }
+
+  String _formatUsd(double amount) => amount == amount.roundToDouble()
+      ? '\$${amount.toInt()}'
+      : '\$${amount.toStringAsFixed(2)}';
+
   @override
   void onInit() {
     super.onInit();
@@ -47,6 +84,9 @@ class LiveRequestController extends GetxController {
 
     // Default to the first pricing tier so the breakdown is populated.
     if (tiers.isNotEmpty) selectedTier.value = tiers.first;
+
+    // Default the display currency to what the scout set on their tier.
+    displayCurrency.value = baseCurrency;
 
     final today = _dateOnly(DateTime.now());
     dateOptions = List.generate(10, (i) => today.add(Duration(days: i)));
@@ -134,8 +174,8 @@ class LiveRequestController extends GetxController {
       LiveRequestInput(
         scoutId: scoutId,
         description: descriptionCTRL.text.trim(),
-        currency: tier.currency,
-        price: total.toDouble(),
+        currency: Currency.kes.code,
+        price: payableKes.toDouble(),
         durationInSec: tier.durationMinutes * 60,
         scheduledAt: schedule,
         address: scout.locality,
@@ -147,7 +187,20 @@ class LiveRequestController extends GetxController {
     Loader.dismiss();
     isSubmitting.value = false;
 
-    result.fold((err) => Toast.error(err.message), (mission) {
+    result.fold((err) => Toast.error(err.message), (mission) async {
+      final missionId = mission.id;
+      if (missionId == null) {
+        Toast.error('Something went wrong. Please try again.');
+        return;
+      }
+
+      final paid = await showPaymentSheet(
+        missionId: missionId,
+        amountLabel: mission.formattedPrice,
+        phone: Get.find<UserController>().currentUser.value?.phone,
+      );
+      if (!paid) return;
+
       Get.offNamed(
         AppRoutes.requestSent,
         arguments: {

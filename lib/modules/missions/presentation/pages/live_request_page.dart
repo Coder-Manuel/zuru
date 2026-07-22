@@ -6,6 +6,7 @@ import 'package:zuru/config/client_colors.dart';
 import 'package:zuru/core/entities/profile.entity.dart';
 import 'package:zuru/core/entities/session_pricing.entity.dart';
 import 'package:zuru/core/models/enums.dart';
+import 'package:zuru/core/services/fx_service/fx_service.dart';
 import 'package:zuru/core/utils/extensions.dart';
 import 'package:zuru/core/utils/size.util.dart';
 import 'package:zuru/modules/missions/presentation/controllers/live_request_controller.dart';
@@ -84,7 +85,16 @@ class LiveRequestPage extends GetView<LiveRequestController> {
                       }),
 
                       24.verticalSpace,
+                      animate(
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: const [_Label('PRICE'), _CurrencyToggle()],
+                        ),
+                      ),
+                      12.verticalSpace,
                       animate(const _FeeBreakdown()),
+                      8.verticalSpace,
+                      animate(const _LiveRateHint()),
                       20.verticalSpace,
                       // Submit — last item in the page.
                       const _SubmitBar(),
@@ -728,19 +738,19 @@ class _FeeBreakdown extends GetView<LiveRequestController> {
         border: Border.all(color: ClientColors.divider.withAlpha(120)),
       ),
       child: Obx(() {
-        final cur = controller.currency;
-        // Touch selectedTier so this rebuilds when the tier changes.
+        // Touch reactive state so this rebuilds on tier / currency changes.
         controller.selectedTier.value;
+        controller.displayCurrency.value;
         return Column(
           children: [
             _FeeRow(
               label: 'Session fee',
-              value: '$cur ${controller.sessionFee.asCurrency}',
+              value: controller.displayAmount(controller.sessionFee),
             ),
             12.verticalSpace,
             _FeeRow(
               label: 'Platform fee (20%)',
-              value: '$cur ${controller.platformFee.asCurrency}',
+              value: controller.displayAmount(controller.platformFee),
             ),
             16.verticalSpace,
             Divider(color: ClientColors.divider.withAlpha(150), height: 1),
@@ -757,7 +767,7 @@ class _FeeBreakdown extends GetView<LiveRequestController> {
                   ),
                 ),
                 Text(
-                  '$cur ${controller.total.asCurrency}',
+                  controller.displayAmount(controller.total),
                   style: const TextStyle(
                     color: ClientColors.primary,
                     fontSize: 20,
@@ -769,6 +779,72 @@ class _FeeBreakdown extends GetView<LiveRequestController> {
           ],
         );
       }),
+    );
+  }
+}
+
+class _CurrencyToggle extends GetView<LiveRequestController> {
+  const _CurrencyToggle();
+
+  @override
+  Widget build(BuildContext context) {
+    return Obx(
+      () => Container(
+        padding: const EdgeInsets.all(3),
+        decoration: BoxDecoration(
+          color: ClientColors.inputBg.withAlpha(120),
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: Currency.values.map((c) {
+            final selected = controller.displayCurrency.value == c;
+            return GestureDetector(
+              onTap: () => controller.setDisplayCurrency(c),
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 180),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 14,
+                  vertical: 6,
+                ),
+                decoration: BoxDecoration(
+                  color: selected ? ClientColors.primary : Colors.transparent,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Text(
+                  c.code,
+                  style: TextStyle(
+                    color: selected
+                        ? ClientColors.background
+                        : ClientColors.textSecondary,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w800,
+                    letterSpacing: 0.5,
+                  ),
+                ),
+              ),
+            );
+          }).toList(),
+        ),
+      ),
+    );
+  }
+}
+
+class _LiveRateHint extends GetView<LiveRequestController> {
+  const _LiveRateHint();
+
+  @override
+  Widget build(BuildContext context) {
+    return Obx(
+      () => Text(
+        'Live rate · 1 USD ≈ KSh ${controller.usdToKes.toInt().asCurrency}',
+        style: const TextStyle(
+          color: ClientColors.textSecondary,
+          fontSize: 12,
+          fontWeight: FontWeight.w500,
+        ),
+      ),
     );
   }
 }
