@@ -8,6 +8,7 @@ import 'package:zuru/core/utils/toast.dart';
 import 'package:zuru/modules/missions/data/models/enum.dart';
 import 'package:zuru/modules/missions/data/models/mission_pricing.config.dart';
 import 'package:zuru/modules/missions/data/models/mission.inputs.dart';
+import 'package:zuru/modules/missions/domain/entities/mission.entity.dart';
 import 'package:zuru/modules/missions/domain/usecases/post_mission.usecase.dart';
 import 'package:zuru/modules/missions/presentation/pages/finding_scouts_page.dart';
 import 'package:zuru/modules/missions/presentation/pages/location_picker_page.dart';
@@ -127,7 +128,20 @@ class PostMissionController extends GetxController {
 
   // ── Post mission ─────────────────────────────────────────────────────────
 
+  /// A live check created this session but not yet paid for. Kept so a retry
+  /// resumes payment instead of creating a duplicate.
+  MissionEntity? _pendingMission;
+  final RxBool hasPendingPayment = false.obs;
+
   Future<void> postMission(GlobalKey<FormState> formKey) async {
+    // Idempotency: if we already created a live check awaiting payment, resume
+    // paying for it rather than posting another one.
+    final pending = _pendingMission;
+    if (pending != null) {
+      await _collectPayment(pending);
+      return;
+    }
+
     if (!hasLocation.value) {
       Toast.error('Please set a location for the live check first.');
       return;
@@ -152,22 +166,30 @@ class PostMissionController extends GetxController {
     );
     Loader.dismiss();
 
-    response.fold((ex) => Toast.error(ex.message), (mission) async {
-      final missionId = mission.id;
-      if (missionId == null) {
-        Toast.error('Something went wrong. Please try again.');
-        return;
-      }
-
-      final paid = await showPaymentSheet(
-        missionId: missionId,
-        amountLabel: mission.formattedPrice,
-        phone: Get.find<UserController>().currentUser.value?.phone,
-      );
-      if (!paid) return;
-
-      Get.offNamed(FindingScoutsPage.route, arguments: mission);
+    response.fold((ex) => Toast.error(ex.message), (mission) {
+      _pendingMission = mission;
+      hasPendingPayment.value = true;
+      _collectPayment(mission);
     });
+  }
+
+  Future<void> _collectPayment(MissionEntity mission) async {
+    final missionId = mission.id;
+    if (missionId == null) {
+      Toast.error('Something went wrong. Please try again.');
+      return;
+    }
+
+    final paid = await showPaymentSheet(
+      missionId: missionId,
+      amountLabel: mission.formattedPrice,
+      phone: Get.find<UserController>().currentUser.value?.phone,
+    );
+    if (!paid) return; // keep the pending mission so a retry reuses it
+
+    _pendingMission = null;
+    hasPendingPayment.value = false;
+    Get.offNamed(FindingScoutsPage.route, arguments: mission);
   }
 
   @override

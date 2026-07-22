@@ -8,6 +8,7 @@ import 'package:zuru/core/utils/extensions.dart';
 import 'package:zuru/core/utils/loader.dart';
 import 'package:zuru/core/utils/toast.dart';
 import 'package:zuru/modules/missions/data/models/live_request.input.dart';
+import 'package:zuru/modules/missions/domain/entities/mission.entity.dart';
 import 'package:zuru/modules/missions/domain/usecases/create_live_request.usecase.dart';
 import 'package:zuru/modules/payments/presentation/widgets/payment_sheet.dart';
 import 'package:zuru/modules/user/presentation/controllers/user_controller.dart';
@@ -145,7 +146,20 @@ class LiveRequestController extends GetxController {
 
   // ── Submit ───────────────────────────────────────────────────────────────
 
+  /// A request created this session but not yet paid for. Kept so a retry
+  /// resumes payment instead of creating a duplicate.
+  MissionEntity? _pendingMission;
+  final RxBool hasPendingPayment = false.obs;
+
   Future<void> submit() async {
+    // Idempotency: resume paying for an already-created request rather than
+    // creating another one.
+    final pending = _pendingMission;
+    if (pending != null) {
+      await _collectPayment(pending);
+      return;
+    }
+
     final tier = selectedTier.value;
     if (tier == null) {
       Toast.error('This guide has no session pricing yet');
@@ -187,28 +201,36 @@ class LiveRequestController extends GetxController {
     Loader.dismiss();
     isSubmitting.value = false;
 
-    result.fold((err) => Toast.error(err.message), (mission) async {
-      final missionId = mission.id;
-      if (missionId == null) {
-        Toast.error('Something went wrong. Please try again.');
-        return;
-      }
-
-      final paid = await showPaymentSheet(
-        missionId: missionId,
-        amountLabel: mission.formattedPrice,
-        phone: Get.find<UserController>().currentUser.value?.phone,
-      );
-      if (!paid) return;
-
-      Get.offNamed(
-        AppRoutes.requestSent,
-        arguments: {
-          'scoutName': scout.fullName,
-          'scheduledAt': schedule?.toIso8601String(),
-        },
-      );
+    result.fold((err) => Toast.error(err.message), (mission) {
+      _pendingMission = mission;
+      hasPendingPayment.value = true;
+      _collectPayment(mission);
     });
+  }
+
+  Future<void> _collectPayment(MissionEntity mission) async {
+    final missionId = mission.id;
+    if (missionId == null) {
+      Toast.error('Something went wrong. Please try again.');
+      return;
+    }
+
+    final paid = await showPaymentSheet(
+      missionId: missionId,
+      amountLabel: mission.formattedPrice,
+      phone: Get.find<UserController>().currentUser.value?.phone,
+    );
+    if (!paid) return; // keep the pending request so a retry reuses it
+
+    _pendingMission = null;
+    hasPendingPayment.value = false;
+    Get.offNamed(
+      AppRoutes.requestSent,
+      arguments: {
+        'scoutName': scout.fullName,
+        'scheduledAt': mission.scheduledAt,
+      },
+    );
   }
 
   // ── Helpers ────────────────────────────────────────────────────────────────

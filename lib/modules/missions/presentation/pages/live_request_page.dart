@@ -914,9 +914,14 @@ class _SubmitBar extends GetView<LiveRequestController> {
                       color: ClientColors.background,
                     ),
                   )
-                : const Text(
-                    'Send Request',
-                    style: TextStyle(fontSize: 17, fontWeight: FontWeight.w800),
+                : Text(
+                    controller.hasPendingPayment.value
+                        ? 'Complete Payment'
+                        : 'Send Request',
+                    style: const TextStyle(
+                      fontSize: 17,
+                      fontWeight: FontWeight.w800,
+                    ),
                   ),
           ),
         ),

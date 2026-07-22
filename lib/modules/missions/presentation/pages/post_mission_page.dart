@@ -172,11 +172,15 @@ class PostMissionPage extends GetView<PostMissionController> {
                               borderRadius: BorderRadius.circular(50),
                             ),
                           ),
-                          child: const Text(
-                            'Post Live Check  →',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w800,
+                          child: Obx(
+                            () => Text(
+                              controller.hasPendingPayment.value
+                                  ? 'Complete Payment  →'
+                                  : 'Post Live Check  →',
+                              style: const TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w800,
+                              ),
                             ),
                           ),
                         ),
