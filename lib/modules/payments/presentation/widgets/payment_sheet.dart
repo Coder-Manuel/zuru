@@ -35,6 +35,7 @@ class PaymentSheet extends GetView<PaymentController> {
   @override
   Widget build(BuildContext context) {
     return Container(
+      width: double.infinity,
       decoration: const BoxDecoration(
         color: ClientColors.surface,
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
