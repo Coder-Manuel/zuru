@@ -6,6 +6,8 @@ import 'package:zuru/modules/missions/domain/entities/mission.entity.dart';
 import 'package:zuru/modules/missions/domain/entities/session.entity.dart';
 import 'package:zuru/modules/missions/domain/usecases/get_my_missions.usecase.dart';
 import 'package:zuru/core/routes/app_routes.dart';
+import 'package:zuru/modules/payments/presentation/widgets/payment_sheet.dart';
+import 'package:zuru/modules/user/presentation/controllers/user_controller.dart';
 
 enum MissionFilter { all, active, pending, completed }
 
@@ -82,5 +84,17 @@ class MissionsTabController extends GetxController {
   /// scouts and [JoinStreamPage] for clients.
   void onJoinStream(MissionEntity mission) {
     Get.toNamed(AppRoutes.stream, arguments: mission);
+  }
+
+  Future<void> payAndPublish(MissionEntity mission) async {
+    final id = mission.id;
+    if (id == null) return;
+
+    final paid = await showPaymentSheet(
+      missionId: id,
+      amountLabel: mission.formattedPrice,
+      phone: Get.find<UserController>().currentUser.value?.phone,
+    );
+    if (paid) fetchMissions();
   }
 }

@@ -174,6 +174,7 @@ class MissionModel extends MissionEntity {
       updatedAt: map['updated_at'] as String?,
       acceptedAt: map['accepted_at'] as String?,
       completedAt: map['completed_at'] as String?,
+      publishedAt: map['published_at'] as String?,
     );
   }
 

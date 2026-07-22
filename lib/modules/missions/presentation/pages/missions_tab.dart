@@ -226,7 +226,9 @@ class _MissionCard extends GetView<MissionsTabController> {
                   ),
                 ),
                 const SizedBox(width: 8),
-                _StatusBadge(status: mission.status),
+                mission.isPublished
+                    ? _StatusBadge(status: mission.status)
+                    : const _UnpaidBadge(),
               ],
             ),
             const SizedBox(height: 8),
@@ -292,7 +294,36 @@ class _MissionCard extends GetView<MissionsTabController> {
                 ),
               ],
             ),
-            if (hasActiveSession || mission.status == MissionStatus.live) ...[
+            if (!mission.isPublished) ...[
+              const SizedBox(height: 12),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton.icon(
+                  onPressed: () => controller.payAndPublish(mission),
+                  icon: const Icon(Icons.lock_open_rounded, size: 18),
+                  label: Text(
+                    'Pay ${mission.formattedPrice} to publish',
+                    style: const TextStyle(
+                      fontWeight: FontWeight.w800,
+                      fontSize: 13,
+                    ),
+                  ),
+                  style: ElevatedButton.styleFrom(
+                    minimumSize: const Size(double.infinity, 30),
+                    backgroundColor: ClientColors.primary,
+                    foregroundColor: Colors.black,
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    elevation: 0,
+                  ),
+                ),
+              ),
+            ],
+
+            if (mission.isPublished &&
+                (hasActiveSession || mission.status == MissionStatus.live)) ...[
               const SizedBox(height: 12),
               SizedBox(
                 width: double.infinity,
@@ -485,6 +516,36 @@ class _DurationPill extends StatelessWidget {
 }
 
 // ─── Status badge ─────────────────────────────────────────────────────────────
+class _UnpaidBadge extends StatelessWidget {
+  const _UnpaidBadge();
+
+  @override
+  Widget build(BuildContext context) {
+    const color = Color(0xFFF5A020);
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+      decoration: BoxDecoration(
+        color: color.withAlpha(30),
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: const [
+          Icon(Icons.lock_outline_rounded, size: 12, color: color),
+          SizedBox(width: 4),
+          Text(
+            'Unpaid',
+            style: TextStyle(
+              color: color,
+              fontSize: 11,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
 
 class _StatusBadge extends StatelessWidget {
   final MissionStatus status;

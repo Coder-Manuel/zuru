@@ -461,6 +461,7 @@ class RemoteMissionsDatasourceImpl extends RemoteMissionsDatasource {
             """)
             .eq('scout_id', profileId)
             .eq('status', MissionStatus.requested.name)
+            .not('published_at', 'is', null)
             .order('created_at', ascending: false);
 
         final rows = res
