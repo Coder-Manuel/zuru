@@ -33,8 +33,6 @@ class RadarController extends GetxController
   /// The scout's currently accepted mission. Null when none is active.
   final activeMission = Rx<MissionEntity?>(null);
 
-  /// Pending client requests targeted at this scout (status `requested`),
-  /// awaiting accept/decline. Drives the radar "incoming requests" indicator.
   final pendingRequests = <MissionEntity>[].obs;
 
   bool get hasPendingRequests => pendingRequests.isNotEmpty;
@@ -44,6 +42,30 @@ class RadarController extends GetxController
   final countdown = '05:00:00'.obs;
 
   bool get hasActiveMission => activeMission.value != null;
+
+  Rx<String?> get locationError => _locationService.error;
+  bool get hasLocationError => _locationService.error.value != null;
+
+  /// True when the device's location services are switched off entirely.
+  bool get isLocationServiceDisabled =>
+      _locationService.error.value?.contains('services are disabled') ?? false;
+
+  bool get isLocationPermanentlyDenied =>
+      _locationService.error.value?.contains('permanently denied') ?? false;
+
+  bool get isResolvingLocation =>
+      !_locationService.isReady.value && _locationService.error.value == null;
+
+  bool get showLoading => isLoading.value || isResolvingLocation;
+
+  Future<void> retryLocation() async {
+    isLoading.value = true;
+    await _locationService.retryInit();
+  }
+
+  Future<void> openLocationSettings() =>
+      _locationService.openLocationSettings();
+  Future<void> openAppSettings() => _locationService.openAppSettings();
 
   StreamSubscription<dynamic>? _missionsSub;
   StreamSubscription<dynamic>? _activeMissionSub;
@@ -84,6 +106,12 @@ class RadarController extends GetxController
         _startNearbyStream();
       }
     });
+
+    if (_locationService.isReady.value) {
+      if (!hasActiveMission) _startNearbyStream();
+    } else {
+      _locationService.ensureInitialized();
+    }
   }
 
   @override
@@ -174,6 +202,7 @@ class RadarController extends GetxController
   void _startNearbyStream() {
     final lat = _locationService.latitude;
     final lng = _locationService.longitude;
+
     if (lat == null || lng == null) return;
 
     if (missions.isEmpty) isLoading.value = true;

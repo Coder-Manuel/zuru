@@ -16,9 +16,11 @@ class LocationService extends GetxService with WidgetsBindingObserver {
   final SupabaseClient _supabase;
 
   static const _kUpdateInterval = Duration(seconds: 25);
+
   static const _kLocationSettings = LocationSettings(
     accuracy: LocationAccuracy.high,
     distanceFilter: 30,
+    timeLimit: Duration(seconds: 12),
   );
 
   final position = Rx<Position?>(null);
@@ -48,7 +50,6 @@ class LocationService extends GetxService with WidgetsBindingObserver {
   void onInit() {
     super.onInit();
     WidgetsBinding.instance.addObserver(this);
-    _initLocation();
   }
 
   @override
@@ -74,46 +75,81 @@ class LocationService extends GetxService with WidgetsBindingObserver {
     }
   }
 
+  /// Bootstraps location once, from a UI-alive context. No-op if already ready
+  Future<void> ensureInitialized() async {
+    if (isReady.value) return;
+    await _initLocation();
+  }
+
+  /// Forces a fresh bootstrap attempt — e.g. the user tapped "Try again".
   Future<void> retryInit() => _initLocation();
 
+  /// Opens the OS location (GPS) settings screen — used when location services
+  /// are turned off device-wide.
+  Future<bool> openLocationSettings() => Geolocator.openLocationSettings();
+
+  /// Opens this app's settings screen — used when the location permission has
+  /// been permanently denied and must be re-granted by hand.
+  Future<bool> openAppSettings() => Geolocator.openAppSettings();
+
+  /// Guards against overlapping runs — `Geolocator.requestPermission()` throws
+  /// `PermissionRequestInProgressException` if called while one is pending.
+  bool _isInitializing = false;
+
   Future<void> _initLocation() async {
-    error.value = null;
-    isReady.value = false;
+    if (_isInitializing) return;
+    _isInitializing = true;
+    try {
+      error.value = null;
+      isReady.value = false;
 
-    final serviceEnabled = await Geolocator.isLocationServiceEnabled();
-    if (!serviceEnabled) {
-      error.value = 'Location services are disabled.';
-      return;
+      final serviceEnabled = await Geolocator.isLocationServiceEnabled();
+      if (!serviceEnabled) {
+        error.value = 'Location services are disabled.';
+        return;
+      }
+
+      LocationPermission perm = await Geolocator.checkPermission();
+      if (perm == LocationPermission.denied) {
+        perm = await Geolocator.requestPermission();
+      }
+
+      if (perm == LocationPermission.deniedForever) {
+        error.value =
+            'Location permission permanently denied. Enable it in Settings.';
+        return;
+      }
+      if (perm == LocationPermission.denied) {
+        error.value = 'Location permission denied.';
+        return;
+      }
+
+      final ok = await _fetchAndSubmit();
+      if (!ok) return;
+
+      isReady.value = true;
+      _startTimer();
+    } finally {
+      _isInitializing = false;
     }
-
-    LocationPermission perm = await Geolocator.checkPermission();
-    if (perm == LocationPermission.denied) {
-      perm = await Geolocator.requestPermission();
-    }
-
-    if (perm == LocationPermission.deniedForever) {
-      error.value =
-          'Location permission permanently denied. Enable it in Settings.';
-      return;
-    }
-    if (perm == LocationPermission.denied) {
-      error.value = 'Location permission denied.';
-      return;
-    }
-
-    final ok = await _fetchAndSubmit();
-    if (!ok) return;
-
-    isReady.value = true;
-    _startTimer();
   }
 
   Future<bool> _fetchAndSubmit() async {
     final isSubmitted = await ErrorWrapper.async<bool>(
       () async {
-        final newPos = await Geolocator.getCurrentPosition(
-          locationSettings: _kLocationSettings,
-        );
+        Position? newPos;
+        try {
+          newPos = await Geolocator.getCurrentPosition(
+            locationSettings: _kLocationSettings,
+          );
+        } on TimeoutException {
+          newPos = await Geolocator.getLastKnownPosition();
+        }
+
+        if (newPos == null) {
+          error.value = 'Unable to determine your location.';
+          return false;
+        }
         if (position.value?.isSameAs(newPos) ?? false) return true;
         position.value = newPos;
         await _submitToSupabase(newPos);
