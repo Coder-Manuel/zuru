@@ -9,6 +9,8 @@ import 'package:zuru/modules/missions/data/models/mission.inputs.dart';
 import 'package:zuru/modules/missions/domain/usecases/post_mission.usecase.dart';
 import 'package:zuru/modules/missions/presentation/pages/finding_scouts_page.dart';
 import 'package:zuru/modules/missions/presentation/pages/location_picker_page.dart';
+import 'package:zuru/modules/payments/presentation/widgets/payment_sheet.dart';
+import 'package:zuru/modules/user/presentation/controllers/user_controller.dart';
 
 class PostMissionController extends GetxController {
   final _postMissionUseCase = Get.find<PostMissionUseCase>();
@@ -84,6 +86,13 @@ class PostMissionController extends GetxController {
 
   void selectPrice(int index) => selectedPriceIndex.value = index;
 
+  /// The offer converted to KES — M-Pesa charges in KES, so we store the KES
+  /// amount on the mission. USD offers are converted via [FxService]; KES offers
+  /// pass through.
+  int get payableKes => currency.value == Currency.kes
+      ? selectedPrice
+      : _fx.toKes(selectedPrice);
+
   /// Formatted chip/label for an amount in the selected currency.
   String priceLabel(int amount) => currency.value == Currency.kes
       ? 'KSh ${amount.asCurrency}'
@@ -124,21 +133,30 @@ class PostMissionController extends GetxController {
         latitude: latitude.value,
         longitude: longitude.value,
         description: descriptionCTRL.text.trim(),
-        currency: currency.value.code,
-        price: selectedPrice.toDouble(),
+        currency: Currency.kes.code,
+        price: payableKes.toDouble(),
         durationInSec: durationInSec,
         missionType: selectedMissionType.value ?? MissionType.surveillance,
       ),
     );
     Loader.dismiss();
 
-    response.fold(
-      (ex) => Toast.error(ex.message),
-      // Pass the created MissionEntity as a GetX argument so
-      // FindingScoutsController can read the mission id + location
-      // for the nearby-scouts fetch and the Realtime subscription.
-      (mission) => Get.offNamed(FindingScoutsPage.route, arguments: mission),
-    );
+    response.fold((ex) => Toast.error(ex.message), (mission) async {
+      final missionId = mission.id;
+      if (missionId == null) {
+        Toast.error('Something went wrong. Please try again.');
+        return;
+      }
+
+      final paid = await showPaymentSheet(
+        missionId: missionId,
+        amountLabel: mission.formattedPrice,
+        phone: Get.find<UserController>().currentUser.value?.phone,
+      );
+      if (!paid) return;
+
+      Get.offNamed(FindingScoutsPage.route, arguments: mission);
+    });
   }
 
   @override

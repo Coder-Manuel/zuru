@@ -35,6 +35,7 @@ class MissionModel extends MissionEntity {
     super.mapY,
     super.acceptedAt,
     super.completedAt,
+    super.publishedAt,
     super.ratings,
     super.recordingSession,
   });
@@ -105,6 +106,7 @@ class MissionModel extends MissionEntity {
           [],
       acceptedAt: m['accepted_at']?.toString(),
       completedAt: m['completed_at']?.toString(),
+      publishedAt: m['published_at']?.toString(),
       recordingSession: _parseSession(m['session']),
     );
   }

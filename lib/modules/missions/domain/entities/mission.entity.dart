@@ -45,6 +45,11 @@ abstract class MissionEntity extends BaseEntity {
 
   final String? acceptedAt;
   final String? completedAt;
+
+  /// When the mission became visible to guides — set server-side once payment
+  /// succeeds. Null means the mission is created but unpaid (draft).
+  final String? publishedAt;
+
   final List<RatingEntity> ratings;
 
   /// The session behind this mission — carries the recording of a completed
@@ -74,9 +79,13 @@ abstract class MissionEntity extends BaseEntity {
     this.mapY = 0,
     this.acceptedAt,
     this.completedAt,
+    this.publishedAt,
     this.ratings = const [],
     this.recordingSession,
   });
+
+  /// True once payment has published the mission (visible to guides).
+  bool get isPublished => publishedAt != null;
 
   // ── Recording helpers ─────────────────────────────────────────────────────
 
