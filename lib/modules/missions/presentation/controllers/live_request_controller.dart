@@ -108,7 +108,7 @@ class LiveRequestController extends GetxController {
   Future<void> submit() async {
     final tier = selectedTier.value;
     if (tier == null) {
-      Toast.error('This scout has no session pricing yet');
+      Toast.error('This guide has no session pricing yet');
       return;
     }
     if (formKey.currentState?.validate() != true) {
@@ -121,7 +121,7 @@ class LiveRequestController extends GetxController {
     }
     final scoutId = scout.id;
     if (scoutId == null) {
-      Toast.error('Scout unavailable, please go back and retry');
+      Toast.error('Guide unavailable, please go back and retry');
       return;
     }
 

@@ -29,7 +29,7 @@ class ScoutDetailPage extends GetView<ScoutDetailController> {
           final profile = controller.scout.value?.scoutProfile;
           if (profile == null) {
             return _DetailError(
-              message: controller.error.value ?? 'Scout not found',
+              message: controller.error.value ?? 'Guide not found',
             );
           }
           return _DetailBody(
@@ -84,7 +84,7 @@ class _DetailBody extends StatelessWidget {
                   12.verticalSpace,
                   animate(
                     Text(
-                      profile.fullName.isNotEmpty ? profile.fullName : 'Scout',
+                      profile.fullName.isNotEmpty ? profile.fullName : 'Guide',
                       style: const TextStyle(
                         color: ClientColors.textPrimary,
                         fontSize: 26,
@@ -153,7 +153,7 @@ class _DetailBody extends StatelessWidget {
 
                   if (profile.tags.isNotEmpty) ...[
                     28.verticalSpace,
-                    animate(const _SectionLabel('MISSION ZONES')),
+                    animate(const _SectionLabel('LIVE CHECK ZONES')),
                     14.verticalSpace,
                     animate(_MissionZones(zones: profile.tags)),
                   ],
@@ -202,7 +202,7 @@ class _TopBar extends StatelessWidget {
         ),
         16.horizontalSpace,
         const Text(
-          'SCOUT PROFILE',
+          'GUIDE PROFILE',
           style: TextStyle(
             color: ClientColors.textSecondary,
             fontSize: 15,
@@ -240,7 +240,7 @@ class _PillsRow extends StatelessWidget {
         ),
         10.horizontalSpace,
         _Pill(
-          label: '${profile.totalReviews ?? 0} MISSIONS',
+          label: '${profile.totalReviews ?? 0} LIVE CHECKS',
           color: ClientColors.primary,
         ),
         10.horizontalSpace,

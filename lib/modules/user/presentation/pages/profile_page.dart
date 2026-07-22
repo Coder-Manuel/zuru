@@ -62,7 +62,7 @@ class ProfilePage extends GetView<ProfileController> {
               _ToggleRow(
                     icon: Icons.notifications_outlined,
                     title: 'Push Notifications',
-                    subtitle: 'Mission alerts & updates',
+                    subtitle: 'Live Check alerts & updates',
                     valueObs: controller.notificationsEnabled,
                     onChanged: controller.toggleNotifications,
                     scheme: scheme,
@@ -178,7 +178,7 @@ class _RoleSwitchCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Obx(() {
       final isScout = RoleService.instance.isScout;
-      final targetLabel = isScout ? 'Client' : 'Scout';
+      final targetLabel = isScout ? 'Viewer' : 'Guide';
       final targetIcon = isScout
           ? Icons.person_outline_rounded
           : Icons.radar_rounded;
@@ -228,8 +228,8 @@ class _RoleSwitchCard extends StatelessWidget {
                     4.verticalSpace,
                     Text(
                       isScout
-                          ? 'Post missions & watch live feeds'
-                          : 'Accept missions & stream live',
+                          ? 'Post live checks & watch live feeds'
+                          : 'Accept live checks & stream live',
                       style: TextStyle(color: bodyColor, fontSize: 12),
                     ),
                   ],
@@ -306,8 +306,8 @@ class _RoleSwitchCard extends StatelessWidget {
             10.verticalSpace,
             Text(
               isCurrentlyScout
-                  ? 'You\'ll switch to Client mode — browse, post missions and watch scouts in the field.'
-                  : 'You\'ll switch to Scout mode — accept missions, navigate to locations and stream live to clients.',
+                  ? 'You\'ll switch to Viewer mode — browse, post live checks and watch guides in the field.'
+                  : 'You\'ll switch to Guide mode — accept live checks, navigate to locations and stream live to viewers.',
               textAlign: TextAlign.center,
               style: TextStyle(color: bodyColor, fontSize: 14, height: 1.5),
             ),
@@ -454,7 +454,7 @@ class _ProfileHeader extends StatelessWidget {
           ),
           12.verticalSpace,
           Text(
-            name.isNotEmpty ? name : 'Scout',
+            name.isNotEmpty ? name : 'Guide',
             style: TextStyle(
               color: scheme.onSurface,
               fontSize: 25,
@@ -467,7 +467,7 @@ class _ProfileHeader extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               Text(
-                isScout ? 'Scout' : 'Client',
+                isScout ? 'Guide' : 'Viewer',
                 style: TextStyle(color: bodyColor, fontSize: 13),
               ),
               Text(' · ', style: TextStyle(color: bodyColor, fontSize: 13)),

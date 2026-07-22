@@ -26,7 +26,7 @@ class RateClientPage extends GetView<RatingController> {
               const Spacer(flex: 6),
               // ── Mission complete title ─────────────────────────────────
               Text(
-                'Mission Complete!',
+                'Live Check Complete!',
                 style: TextStyle(
                   color: ScoutColors.textPrimary,
                   fontSize: 32,
@@ -60,7 +60,7 @@ class RateClientPage extends GetView<RatingController> {
               28.verticalSpace,
 
               Text(
-                'How was your mission?',
+                'How was your live check?',
                 style: TextStyle(
                   color: ScoutColors.textPrimary,
                   fontSize: 22,

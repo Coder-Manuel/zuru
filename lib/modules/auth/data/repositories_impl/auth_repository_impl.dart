@@ -72,7 +72,7 @@ class AuthRepositoryImpl extends AuthRepository {
             return FailureResponse(
               role == null
                   ? 'Account not set up correctly. Contact support.'
-                  : 'This app is for Clients only. Use the Scout app.',
+                  : 'This app is for Viewers only. Use the Guide app.',
             );
           }
         }

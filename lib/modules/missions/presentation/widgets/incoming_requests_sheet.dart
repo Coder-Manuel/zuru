@@ -196,7 +196,7 @@ class _RequestCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      (name?.isNotEmpty ?? false) ? name! : 'A client',
+                      (name?.isNotEmpty ?? false) ? name! : 'A viewer',
                       style: const TextStyle(
                         color: ScoutColors.textPrimary,
                         fontSize: 15,

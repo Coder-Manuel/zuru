@@ -330,8 +330,8 @@ class _LockedRadarOverlay extends StatelessWidget {
             builder: (_, distance) {
               return Text(
                 mission != null
-                    ? 'Mission in progress · ${distance?.formatDistance} away'
-                    : 'Complete your current mission\nto scan for new ones.',
+                    ? 'Live Check in progress · ${distance?.formatDistance} away'
+                    : 'Complete your current live check\nto scan for new ones.',
                 style: TextStyle(
                   color: ScoutColors.textSecondary,
                   fontSize: 12,

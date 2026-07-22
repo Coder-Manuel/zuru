@@ -235,7 +235,7 @@ class _RoleTabSwitcher extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             _RoleTab(
-              label: 'Client',
+              label: 'Viewer',
               icon: Icons.person_outline_rounded,
               isSelected: !RoleService.instance.isScout,
               activeColor: Get.theme.primaryColor,
@@ -243,7 +243,7 @@ class _RoleTabSwitcher extends StatelessWidget {
             ),
             const SizedBox(width: 4),
             _RoleTab(
-              label: 'Scout',
+              label: 'Guide',
               icon: Icons.radar_rounded,
               isSelected: RoleService.instance.isScout,
               activeColor: Get.theme.primaryColor,

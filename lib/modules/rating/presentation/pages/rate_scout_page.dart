@@ -45,7 +45,7 @@ class RateScoutPage extends GetView<RatingController> {
 
               // ── Mission complete title ─────────────────────────────────
               Text(
-                'Mission Complete!',
+                'Live Check Complete!',
                 style: TextStyle(
                   color: ClientColors.textPrimary,
                   fontSize: 32,
@@ -99,7 +99,7 @@ class RateScoutPage extends GetView<RatingController> {
                     ),
                     child: Text(
                       controller.selectedStars.value > 0
-                          ? 'Rate Scout'
+                          ? 'Rate Guide'
                           : 'Back to Home',
                       style: TextStyle(
                         fontSize: 16,

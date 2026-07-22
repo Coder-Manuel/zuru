@@ -28,7 +28,7 @@ class ScoutsRepositoryImpl extends ScoutsRepository {
         );
         return SuccessResponse(rows.map(_rowToUser).toList());
       },
-      onError: (_) => FailureResponse('Could not load scouts, kindly retry'),
+      onError: (_) => FailureResponse('Could not load guides, kindly retry'),
       library: _library,
       description: 'while loading scouts feed',
     );
@@ -41,11 +41,11 @@ class ScoutsRepositoryImpl extends ScoutsRepository {
       () async {
         final data = await remoteDatasource.getScoutDetail(profileId);
         if (data == null || data.isEmpty) {
-          return FailureResponse('Scout not found');
+          return FailureResponse('Guide not found');
         }
         return SuccessResponse(_rowToUser(data));
       },
-      onError: (_) => FailureResponse('Could not load scout, kindly retry'),
+      onError: (_) => FailureResponse('Could not load guide, kindly retry'),
       library: _library,
       description: 'while loading scout detail',
     );

@@ -37,7 +37,7 @@ class MissionCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    '${mission.type?.label} \n${mission.address}',
+                    '${mission.type?.label} \n${mission.shortAddress}',
                     style: TextStyle(
                       color: ScoutColors.textPrimary,
                       fontWeight: FontWeight.w600,

@@ -27,7 +27,7 @@ class PostMissionPage extends GetView<PostMissionController> {
                   _CircleBackButton(),
                   const SizedBox(width: 14),
                   Text(
-                    'Post a Mission',
+                    'Post a Live Check',
                     style: TextStyle(
                       color: ClientColors.textPrimary,
                       fontSize: 22,
@@ -58,11 +58,11 @@ class PostMissionPage extends GetView<PostMissionController> {
                       24.verticalSpace,
 
                       // ── Mission type ──────────────────────────────────────
-                      _FieldLabel('MISSION TYPE'),
+                      _FieldLabel('LIVE CHECK TYPE'),
                       6.verticalSpace,
                       Obx(
                         () => CustomDropDown<MissionType>(
-                          hint: 'Select mission type',
+                          hint: 'Select live check type',
                           value: controller.selectedMissionType.value,
                           items: controller.missionTypes,
                           itemLabel: (v) => v.label,
@@ -70,13 +70,13 @@ class PostMissionPage extends GetView<PostMissionController> {
                           onChanged: (v) =>
                               controller.selectedMissionType.value = v,
                           validator: (v) =>
-                              v == null ? 'Select a mission type' : null,
+                              v == null ? 'Select a live check type' : null,
                         ),
                       ),
                       20.verticalSpace,
 
                       // ── Instructions to scout (description) ──────────────
-                      _FieldLabel('INSTRUCTIONS TO SCOUT'),
+                      _FieldLabel('INSTRUCTIONS TO GUIDE'),
                       6.verticalSpace,
                       _MissionTextField(
                         controller: controller.descriptionCTRL,
@@ -149,7 +149,7 @@ class PostMissionPage extends GetView<PostMissionController> {
                             ),
                           ),
                           child: const Text(
-                            'Post Mission  →',
+                            'Post Live Check  →',
                             style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.w800,
@@ -212,7 +212,7 @@ class _GpsBanner extends StatelessWidget {
               child: Text(
                 hasLocation
                     ? '$location · GPS confirmed'
-                    : 'Tap to set mission location',
+                    : 'Tap to set live check location',
                 style: TextStyle(
                   color: hasLocation
                       ? ClientColors.primary

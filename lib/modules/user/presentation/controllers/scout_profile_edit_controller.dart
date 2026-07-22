@@ -100,7 +100,7 @@ class ScoutProfileEditController extends GetxController {
   /// Display name shown in the preview card.
   String get currentUserName {
     final name = _userController.currentUser.value?.scoutProfile?.fullName;
-    return (name?.isNotEmpty ?? false) ? name! : 'Scout';
+    return (name?.isNotEmpty ?? false) ? name! : 'Guide';
   }
 
   /// Formatted rating for the preview card.
@@ -434,7 +434,7 @@ class ScoutProfileEditController extends GetxController {
   }
 
   void previewAsClient() {
-    Toast.info('Client preview is coming soon');
+    Toast.info('Viewer preview is coming soon');
   }
 
   // ── Helpers ──────────────────────────────────────────────────────────────

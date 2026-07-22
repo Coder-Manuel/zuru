@@ -674,7 +674,7 @@ class _BioFieldState extends State<_BioField> {
             ),
             decoration: InputDecoration(
               isDense: true,
-              hintText: 'Tell clients what you show them about your world…',
+              hintText: 'Tell viewers what you show them about your world…',
               hintStyle: TextStyle(color: widget.bodyColor, fontSize: 13),
               border: InputBorder.none,
               contentPadding: EdgeInsets.all(6),

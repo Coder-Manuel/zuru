@@ -82,6 +82,30 @@ abstract class MissionEntity extends BaseEntity {
   bool get isMyMission;
 
   // ── Display helpers ───────────────────────────────────────────────────────
+
+  /// A short, human-readable summary of [address] — at most 3 words.
+  ///
+  /// Geocoded addresses often lead with a plot number or a Plus Code, e.g.
+  /// "123G+4R Pioneer House, Nakuru". We drop that leading code token so the
+  /// recognisable place name comes first, then keep the next three words
+  /// (commas preserved): -> "Pioneer House, Nakuru".
+  String get shortAddress {
+    final raw = address.trim();
+    if (raw.isEmpty) return 'Unknown area';
+
+    var tokens = raw.split(RegExp(r'\s+')).where((t) => t.isNotEmpty).toList();
+    if (tokens.isEmpty) return 'Unknown area';
+
+    // Drop a leading code token — a plot number ("12") or a Plus Code
+    // ("123G+4R"): any first token containing a digit or a '+'.
+    final first = tokens.first;
+    final isCode = first.contains('+') || RegExp(r'\d').hasMatch(first);
+    if (isCode && tokens.length > 1) tokens = tokens.sublist(1);
+
+    // Cap to 3 words and strip any dangling trailing comma.
+    return tokens.take(3).join(' ').replaceAll(RegExp(r',\s*$'), '');
+  }
+
   String get durationLabel {
     final minutes = durationInSec ~/ 60;
     if (minutes < 60) return '$minutes min';

@@ -24,7 +24,7 @@ class RequestSentPage extends StatelessWidget {
   Map<String, dynamic> get _args =>
       (Get.arguments as Map?)?.cast<String, dynamic>() ?? const {};
 
-  String get _scoutName => (_args['scoutName'] as String?) ?? 'The scout';
+  String get _scoutName => (_args['scoutName'] as String?) ?? 'The guide';
 
   DateTime? get _scheduledAt {
     final raw = _args['scheduledAt'] as String?;

@@ -23,14 +23,14 @@ class RatingController extends GetxController
   Rx<bool> isRating = false.obs;
 
   // ── Client view ───────────────────────────────────────────────────────────
-  String get scoutName => mission.scout?.displayName ?? 'Scout';
+  String get scoutName => mission.scout?.displayName ?? 'Guide';
 
   String get paymentText =>
       'Payment of ${mission.currency} ${mission.price.toStringAsFixed(2)} '
       'has been released to $scoutName.';
 
   // ── Scout view ────────────────────────────────────────────────────────────
-  String get clientName => mission.client?.displayName ?? 'Client';
+  String get clientName => mission.client?.displayName ?? 'Viewer';
 
   void onContinue() =>
       Get.offNamed(MissionCompletePage.route, arguments: mission);

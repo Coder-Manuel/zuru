@@ -186,7 +186,7 @@ class _NavigationPageState extends State<NavigationPage> {
       WayPoint(
         name: _mission.address.isNotEmpty
             ? _mission.address
-            : 'Mission Location',
+            : 'Live Check Location',
         latitude: _mission.latitude ?? 0.0,
         longitude: _mission.longitude ?? 0.0,
       ),
@@ -374,7 +374,7 @@ class _PreparingBodyState extends State<_PreparingBody>
                     Text(
                       widget.mission.address.isNotEmpty
                           ? widget.mission.address
-                          : 'Mission Location',
+                          : 'Live Check Location',
                       style: TextStyle(
                         color: ScoutColors.textPrimary,
                         fontSize: 14,

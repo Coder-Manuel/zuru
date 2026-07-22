@@ -333,8 +333,8 @@ class _BottomOverlay extends GetView<MapsTabController> {
             final count = controller.activeMissions.length;
             return Text(
               count == 0
-                  ? 'Tap map · Long-press to post a mission'
-                  : '$count active mission${count == 1 ? '' : 's'} on the map',
+                  ? 'Tap map · Long-press to post a live check'
+                  : '$count active live check${count == 1 ? '' : 's'} on the map',
               style: TextStyle(color: ClientColors.textSecondary, fontSize: 13),
             );
           }),
@@ -353,7 +353,7 @@ class _BottomOverlay extends GetView<MapsTabController> {
                 elevation: 0,
               ),
               child: const Text(
-                '+ Post a Mission',
+                '+ Post a Live Check',
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800),
               ),
             ),

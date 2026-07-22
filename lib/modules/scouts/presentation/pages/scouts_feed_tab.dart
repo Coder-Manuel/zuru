@@ -63,7 +63,7 @@ class ScoutsFeedTab extends GetView<ScoutsFeedController> {
                     ),
                     noItemsFoundIndicatorBuilder: (_) => const _FeedEmpty(),
                     firstPageErrorIndicatorBuilder: (_) => _FeedError(
-                      message: 'Could not load scouts',
+                      message: 'Could not load guides',
                       onRetry: controller.pagingController.refresh,
                     ),
                     newPageErrorIndicatorBuilder: (_) => _RetryRow(
@@ -98,7 +98,7 @@ class _FeedHeader extends GetView<ScoutsFeedController> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const Text(
-                'Scouts Feed',
+                'Guides Feed',
                 style: TextStyle(
                   color: ClientColors.textPrimary,
                   fontSize: 28,
@@ -118,7 +118,7 @@ class _FeedHeader extends GetView<ScoutsFeedController> {
                   fontSize: 13,
                 ),
                 children: [
-                  TextSpan(text: '${controller.loadedCount} scouts found '),
+                  TextSpan(text: '${controller.loadedCount} guides found '),
                   const TextSpan(text: '· '),
                   TextSpan(
                     text: '${controller.liveCount} live now',
@@ -237,7 +237,7 @@ class _FeedEmpty extends StatelessWidget {
           ),
           SizedBox(height: 16),
           Text(
-            'No scouts match this filter',
+            'No guides match this filter',
             style: TextStyle(color: ClientColors.textSecondary, fontSize: 15),
           ),
         ],

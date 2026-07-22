@@ -21,7 +21,7 @@ class RatingRepositoryImpl implements RatingRepository {
         final data = await remoteDatasource.createRating(input.toMap());
         return SuccessResponse(RatingModel.fromMap(data));
       },
-      onError: (_) => FailureResponse('Failed to rating scout, kindly retry'),
+      onError: (_) => FailureResponse('Failed to rating guide, kindly retry'),
       library: _library,
       description: 'while creating a rating',
     );

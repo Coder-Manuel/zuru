@@ -189,7 +189,7 @@ class _ScoutCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  scout.fullName.isNotEmpty ? scout.fullName : 'Scout',
+                  scout.fullName.isNotEmpty ? scout.fullName : 'Guide',
                   style: const TextStyle(
                     color: ClientColors.textPrimary,
                     fontSize: 18,
@@ -270,7 +270,7 @@ class _DurationPicker extends GetView<LiveRequestController> {
   Widget build(BuildContext context) {
     if (!controller.hasPricing) {
       return const Text(
-        'This scout hasn’t set session pricing yet.',
+        'This guide hasn’t set session pricing yet.',
         style: TextStyle(color: ClientColors.textSecondary, fontSize: 14),
       );
     }

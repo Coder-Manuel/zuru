@@ -36,10 +36,10 @@ class MissionsPanel extends GetView<RadarController> {
                         ? (controller.isResolvingLocation
                               // The centred loader below owns this message.
                               ? ''
-                              : 'SCANNING FOR MISSIONS…')
+                              : 'SCANNING FOR LIVE CHECKS…')
                         : count == 0
-                        ? 'NO ACTIVE MISSIONS NEARBY'
-                        : '$count ACTIVE MISSION${count == 1 ? '' : 'S'} NEARBY',
+                        ? 'NO ACTIVE LIVE CHECKS NEARBY'
+                        : '$count ACTIVE LIVE CHECK${count == 1 ? '' : 'S'} NEARBY',
                     style: TextStyle(
                       color: controller.hasLocationError
                           ? ScoutColors.scoutMarker
@@ -130,7 +130,7 @@ class _SeeAllButton extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
-              'See all $count missions',
+              'See all $count live checks',
               style: TextStyle(
                 color: ScoutColors.textAccent,
                 fontWeight: FontWeight.w700,
@@ -175,7 +175,7 @@ class _NoMissionsPlaceholder extends StatelessWidget {
           ),
           16.verticalSpace,
           Text(
-            'No missions nearby',
+            'No live checks nearby',
             style: TextStyle(
               color: ScoutColors.textPrimary,
               fontSize: 15,
@@ -184,7 +184,7 @@ class _NoMissionsPlaceholder extends StatelessWidget {
           ),
           8.verticalSpace,
           Text(
-            'New missions will appear here\nas they become available.',
+            'New live checks will appear here\nas they become available.',
             style: TextStyle(
               color: ScoutColors.textSecondary,
               fontSize: 13,
@@ -230,7 +230,7 @@ class _LocationErrorPlaceholder extends GetView<RadarController> {
               ),
               16.verticalSpace,
               Text(
-                'Location needed to find missions',
+                'Location needed to find live checks',
                 style: TextStyle(
                   color: ScoutColors.textPrimary,
                   fontSize: 15,

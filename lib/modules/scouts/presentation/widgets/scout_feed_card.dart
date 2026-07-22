@@ -15,7 +15,7 @@ class ScoutFeedCard extends StatelessWidget {
     final profile = scout.scoutProfile;
     final name = (profile?.fullName.isNotEmpty ?? false)
         ? profile!.fullName
-        : 'Scout';
+        : 'Guide';
     final tags = (profile?.tags ?? const []).take(3).toList();
 
     return GestureDetector(
@@ -107,7 +107,7 @@ class ScoutFeedCard extends StatelessWidget {
                     ),
                     2.verticalSpace,
                     Text(
-                      '${profile?.totalReviews ?? 0} missions',
+                      '${profile?.totalReviews ?? 0} live checks',
                       style: const TextStyle(
                         color: ClientColors.textSecondary,
                         fontSize: 12,

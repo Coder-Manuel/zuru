@@ -63,7 +63,7 @@ class PostMissionController extends GetxController {
 
   Future<void> postMission(GlobalKey<FormState> formKey) async {
     if (!hasLocation.value) {
-      Toast.error('Please set a location for the mission first.');
+      Toast.error('Please set a location for the live check first.');
       return;
     }
     if (formKey.currentState?.validate() != true) return;
@@ -71,7 +71,7 @@ class PostMissionController extends GetxController {
     // Convert selected minutes → seconds for the DB
     final durationInSec = (selectedDuration.value ?? 5) * 60;
 
-    Loader.show(message: 'Posting mission...');
+    Loader.show(message: 'Posting live check...');
     final response = await _postMissionUseCase(
       PostMissionInput(
         address: address.value,

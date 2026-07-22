@@ -19,7 +19,7 @@ class AlertModel extends AlertEntity {
   /// pending request (the realtime stream fires on every touch) collapse to a
   /// single alert instead of piling up duplicates.
   factory AlertModel.liveRequest(MissionEntity mission) {
-    final client = mission.client?.displayName ?? 'A client';
+    final client = mission.client?.displayName ?? 'A viewer';
     return AlertModel(
       id: '${AlertType.liveRequestCreated.storageValue}:${mission.id}',
       createdAt: mission.createdAt ?? DateTime.now().toUtc().toIso8601String(),

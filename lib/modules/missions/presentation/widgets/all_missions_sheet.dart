@@ -56,8 +56,8 @@ class _AllMissionsSheet extends GetView<RadarController> {
                       Expanded(
                         child: Text(
                           count == 0
-                              ? 'NO ACTIVE MISSIONS NEARBY'
-                              : '$count ACTIVE MISSION${count == 1 ? '' : 'S'} NEARBY',
+                              ? 'NO ACTIVE LIVE CHECKS NEARBY'
+                              : '$count ACTIVE LIVE CHECK${count == 1 ? '' : 'S'} NEARBY',
                           style: TextStyle(
                             color: ScoutColors.textAccent,
                             fontSize: 12,
@@ -97,7 +97,7 @@ class _AllMissionsSheet extends GetView<RadarController> {
                   if (missions.isEmpty) {
                     return Center(
                       child: Text(
-                        'No missions nearby',
+                        'No live checks nearby',
                         style: TextStyle(
                           color: ScoutColors.textSecondary,
                           fontSize: 14,

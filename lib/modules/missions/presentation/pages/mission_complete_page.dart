@@ -29,7 +29,7 @@ class MissionCompletePage extends StatelessWidget {
 
               // ── Title ────────────────────────────────────────────────────
               Text(
-                'Mission Complete!',
+                'Live Check Complete!',
                 style: TextStyle(
                   color: ClientColors.textPrimary,
                   fontSize: 34,
@@ -130,7 +130,7 @@ class _StatsCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Text(
-            'MISSION STATS',
+            'LIVE CHECK STATS',
             style: TextStyle(
               color: ClientColors.textSecondary,
               fontSize: 11,

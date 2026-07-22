@@ -33,7 +33,7 @@ class PhoneSetupPage extends GetView<RegisterController> {
               ),
               12.verticalSpace,
               Text(
-                'Required for mission coordination and security.',
+                'Required for live check coordination and security.',
                 style: TextStyle(color: bodyColor, fontSize: 15),
               ),
               28.verticalSpace,

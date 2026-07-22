@@ -21,8 +21,8 @@ enum MissionType {
   liveRequest;
 
   String get label => switch (this) {
-    MissionType.surveillance => 'Surveillance',
-    MissionType.intelGathering => 'Intel Gathering',
+    MissionType.surveillance => 'Live Site Check',
+    MissionType.intelGathering => 'Location Insight',
     MissionType.perimeterCheck => 'Perimeter Check',
     MissionType.extractionSupport => 'Extraction Support',
     MissionType.eventVerification => 'Event Verification',

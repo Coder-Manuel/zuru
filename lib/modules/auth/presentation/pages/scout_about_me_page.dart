@@ -54,7 +54,7 @@ class ScoutAboutMePage extends GetView<RegisterController> {
               ),
               10.verticalSpace,
               Text(
-                'Help clients understand what makes you the right scout for their mission.',
+                'Help viewers understand what makes you the right guide for their live check.',
                 style: TextStyle(color: bodyColor, fontSize: 15, height: 1.5),
               ),
 

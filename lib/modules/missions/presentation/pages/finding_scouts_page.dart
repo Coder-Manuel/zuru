@@ -27,7 +27,7 @@ class FindingScoutsPage extends GetView<FindingScoutsController> {
                   _CircleBackButton(),
                   const SizedBox(width: 14),
                   Text(
-                    'Finding Scouts',
+                    'Finding Guides',
                     style: TextStyle(
                       color: ClientColors.textPrimary,
                       fontSize: 22,
@@ -102,7 +102,7 @@ class _ScoutsSection extends StatelessWidget {
         // Scouts notified counter
         Obx(
           () => Text(
-            '${controller.scoutsNotified.value} SCOUTS NOTIFIED',
+            '${controller.scoutsNotified.value} GUIDES NOTIFIED',
             style: const TextStyle(
               color: Color(0xFF22C55E),
               fontSize: 15,
@@ -184,7 +184,7 @@ class _NoScoutsFallbackState extends State<_NoScoutsFallback>
 
           // Heading
           Text(
-            'No scouts nearby right now',
+            'No guides nearby right now',
             textAlign: TextAlign.center,
             style: TextStyle(
               color: ClientColors.textPrimary,
@@ -196,7 +196,7 @@ class _NoScoutsFallbackState extends State<_NoScoutsFallback>
 
           // Subtitle
           Text(
-            'Your mission has been posted and will be accepted by the next available scout.',
+            'Your live check has been posted and will be accepted by the next available guide.',
             textAlign: TextAlign.center,
             style: TextStyle(
               color: ClientColors.textSecondary,
@@ -490,7 +490,7 @@ class _ScoutCard extends StatelessWidget {
                 ),
                 const SizedBox(height: 3),
                 Text(
-                  '${scout.distanceMeters.formatDistance} · ${scout.user.scoutProfile?.totalReviews ?? 0} missions',
+                  '${scout.distanceMeters.formatDistance} · ${scout.user.scoutProfile?.totalReviews ?? 0} live checks',
                   style: TextStyle(
                     color: ClientColors.textSecondary,
                     fontSize: 12,

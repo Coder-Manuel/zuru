@@ -271,16 +271,16 @@ class _GpsVerificationPageState extends State<GpsVerificationPage>
     switch (_state) {
       case _GpsState.locating:
         subtitle =
-            'You must be within 100m of the mission pin\nto begin streaming.';
+            'You must be within 100m of the live check pin\nto begin streaming.';
         break;
       case _GpsState.verified:
         subtitle =
-            'Location confirmed. You are within 100m\nof the mission pin.';
+            'Location confirmed. You are within 100m\nof the live check pin.';
         break;
       case _GpsState.tooFar:
         final distLabel = _distanceMeters > 0
-            ? '${_distanceMeters.toInt()}m away from the mission pin.'
-            : 'too far from the mission pin.';
+            ? '${_distanceMeters.toInt()}m away from the live check pin.'
+            : 'too far from the live check pin.';
         subtitle = 'You are $distLabel\nMove closer to begin streaming.';
         break;
     }

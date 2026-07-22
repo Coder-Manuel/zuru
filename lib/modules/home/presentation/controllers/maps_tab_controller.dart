@@ -41,7 +41,7 @@ class MapsTabController extends GetxController {
       },
       onError: (_) {
         isLoading.value = false;
-        Toast.error('Failed to load missions. Kindly retry.');
+        Toast.error('Failed to load live checks. Kindly retry.');
       },
     );
   }

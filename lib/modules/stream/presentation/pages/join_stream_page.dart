@@ -156,7 +156,7 @@ class _RemoteFeed extends StatelessWidget {
               ),
               20.verticalSpace,
               const Text(
-                'Scout disconnected',
+                'Guide disconnected',
                 style: TextStyle(
                   color: Colors.white70,
                   fontSize: 16,
@@ -189,7 +189,7 @@ class _RemoteFeed extends StatelessWidget {
             const _PulsingIcon(),
             16.verticalSpace,
             Text(
-              'Waiting for scout to stream…',
+              'Waiting for guide to stream…',
               style: TextStyle(color: ClientColors.textSecondary, fontSize: 14),
             ),
           ],
@@ -317,7 +317,7 @@ class _BottomSection extends StatelessWidget {
                     // Scout avatar with dynamic status ring
                     Obx(
                       () => _ScoutAvatar(
-                        name: ctrl.mission.scout?.displayName ?? 'Scout',
+                        name: ctrl.mission.scout?.displayName ?? 'Guide',
                         status: ctrl.scoutStatus.value,
                       ),
                     ),
@@ -329,7 +329,7 @@ class _BottomSection extends StatelessWidget {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Text(
-                            ctrl.mission.scout?.displayName ?? 'Scout',
+                            ctrl.mission.scout?.displayName ?? 'Guide',
                             style: TextStyle(
                               color: ClientColors.textPrimary,
                               fontSize: 16,
@@ -387,7 +387,7 @@ class _StatusBadge extends StatelessWidget {
       ScoutStatus.muted => _badge(
         color: const Color(0xFFEF4444),
         dot: false,
-        label: 'SCOUT MUTED',
+        label: 'GUIDE MUTED',
         icon: Icons.mic_off_rounded,
       ),
       ScoutStatus.disconnected => _badge(

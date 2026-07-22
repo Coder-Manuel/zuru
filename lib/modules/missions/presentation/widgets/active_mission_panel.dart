@@ -30,7 +30,7 @@ class ActiveMissionPanel extends GetView<RadarController> {
                   _PulsingDot(),
                   10.horizontalSpace,
                   Text(
-                    'MISSION IN ACTION',
+                    'LIVE CHECK IN ACTION',
                     style: TextStyle(
                       color: ScoutColors.scoutMarker,
                       fontSize: 12,
@@ -92,7 +92,7 @@ class ActiveMissionPanel extends GetView<RadarController> {
                                 ),
                               )
                             : const Text(
-                                'Complete Mission',
+                                'Complete Live Check',
                                 style: TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.w700,
@@ -121,7 +121,7 @@ class ActiveMissionPanel extends GetView<RadarController> {
                           ),
                         ),
                         child: const Text(
-                          'Abandon Mission',
+                          'Abandon Live Check',
                           style: TextStyle(
                             fontSize: 15,
                             fontWeight: FontWeight.w600,
@@ -146,7 +146,7 @@ class ActiveMissionPanel extends GetView<RadarController> {
         backgroundColor: ScoutColors.surface,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         title: Text(
-          'Abandon Mission?',
+          'Abandon Live Check?',
           style: TextStyle(
             color: ScoutColors.textPrimary,
             fontWeight: FontWeight.w700,
@@ -154,7 +154,7 @@ class ActiveMissionPanel extends GetView<RadarController> {
           ),
         ),
         content: Text(
-          'This mission will be released back to the pool. This action cannot be undone.',
+          'This live check will be released back to the pool. This action cannot be undone.',
           style: TextStyle(
             color: ScoutColors.textSecondary,
             fontSize: 14,
@@ -330,7 +330,7 @@ class _CountdownCard extends StatelessWidget {
               ),
               6.verticalSpace,
               Text(
-                'Mission removed after 5 hours',
+                'Live Check removed after 5 hours',
                 style: TextStyle(
                   color: ScoutColors.textSecondary,
                   fontSize: 12,

@@ -32,7 +32,7 @@ class ScoutMissionsTab extends GetView<MissionsController> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        'Missions',
+                        'Live Checks',
                         style: TextStyle(
                           color: ScoutColors.textPrimary,
                           fontSize: 28,
@@ -291,7 +291,7 @@ class _MissionCard extends StatelessWidget {
                         curve: Curves.easeInOut,
                       ),
                   label: const Text(
-                    'Complete Mission',
+                    'Complete Live Check',
                     style: TextStyle(fontWeight: FontWeight.w700, fontSize: 14),
                   ),
                   style: ElevatedButton.styleFrom(
@@ -450,10 +450,10 @@ class _EmptyState extends StatelessWidget {
   const _EmptyState({required this.filter});
 
   String get _message => switch (filter) {
-    MissionFilter.active => 'No live missions right now.',
-    MissionFilter.accepted => 'No accepted missions.',
-    MissionFilter.completed => 'No completed missions yet.',
-    MissionFilter.all => 'You haven\'t accepted any missions yet.',
+    MissionFilter.active => 'No active live checks right now.',
+    MissionFilter.accepted => 'No accepted live checks.',
+    MissionFilter.completed => 'No completed live checks yet.',
+    MissionFilter.all => 'You haven\'t accepted any live checks yet.',
   };
 
   @override

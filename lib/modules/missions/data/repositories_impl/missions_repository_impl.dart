@@ -26,7 +26,7 @@ class MissionsRepositoryImpl extends MissionsRepository {
         final data = await remoteDatasource.postMission(input.toMap());
         return SuccessResponse(MissionModel.fromMap(data));
       },
-      onError: (_) => FailureResponse('Failed to post mission, kindly retry'),
+      onError: (_) => FailureResponse('Failed to post live check, kindly retry'),
       library: _library,
       description: 'while posting mission',
     );
@@ -58,7 +58,7 @@ class MissionsRepositoryImpl extends MissionsRepository {
             return SuccessResponse(data.map(MissionModel.fromMap).toList());
           },
           onError: (_) =>
-              FailureResponse('Failed to load missions, kindly retry'),
+              FailureResponse('Failed to load live checks, kindly retry'),
           library: _library,
           description: 'while loading missions',
         );
@@ -96,7 +96,7 @@ class MissionsRepositoryImpl extends MissionsRepository {
         });
         return SuccessResponse(data.map(NearbyScoutModel.fromMap).toList());
       },
-      onError: (_) => FailureResponse('Failed to load nearby scouts'),
+      onError: (_) => FailureResponse('Failed to load nearby guides'),
       library: _library,
       description: 'while fetching nearby scouts',
     );
@@ -132,7 +132,7 @@ class MissionsRepositoryImpl extends MissionsRepository {
             );
           },
           onError: (_) =>
-              FailureResponse('Failed to load missions, kindly retry'),
+              FailureResponse('Failed to load live checks, kindly retry'),
           library: _library,
           description: 'while loading scout missions',
         );
@@ -173,7 +173,7 @@ class MissionsRepositoryImpl extends MissionsRepository {
       () async {
         final res = await remoteDatasource.acceptMission(input.missionId);
         if (!res) {
-          return FailureResponse('Failed to accept mission. Please try again.');
+          return FailureResponse('Failed to accept live check. Please try again.');
         }
         return SuccessResponse(null);
       },
@@ -206,7 +206,7 @@ class MissionsRepositoryImpl extends MissionsRepository {
           }
         }
       },
-      onError: (_) => FailureResponse('Failed to watch active mission.'),
+      onError: (_) => FailureResponse('Failed to watch active live check.'),
       library: _library,
       description: 'while streaming active mission',
     );
@@ -257,7 +257,7 @@ class MissionsRepositoryImpl extends MissionsRepository {
       description: 'while updating mission status',
     );
     if (ok != true) {
-      return FailureResponse('Failed to update mission. Please try again.');
+      return FailureResponse('Failed to update live check. Please try again.');
     }
     return SuccessResponse(null);
   }
@@ -266,7 +266,7 @@ class MissionsRepositoryImpl extends MissionsRepository {
   Future<RepoResponse<void>> declineMission(DeclineMissionInput input) async {
     final missionId = input.mission.id;
     if (missionId == null || missionId.isEmpty) {
-      return FailureResponse('Failed to decline mission. Please try again.');
+      return FailureResponse('Failed to decline live check. Please try again.');
     }
     final ok = await ErrorWrapper.async<bool>(
       () async {
@@ -281,7 +281,7 @@ class MissionsRepositoryImpl extends MissionsRepository {
       description: 'while declining mission',
     );
     if (ok != true) {
-      return FailureResponse('Failed to decline mission. Please try again.');
+      return FailureResponse('Failed to decline live check. Please try again.');
     }
     return SuccessResponse(null);
   }

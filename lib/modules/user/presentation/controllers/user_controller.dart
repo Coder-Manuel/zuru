@@ -68,7 +68,7 @@ class UserController extends GetxController {
     final target = RoleService.instance.isScout
         ? UserRole.client
         : UserRole.scout;
-    final label = target == UserRole.scout ? 'Scout' : 'Client';
+    final label = target == UserRole.scout ? 'Guide' : 'Viewer';
 
     isSwitchingRole.value = true;
     Loader.show(message: 'Switching to $label mode…');

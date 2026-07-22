@@ -287,7 +287,7 @@ class _BottomSection extends StatelessWidget {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Text(
-                            ctrl.mission.client?.displayName ?? 'Scout',
+                            ctrl.mission.client?.displayName ?? 'Viewer',
                             style: TextStyle(
                               color: ClientColors.textPrimary,
                               fontSize: 16,
@@ -511,16 +511,16 @@ class _ClientStatusText extends StatelessWidget {
   Widget build(BuildContext context) {
     final (label, color) = switch (state) {
       ClientStreamState.waiting => (
-        'Waiting for client to join…',
+        'Waiting for viewer to join…',
         ClientColors.textSecondary,
       ),
-      ClientStreamState.joined => ('Client is watching', ClientColors.primary),
+      ClientStreamState.joined => ('Viewer is watching', ClientColors.primary),
       ClientStreamState.disconnected => (
-        'Client disconnected — reconnecting…',
+        'Viewer disconnected — reconnecting…',
         Color(0xFFF5A020),
       ),
       ClientStreamState.droppedOff => (
-        'Client left the stream',
+        'Viewer left the stream',
         Color(0xFFF5A020),
       ),
       ClientStreamState.terminated => (
@@ -717,7 +717,7 @@ class _EndMissionButton extends StatelessWidget {
         backgroundColor: ClientColors.surface,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         title: Text(
-          'End Mission?',
+          'End Live Check?',
           style: TextStyle(
             color: ClientColors.textPrimary,
             fontSize: 18,
@@ -725,7 +725,7 @@ class _EndMissionButton extends StatelessWidget {
           ),
         ),
         content: Text(
-          'This will stop your stream and mark the mission as complete.',
+          'This will stop your stream and mark the live check as complete.',
           style: TextStyle(
             color: ClientColors.textSecondary,
             fontSize: 14,
@@ -746,7 +746,7 @@ class _EndMissionButton extends StatelessWidget {
               ctrl.endMission();
             },
             child: const Text(
-              'End Mission',
+              'End Live Check',
               style: TextStyle(
                 color: Color(0xFFCC1E1E),
                 fontWeight: FontWeight.w700,
@@ -774,7 +774,7 @@ class _EndMissionButton extends StatelessWidget {
               )
             : const Icon(Icons.close_rounded, size: 18),
         label: Text(
-          ctrl.isEndingMission.value ? 'Ending…' : 'END MISSION',
+          ctrl.isEndingMission.value ? 'Ending…' : 'END LIVE CHECK',
           style: const TextStyle(
             fontSize: 15,
             fontWeight: FontWeight.w700,

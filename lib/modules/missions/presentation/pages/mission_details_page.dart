@@ -35,7 +35,7 @@ class MissionDetailsPage extends GetView<RadarController> {
                   _BackButton(),
                   20.horizontalSpace,
                   Text(
-                    'Mission Details',
+                    'Live Check Details',
                     style: TextStyle(
                       color: ClientColors.textPrimary,
                       fontSize: 26,
@@ -93,7 +93,7 @@ class MissionDetailsPage extends GetView<RadarController> {
                         _InstructionsRow(text: mission.description),
                         _Divider(),
                         _ClientRow(
-                          name: mission.client?.displayName ?? 'Client',
+                          name: mission.client?.displayName ?? 'Viewer',
                           rating: mission.client?.rating ?? 0,
                           missions: mission.client?.totalReviews ?? 0,
                         ),
@@ -162,7 +162,7 @@ class MissionDetailsPage extends GetView<RadarController> {
                                     ),
                                   )
                                 : const Text(
-                                    'Accept Mission',
+                                    'Accept Live Check',
                                     style: TextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.w700,
@@ -249,7 +249,7 @@ class _OwnMissionNotice extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Your mission',
+                      'Your live check',
                       style: TextStyle(
                         color: Colors.grey,
                         fontSize: 16,
@@ -258,7 +258,7 @@ class _OwnMissionNotice extends StatelessWidget {
                     ),
                     const SizedBox(height: 6),
                     Text(
-                      "You posted this mission. It's visible to nearby scouts who can accept it — you don't need to take any action here.",
+                      "You posted this live check. It's visible to nearby guides who can accept it — you don't need to take any action here.",
                       style: TextStyle(fontSize: 13.5, height: 1.5),
                     ),
                   ],
@@ -475,7 +475,7 @@ class _ClientRow extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(
-            'CLIENT',
+            'VIEWER',
             style: TextStyle(
               color: ClientColors.textSecondary,
               fontSize: 11,

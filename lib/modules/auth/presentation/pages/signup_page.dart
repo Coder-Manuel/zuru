@@ -38,7 +38,7 @@ class SignupPage extends GetView<RegisterController> {
                 ),
                 10.verticalSpace,
                 Text(
-                  'Join the network of scouts and clients.',
+                  'Join the network of guides and viewers.',
                   style: TextStyle(color: bodyColor, fontSize: 15),
                 ),
                 32.verticalSpace,

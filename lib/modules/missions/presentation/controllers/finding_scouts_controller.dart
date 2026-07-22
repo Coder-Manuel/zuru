@@ -182,7 +182,7 @@ class FindingScoutsController extends GetxController {
             _redirectTimer?.cancel();
             // TODO: navigate to the mission-tracker screen once it exists.
             // Get.offNamed(MissionTrackerPage.route, arguments: _mission);
-            Toast.success('A scout has accepted your mission! 🎉');
+            Toast.success('A guide has accepted your live check! 🎉');
           }
         });
   }

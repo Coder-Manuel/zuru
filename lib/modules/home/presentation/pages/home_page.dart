@@ -62,12 +62,12 @@ class HomePage extends GetView<HomeController> {
               BottomNavigationBarItem(
                 icon: Icon(Icons.my_location_outlined),
                 activeIcon: Icon(Icons.my_location),
-                label: 'MISSIONS',
+                label: 'LIVE CHECKS',
               ),
               BottomNavigationBarItem(
                 icon: Icon(Icons.travel_explore_outlined),
                 activeIcon: Icon(Icons.travel_explore),
-                label: 'SCOUTS',
+                label: 'GUIDES',
               ),
               BottomNavigationBarItem(
                 icon: Icon(Icons.person_outline),

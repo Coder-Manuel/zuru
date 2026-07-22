@@ -27,7 +27,7 @@ class MissionsTab extends GetView<MissionsTabController> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    'Missions',
+                    'Live Checks',
                     style: TextStyle(
                       color: ClientColors.textPrimary,
                       fontSize: 28,
@@ -461,10 +461,10 @@ class _EmptyState extends StatelessWidget {
   const _EmptyState({required this.filter});
 
   String get _message => switch (filter) {
-    MissionFilter.active => 'No active missions right now.',
-    MissionFilter.pending => 'No pending missions.',
-    MissionFilter.completed => 'No completed missions yet.',
-    MissionFilter.all => 'You haven\'t posted any missions yet.',
+    MissionFilter.active => 'No active live checks right now.',
+    MissionFilter.pending => 'No pending live checks.',
+    MissionFilter.completed => 'No completed live checks yet.',
+    MissionFilter.all => 'You haven\'t posted any live checks yet.',
   };
 
   @override
@@ -512,7 +512,7 @@ class _EmptyState extends StatelessWidget {
                     borderRadius: BorderRadius.circular(24),
                   ),
                   child: const Text(
-                    'Post a Mission',
+                    'Post a Live Check',
                     style: TextStyle(
                       color: Colors.black,
                       fontWeight: FontWeight.w700,

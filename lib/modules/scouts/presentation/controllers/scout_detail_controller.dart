@@ -26,7 +26,7 @@ class ScoutDetailController extends GetxController {
   Future<void> fetch() async {
     if (_profileId.isEmpty) {
       isLoading.value = false;
-      error.value = 'Scout not found';
+      error.value = 'Guide not found';
       return;
     }
 
@@ -45,7 +45,7 @@ class ScoutDetailController extends GetxController {
   void requestLive() {
     final profile = scout.value?.scoutProfile;
     if (profile == null) {
-      Toast.error('Scout details unavailable, please retry');
+      Toast.error('Guide details unavailable, please retry');
       return;
     }
     Get.toNamed(AppRoutes.liveRequest, arguments: profile);

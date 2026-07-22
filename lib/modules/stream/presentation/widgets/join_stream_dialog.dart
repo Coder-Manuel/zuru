@@ -38,7 +38,7 @@ class JoinStreamDialog extends StatelessWidget {
 
             // ── Title ────────────────────────────────────────────────────────
             Text(
-              'Scout ${mission.scout?.firstName ?? ''} is Live!',
+              'Guide ${mission.scout?.firstName ?? ''} is Live!',
               style: TextStyle(
                 color: ClientColors.textPrimary,
                 fontSize: 20,
@@ -61,7 +61,7 @@ class JoinStreamDialog extends StatelessWidget {
 
             // ── Description ──────────────────────────────────────────────────
             Text(
-              'Your scout has started streaming. Join now to watch the live feed.',
+              'Your guide has started streaming. Join now to watch the live feed.',
               textAlign: TextAlign.center,
               style: TextStyle(
                 color: ClientColors.textSecondary,
