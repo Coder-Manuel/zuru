@@ -84,11 +84,6 @@ abstract class MissionEntity extends BaseEntity {
   // ── Display helpers ───────────────────────────────────────────────────────
 
   /// A short, human-readable summary of [address] — at most 3 words.
-  ///
-  /// Geocoded addresses often lead with a plot number or a Plus Code, e.g.
-  /// "123G+4R Pioneer House, Nakuru". We drop that leading code token so the
-  /// recognisable place name comes first, then keep the next three words
-  /// (commas preserved): -> "Pioneer House, Nakuru".
   String get shortAddress {
     final raw = address.trim();
     if (raw.isEmpty) return 'Unknown area';
