@@ -96,10 +96,7 @@ class _FormView extends GetView<PaymentController> {
         Center(
           child: Text(
             'Pay with M-Pesa to publish your live check',
-            style: TextStyle(
-              color: ClientColors.textSecondary,
-              fontSize: 13,
-            ),
+            style: TextStyle(color: ClientColors.textSecondary, fontSize: 13),
           ),
         ),
         const SizedBox(height: 20),

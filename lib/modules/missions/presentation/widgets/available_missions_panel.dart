@@ -338,7 +338,11 @@ class _LocatingLoader extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(Icons.my_location_rounded, size: 46, color: Colors.white),
+            const Icon(
+              Icons.my_location_rounded,
+              size: 46,
+              color: Colors.white,
+            ),
             16.verticalSpace,
             const Text(
               'Getting your location…',

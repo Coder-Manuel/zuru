@@ -55,8 +55,10 @@ class MissionModel extends MissionEntity {
           .toList();
       if (sessions.isEmpty) return null;
       sessions.sort((a, b) {
-        final da = DateTime.tryParse(a.endedAt ?? a.createdAt ?? '') ?? DateTime(0);
-        final db = DateTime.tryParse(b.endedAt ?? b.createdAt ?? '') ?? DateTime(0);
+        final da =
+            DateTime.tryParse(a.endedAt ?? a.createdAt ?? '') ?? DateTime(0);
+        final db =
+            DateTime.tryParse(b.endedAt ?? b.createdAt ?? '') ?? DateTime(0);
         return db.compareTo(da);
       });
       return sessions.firstWhere(

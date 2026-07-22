@@ -26,7 +26,8 @@ class MissionsRepositoryImpl extends MissionsRepository {
         final data = await remoteDatasource.postMission(input.toMap());
         return SuccessResponse(MissionModel.fromMap(data));
       },
-      onError: (_) => FailureResponse('Failed to post live check, kindly retry'),
+      onError: (_) =>
+          FailureResponse('Failed to post live check, kindly retry'),
       library: _library,
       description: 'while posting mission',
     );
@@ -173,7 +174,9 @@ class MissionsRepositoryImpl extends MissionsRepository {
       () async {
         final res = await remoteDatasource.acceptMission(input.missionId);
         if (!res) {
-          return FailureResponse('Failed to accept live check. Please try again.');
+          return FailureResponse(
+            'Failed to accept live check. Please try again.',
+          );
         }
         return SuccessResponse(null);
       },

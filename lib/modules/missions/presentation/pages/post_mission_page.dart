@@ -119,7 +119,7 @@ class PostMissionPage extends GetView<PostMissionController> {
                       ),
                       12.verticalSpace,
                       Obx(() {
-                        final options = controller.priceOptions;
+                        final options = controller.offerOptions;
                         if (options.isEmpty) {
                           return const _PriceHint();
                         }
@@ -132,7 +132,7 @@ class PostMissionPage extends GetView<PostMissionController> {
                                   right: i < options.length - 1 ? 10 : 0,
                                 ),
                                 child: _PriceChip(
-                                  label: controller.priceLabel(options[i]),
+                                  label: controller.offerLabel(options[i]),
                                   selected:
                                       controller.selectedPriceIndex.value == i,
                                   onTap: () => controller.selectPrice(i),
@@ -142,14 +142,11 @@ class PostMissionPage extends GetView<PostMissionController> {
                           ),
                         );
                       }),
-                      // Live FX hint (KES only).
-                      Obx(() {
-                        if (controller.currency.value != Currency.kes) {
-                          return const SizedBox.shrink();
-                        }
-                        return Padding(
-                          padding: const EdgeInsets.only(top: 10),
-                          child: Text(
+                      // Live FX hint — always visible.
+                      Padding(
+                        padding: const EdgeInsets.only(top: 10),
+                        child: Obx(
+                          () => Text(
                             'Live rate · 1 USD ≈ KSh '
                             '${controller.usdToKes.toInt().asCurrency}',
                             style: TextStyle(
@@ -158,8 +155,8 @@ class PostMissionPage extends GetView<PostMissionController> {
                               fontWeight: FontWeight.w500,
                             ),
                           ),
-                        );
-                      }),
+                        ),
+                      ),
                       32.verticalSpace,
 
                       // ── Post button ───────────────────────────────────────

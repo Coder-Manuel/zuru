@@ -7,7 +7,7 @@ import 'package:zuru/modules/payments/domain/entities/payment.entity.dart';
 import 'package:zuru/modules/payments/domain/usecases/initiate_stk_push.usecase.dart';
 import 'package:zuru/modules/payments/domain/usecases/watch_payment.usecase.dart';
 
-enum PaymentUiState { form, processing, success, failed }
+enum PaymentUiState { form, sending, awaitingPin, success, failed }
 
 class PaymentController extends GetxController {
   final String missionId;
@@ -39,16 +39,16 @@ class PaymentController extends GetxController {
     }
 
     error.value = '';
-    state.value = PaymentUiState.processing;
+    state.value = PaymentUiState.sending;
 
     final result = await _initiateStk(
       StkPushInput(phoneNumber: phone, missionId: missionId),
     );
 
-    result.fold(
-      (fail) => _fail(fail.message),
-      (stk) => _watch(stk.paymentId),
-    );
+    result.fold((fail) => _fail(fail.message), (stk) {
+      state.value = PaymentUiState.awaitingPin;
+      _watch(stk.paymentId);
+    });
   }
 
   void retry() {
@@ -98,7 +98,7 @@ class PaymentController extends GetxController {
   void _startTimeout() {
     _timeout?.cancel();
     _timeout = Timer(_timeoutDuration, () {
-      if (state.value == PaymentUiState.processing) {
+      if (state.value == PaymentUiState.awaitingPin) {
         _fail('Payment timed out. Please try again.');
       }
     });

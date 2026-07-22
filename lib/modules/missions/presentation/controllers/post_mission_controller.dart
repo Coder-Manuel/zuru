@@ -1,10 +1,12 @@
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:zuru/core/services/fx_service/fx_service.dart';
+import 'package:zuru/core/services/remote_config_service/remote_config_service.dart';
 import 'package:zuru/core/utils/extensions.dart';
 import 'package:zuru/core/utils/loader.dart';
 import 'package:zuru/core/utils/toast.dart';
 import 'package:zuru/modules/missions/data/models/enum.dart';
+import 'package:zuru/modules/missions/data/models/mission_pricing.config.dart';
 import 'package:zuru/modules/missions/data/models/mission.inputs.dart';
 import 'package:zuru/modules/missions/domain/usecases/post_mission.usecase.dart';
 import 'package:zuru/modules/missions/presentation/pages/finding_scouts_page.dart';
@@ -15,12 +17,19 @@ import 'package:zuru/modules/user/presentation/controllers/user_controller.dart'
 class PostMissionController extends GetxController {
   final _postMissionUseCase = Get.find<PostMissionUseCase>();
   final _fx = Get.find<FxService>();
+  final _remoteConfig = Get.find<RemoteConfigService>();
 
   // ── Form fields ──────────────────────────────────────────────────────────
   final descriptionCTRL = TextEditingController();
 
+  /// Duration + pricing come from `app_config` (key `mission_pricing`), synced
+  /// from the backend; falls back to bundled defaults offline / pre-sync.
+  MissionPricingConfig get _pricing => MissionPricingConfig.fromSection(
+    _remoteConfig.section('mission_pricing'),
+  );
+
   /// Duration options in minutes shown in the dropdown.
-  final List<int> durations = const [10, 15, 20, 30, 45, 60];
+  List<int> get durations => _pricing.durations;
 
   /// Currently selected duration in minutes (null = nothing chosen yet).
   final Rxn<int> selectedDuration = Rxn<int>();
@@ -56,47 +65,49 @@ class PostMissionController extends GetxController {
   double get usdToKes => _fx.usdToKes.value;
 
   // ── Price ────────────────────────────────────────────────────────────────
-  /// Offer presets in **USD**, keyed by duration (minutes). The range scales up
-  /// with duration (10 min ≈ \$3–5 … 60 min ≈ \$25–40). Edit freely.
-  static const Map<int, List<int>> _usdPriceOptions = {
-    10: [3, 4, 5],
-    15: [5, 7, 9],
-    20: [8, 10, 13],
-    30: [13, 17, 22],
-    45: [18, 24, 30],
-    60: [25, 32, 40],
-  };
-
   final RxInt selectedPriceIndex = 0.obs;
 
-  List<int> get _usdOptions =>
-      _usdPriceOptions[selectedDuration.value] ?? const [];
+  Currency get _baseCurrency => _pricing.baseCurrency;
 
-  /// Offer options in the **selected currency**, whole numbers. KES values are
-  /// derived live from [FxService]; reads here are reactive.
-  List<int> get priceOptions => currency.value == Currency.kes
-      ? _usdOptions.map((usd) => _fx.toKes(usd)).toList()
-      : _usdOptions;
+  /// Offer presets for the selected duration, in the config's declared base
+  /// currency.
+  List<int> get _baseOptions =>
+      _pricing.options[selectedDuration.value] ?? const [];
 
-  int get selectedPrice {
-    final opts = priceOptions;
-    if (opts.isEmpty) return 0;
-    return opts[selectedPriceIndex.value.clamp(0, opts.length - 1)];
-  }
+  /// Canonical offer options for the selected duration, in the config's base
+  /// currency. The chips iterate these; labels convert to the display currency.
+  List<int> get offerOptions => _baseOptions;
 
   void selectPrice(int index) => selectedPriceIndex.value = index;
 
-  /// The offer converted to KES — M-Pesa charges in KES, so we store the KES
-  /// amount on the mission. USD offers are converted via [FxService]; KES offers
-  /// pass through.
-  int get payableKes => currency.value == Currency.kes
-      ? selectedPrice
-      : _fx.toKes(selectedPrice);
+  int get _selectedBaseOffer {
+    final base = _baseOptions;
+    if (base.isEmpty) return 0;
+    return base[selectedPriceIndex.value.clamp(0, base.length - 1)];
+  }
 
-  /// Formatted chip/label for an amount in the selected currency.
-  String priceLabel(int amount) => currency.value == Currency.kes
-      ? 'KSh ${amount.asCurrency}'
-      : '\$$amount';
+  /// The offer converted to KES — M-Pesa charges in KES, so we store the KES
+  /// amount on the mission regardless of the config's declared base currency.
+  int get payableKes =>
+      _fx.convert(_selectedBaseOffer, _baseCurrency, Currency.kes);
+
+  /// Chip label: converts a base-currency offer to the selected display
+  /// currency. KES shows whole; USD keeps up to 2 dp so small converted values
+  /// don't collapse to \$0.
+  String offerLabel(int baseAmount) {
+    final amount = _fx.convertPrecise(
+      baseAmount,
+      _baseCurrency,
+      currency.value,
+    );
+    return currency.value == Currency.kes
+        ? 'KSh ${amount.round().asCurrency}'
+        : _formatUsd(amount);
+  }
+
+  String _formatUsd(double amount) => amount == amount.roundToDouble()
+      ? '\$${amount.toInt()}'
+      : '\$${amount.toStringAsFixed(2)}';
 
   // ── Location picker ──────────────────────────────────────────────────────
 

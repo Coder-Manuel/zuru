@@ -6,6 +6,7 @@ import 'package:zuru/core/remote/network_client.dart';
 import 'package:zuru/core/services/connectivity_service/connectivity_controller.dart';
 import 'package:zuru/core/services/fx_service/fx_service.dart';
 import 'package:zuru/core/services/location_service/location_service.dart';
+import 'package:zuru/core/services/remote_config_service/remote_config_service.dart';
 import 'package:zuru/core/services/role_service/role_service.dart';
 import 'package:zuru/core/services/url_launcher_service/url_launcher_service.dart';
 import 'package:zuru/core/utils/navigation_middleware/navigation_controller.dart';
@@ -39,5 +40,10 @@ class InitialBinding extends Bindings {
     );
     // FxService is permanent — fetches USD→KES on boot then hourly.
     Get.put<FxService>(FxService(), permanent: true);
+    // RemoteConfigService is permanent — syncs app_config on boot then every 2h.
+    Get.put<RemoteConfigService>(
+      RemoteConfigService(client: Get.find<SupabaseClient>()),
+      permanent: true,
+    );
   }
 }

@@ -94,6 +94,21 @@ class FxService extends GetxService {
   /// Converts a USD amount to whole KES using the current rate.
   int toKes(num usd) => (usd * usdToKes.value).round();
 
+  /// Converts between supported currencies, rounded to a whole number.
+  int convert(num amount, Currency from, Currency to) =>
+      convertPrecise(amount, from, to).round();
+
+  /// Converts between supported currencies without rounding — callers decide how
+  /// to display (e.g. USD keeps decimals so small values don't collapse to \$0).
+  double convertPrecise(num amount, Currency from, Currency to) {
+    if (from == to) return amount.toDouble();
+    return switch ((from, to)) {
+      (Currency.usd, Currency.kes) => amount * usdToKes.value,
+      (Currency.kes, Currency.usd) => amount / usdToKes.value,
+      _ => amount.toDouble(),
+    };
+  }
+
   /// Fetches the latest USD → KES rate and caches it. Keeps the last known value
   /// on any failure so the UI degrades gracefully.
   Future<void> refresh() async {
