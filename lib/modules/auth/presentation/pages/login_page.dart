@@ -144,7 +144,7 @@ class LoginPage extends GetView<LoginController> {
                       if (controller.canLoginWithBiometrics.value) ...[
                         15.horizontalSpace,
                         GestureDetector(
-                          onTap: () {},
+                          onTap: controller.biometricLogin,
                           child: Container(
                             width: 65,
                             height: 55,

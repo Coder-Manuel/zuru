@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import 'package:zuru/core/entities/user.entity.dart';
 import 'package:zuru/core/models/enums.dart';
 import 'package:zuru/core/routes/app_routes.dart';
+import 'package:zuru/core/services/biometric_service/biometric_service.dart';
 import 'package:zuru/core/services/notification_service/notification_service.dart';
 import 'package:zuru/core/services/role_service/role_service.dart';
 import 'package:zuru/core/utils/loader.dart';
@@ -24,7 +25,7 @@ class UserController extends GetxController {
   Rx<User?> currentUser = Rx<User?>(null);
 
   // ── Settings toggles ──────────────────────────────────────────────────────
-  final RxBool biometricsEnabled = true.obs;
+  final RxBool biometricsEnabled = false.obs;
   final RxBool notificationsEnabled = true.obs;
 
   /// True while a role-switch API call is in flight.
@@ -40,9 +41,40 @@ class UserController extends GetxController {
   // ── Lifecycle ─────────────────────────────────────────────────────────────
 
   @override
+  void onInit() {
+    super.onInit();
+    _loadBiometricSetting();
+  }
+
+  @override
   void onClose() {
     _cancelFcmRetry();
     super.onClose();
+  }
+
+  Future<void> _loadBiometricSetting() async {
+    biometricsEnabled.value = await BiometricService.isEnabled();
+  }
+
+  Future<void> toggleBiometrics(bool value) async {
+    if (value) {
+      final supported = await BiometricService.isSupported();
+      if (!supported) {
+        Toast.error('Biometrics are not available on this device');
+        return;
+      }
+      final verified = await BiometricService.authenticate(
+        reason: 'Verify to enable biometric login',
+      );
+      if (!verified) return;
+    }
+
+    biometricsEnabled.value = value;
+    await BiometricService.setEnabled(value);
+
+    if (value && !await BiometricService.hasCredentials()) {
+      Toast.info('Sign in with your password once to finish biometric setup');
+    }
   }
 
   // ── Public ────────────────────────────────────────────────────────────────

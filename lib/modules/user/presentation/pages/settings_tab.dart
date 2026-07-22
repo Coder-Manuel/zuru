@@ -85,8 +85,7 @@ class SettingsTab extends GetView<UserController> {
                       trailing: _AppSwitch(
                         value: controller.biometricsEnabled.value,
                         activeColor: scheme.primary,
-                        onChanged: (v) =>
-                            controller.biometricsEnabled.value = v,
+                        onChanged: controller.toggleBiometrics,
                       ),
                     ),
                   ),

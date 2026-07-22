@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'package:zuru/core/routes/app_routes.dart';
+import 'package:zuru/core/services/biometric_service/biometric_service.dart';
 import 'package:zuru/core/utils/loader.dart';
 import 'package:zuru/core/utils/toast.dart';
 import 'package:zuru/modules/auth/data/models/auth.inputs.dart';
@@ -19,6 +20,20 @@ class LoginController extends GetxController {
 
   Rx<bool> obscurePass = true.obs;
   Rx<bool> canLoginWithBiometrics = false.obs;
+
+  @override
+  void onInit() {
+    super.onInit();
+    _resolveBiometricAvailability();
+  }
+
+  Future<void> _resolveBiometricAvailability() async {
+    final enabled = await BiometricService.isEnabled();
+    if (!enabled) return;
+    final supported = await BiometricService.isSupported();
+    final hasCreds = await BiometricService.hasCredentials();
+    canLoginWithBiometrics.value = supported && hasCreds;
+  }
 
   void toggleObscurePass() => obscurePass.value = !obscurePass.value;
 
@@ -90,12 +105,36 @@ class LoginController extends GetxController {
   Future<void> login(GlobalKey<FormState> formKey) async {
     if (formKey.currentState?.validate() != true) return;
 
+    final email = emailCTRL.text.trim();
+    final password = passwordCTRL.text.trim();
+
     Loader.show(message: 'Login...');
     final response = await loginUsecase(
-      LoginInput(
-        email: emailCTRL.text.trim(),
-        password: passwordCTRL.text.trim(),
-      ),
+      LoginInput(email: email, password: password),
+    );
+    Loader.dismiss();
+
+    response.fold((ex) => Toast.error(ex.message), (_) async {
+      await BiometricService.saveCredentials(email: email, password: password);
+      _navigateHome();
+    });
+  }
+
+  Future<void> biometricLogin() async {
+    final verified = await BiometricService.authenticate(
+      reason: 'Verify to sign in',
+    );
+    if (!verified) return;
+
+    final creds = await BiometricService.readCredentials();
+    if (creds == null) {
+      Toast.error('No saved sign-in. Please log in with your password.');
+      return;
+    }
+
+    Loader.show(message: 'Login...');
+    final response = await loginUsecase(
+      LoginInput(email: creds.email, password: creds.password),
     );
     Loader.dismiss();
 

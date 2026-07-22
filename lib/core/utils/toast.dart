@@ -45,8 +45,11 @@ class Toast {
   static void error(String message, {String? title}) =>
       _show(message, title: title ?? 'Error', isError: true);
 
-  static void info(String message, {String? title}) =>
-      _show(message, title: title ?? 'Info', color: Colors.blue);
+  static void info(String message, {String? title}) => _show(
+    message,
+    title: title ?? 'Info',
+    color: const Color.fromARGB(255, 195, 147, 5),
+  );
 
   static void warning(String message, {String? title}) =>
       _show(message, title: title ?? 'Warning', color: Colors.orange);

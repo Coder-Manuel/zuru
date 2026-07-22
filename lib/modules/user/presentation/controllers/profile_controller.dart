@@ -1,5 +1,6 @@
 import 'package:get/get.dart';
 import 'package:zuru/core/entities/user.entity.dart';
+import 'package:zuru/core/services/biometric_service/biometric_service.dart';
 import 'package:zuru/core/services/storage_service/storage.service.dart';
 import 'package:zuru/core/utils/loader.dart';
 import 'package:zuru/core/utils/toast.dart';
@@ -38,9 +39,25 @@ class ProfileController extends GetxController {
     }
   }
 
-  void toggleBiometrics(bool value) {
+  Future<void> toggleBiometrics(bool value) async {
+    if (value) {
+      final supported = await BiometricService.isSupported();
+      if (!supported) {
+        Toast.error('Biometrics are not available on this device');
+        return;
+      }
+      final verified = await BiometricService.authenticate(
+        reason: 'Verify to enable biometric login',
+      );
+      if (!verified) return;
+    }
+
     biometricsEnabled.value = value;
-    StorageService.save<bool>(StorageKeys.biometricsKey, value: value);
+    await BiometricService.setEnabled(value);
+
+    if (value && !await BiometricService.hasCredentials()) {
+      Toast.info('Sign in with your password once to finish biometric setup');
+    }
   }
 
   void toggleNotifications(bool value) {

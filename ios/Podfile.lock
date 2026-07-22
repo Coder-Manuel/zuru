@@ -80,6 +80,8 @@ PODS:
     - Flutter
     - MapboxCoreNavigation (~> 2.11)
     - MapboxNavigation (~> 2.11)
+  - flutter_secure_storage (6.0.0):
+    - Flutter
   - flutter_webrtc (1.4.0):
     - Flutter
     - WebRTC-SDK (= 144.7559.01)
@@ -161,6 +163,9 @@ PODS:
     - Flutter
     - flutter_webrtc
     - WebRTC-SDK (= 144.7559.01)
+  - local_auth_darwin (0.0.1):
+    - Flutter
+    - FlutterMacOS
   - MapboxCommon (23.12.0)
   - MapboxCoreMaps (10.19.2):
     - MapboxCommon (~> 23.11)
@@ -233,12 +238,14 @@ DEPENDENCIES:
   - firebase_messaging (from `.symlinks/plugins/firebase_messaging/ios`)
   - Flutter (from `Flutter`)
   - flutter_mapbox_navigation_plus (from `.symlinks/plugins/flutter_mapbox_navigation_plus/ios`)
+  - flutter_secure_storage (from `.symlinks/plugins/flutter_secure_storage/ios`)
   - flutter_webrtc (from `.symlinks/plugins/flutter_webrtc/ios`)
   - geolocator_apple (from `.symlinks/plugins/geolocator_apple/darwin`)
   - google_maps_flutter_ios (from `.symlinks/plugins/google_maps_flutter_ios/ios`)
   - google_sign_in_ios (from `.symlinks/plugins/google_sign_in_ios/darwin`)
   - image_picker_ios (from `.symlinks/plugins/image_picker_ios/ios`)
   - livekit_client (from `.symlinks/plugins/livekit_client/ios`)
+  - local_auth_darwin (from `.symlinks/plugins/local_auth_darwin/darwin`)
   - mixpanel_flutter (from `.symlinks/plugins/mixpanel_flutter/ios`)
   - shared_preferences_foundation (from `.symlinks/plugins/shared_preferences_foundation/darwin`)
   - sign_in_with_apple (from `.symlinks/plugins/sign_in_with_apple/ios`)
@@ -306,6 +313,8 @@ EXTERNAL SOURCES:
     :path: Flutter
   flutter_mapbox_navigation_plus:
     :path: ".symlinks/plugins/flutter_mapbox_navigation_plus/ios"
+  flutter_secure_storage:
+    :path: ".symlinks/plugins/flutter_secure_storage/ios"
   flutter_webrtc:
     :path: ".symlinks/plugins/flutter_webrtc/ios"
   geolocator_apple:
@@ -318,6 +327,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/image_picker_ios/ios"
   livekit_client:
     :path: ".symlinks/plugins/livekit_client/ios"
+  local_auth_darwin:
+    :path: ".symlinks/plugins/local_auth_darwin/darwin"
   mixpanel_flutter:
     :path: ".symlinks/plugins/mixpanel_flutter/ios"
   shared_preferences_foundation:
@@ -353,6 +364,7 @@ SPEC CHECKSUMS:
   FirebaseSessions: 0e5f64cd99400275798fcb5e2b773dd000ca02c1
   Flutter: cabc95a1d2626b1b06e7179b784ebcf0c0cde467
   flutter_mapbox_navigation_plus: 4d4a3534a7f3193cbd160ff50d1ed3ff9023d42a
+  flutter_secure_storage: 1ed9476fba7e7a782b22888f956cce43e2c62f13
   flutter_webrtc: ec91d94b484ad49cf191ef93413f64a40ffd3b4c
   geolocator_apple: ab36aa0e8b7d7a2d7639b3b4e48308394e8cef5e
   Google-Maps-iOS-Utils: 0a484b05ed21d88c9f9ebbacb007956edd508a96
@@ -369,6 +381,7 @@ SPEC CHECKSUMS:
   jsonlogic: 006f892470384401b8ca5b5d8d4cdadb3a0d5c9b
   libwebp: 02b23773aedb6ff1fd38cec7a77b81414c6842a8
   livekit_client: 9b9a08c5c78f694ac6a9e70c1c269704ba574b73
+  local_auth_darwin: c3ee6cce0a8d56be34c8ccb66ba31f7f180aaebb
   MapboxCommon: 9fe257ddc7385d55106345d4520a7fec3f4c0465
   MapboxCoreMaps: 35685edba03e44468aed57c3dfd7f8795edafda8
   MapboxCoreNavigation: 11dda50daebae2e2ff15d8ade0f272e75c218d25
