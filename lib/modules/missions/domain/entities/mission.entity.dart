@@ -1,6 +1,7 @@
 import 'package:zuru/core/entities/base.entity.dart';
 import 'package:zuru/core/entities/profile.entity.dart';
 import 'package:zuru/modules/missions/data/models/enum.dart';
+import 'package:zuru/modules/missions/domain/entities/session.entity.dart';
 import 'package:zuru/modules/rating/domain/entities/rating.entity.dart';
 
 abstract class MissionEntity extends BaseEntity {
@@ -46,6 +47,10 @@ abstract class MissionEntity extends BaseEntity {
   final String? completedAt;
   final List<RatingEntity> ratings;
 
+  /// The session behind this mission — carries the recording of a completed
+  /// live check (populated in the client view). Null when there was no session.
+  final SessionEntity? recordingSession;
+
   MissionEntity({
     super.id,
     super.createdAt,
@@ -70,7 +75,60 @@ abstract class MissionEntity extends BaseEntity {
     this.acceptedAt,
     this.completedAt,
     this.ratings = const [],
+    this.recordingSession,
   });
+
+  // ── Recording helpers ─────────────────────────────────────────────────────
+
+  /// How long after a live check is marked completed a recording may still be
+  /// processing. Past this, a missing recording is treated as unavailable
+  /// rather than "still processing".
+  static const Duration recordingGracePeriod = Duration(hours: 2);
+
+  /// Playable recording URL for this mission's session, or null.
+  String? get recordingUrl => recordingSession?.recordingUrl;
+
+  /// True when a completed live check has a ready, playable recording.
+  bool get hasRecording => (recordingUrl?.isNotEmpty ?? false);
+
+  /// When the live check was marked completed (falls back to the session's end
+  /// time), in UTC. Null when unknown.
+  DateTime? get _completedAtUtc {
+    final raw = completedAt ?? recordingSession?.endedAt;
+    return raw != null ? DateTime.tryParse(raw)?.toUtc() : null;
+  }
+
+  /// True while still inside the [recordingGracePeriod] after completion. When
+  /// the completion time is unknown we optimistically assume we're still in the
+  /// window rather than declaring the recording lost.
+  bool get _withinRecordingWindow {
+    final done = _completedAtUtc;
+    if (done == null) return true;
+    return DateTime.now().toUtc().difference(done) < recordingGracePeriod;
+  }
+
+  /// A recording is *expected* (a session ended for a completed check) but isn't
+  /// available yet.
+  bool get _recordingPending =>
+      status == MissionStatus.completed &&
+      recordingSession != null &&
+      recordingSession?.status == SessionStatus.ended &&
+      !hasRecording;
+
+  /// Egress is still running and we're within the 2h grace window — drives the
+  /// "processing" state on the card.
+  bool get recordingProcessing => _recordingPending && _withinRecordingWindow;
+
+  /// No recording will arrive: the session failed, or the 2h grace window has
+  /// elapsed with no recording produced.
+  bool get recordingUnavailable =>
+      status == MissionStatus.completed &&
+      !hasRecording &&
+      (recordingSession?.status == SessionStatus.failed ||
+          (_recordingPending && !_withinRecordingWindow));
+
+  /// Recording length in seconds, when known.
+  int? get recordingDurationSec => recordingSession?.actualDurationSec;
 
   // ── Rating helpers ────────────────────────────────────────────────────────
   bool get hasRatedByClient => ratings.any((r) => r.fromUserId == clientId);

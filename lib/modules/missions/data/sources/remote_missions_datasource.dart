@@ -88,6 +88,14 @@ class RemoteMissionsDatasourceImpl extends RemoteMissionsDatasource {
           from_profile_id,
           to_profile_id,
           score
+        ),
+        session:sessions!sessions_mission_id_fkey (
+          id,
+          recording_url,
+          recording_id,
+          actual_duration_sec,
+          status,
+          ended_at
         )
       """)
         .eq('$role.user_id', userId);

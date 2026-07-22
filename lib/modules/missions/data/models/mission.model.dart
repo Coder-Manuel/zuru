@@ -4,7 +4,9 @@ import 'package:get/get.dart';
 import 'package:zuru/core/models/profile.model.dart';
 import 'package:zuru/core/utils/ewkb_parser.dart';
 import 'package:zuru/modules/missions/data/models/enum.dart';
+import 'package:zuru/modules/missions/data/models/session.model.dart';
 import 'package:zuru/modules/missions/domain/entities/mission.entity.dart';
+import 'package:zuru/modules/missions/domain/entities/session.entity.dart';
 import 'package:zuru/modules/rating/data/models/rating.model.dart';
 import 'package:zuru/modules/rating/domain/entities/rating.entity.dart';
 import 'package:zuru/modules/user/presentation/controllers/user_controller.dart';
@@ -34,7 +36,35 @@ class MissionModel extends MissionEntity {
     super.acceptedAt,
     super.completedAt,
     super.ratings,
+    super.recordingSession,
   });
+
+  /// Parses the embedded `session` relationship, which Supabase returns as a
+  /// single object (1:1) or a list (1:many). When it's a list we prefer the
+  /// session that actually carries a recording, else the most recent one.
+  static SessionEntity? _parseSession(dynamic raw) {
+    if (raw == null) return null;
+    if (raw is Map) {
+      return SessionModel.fromMap(Map<String, dynamic>.from(raw));
+    }
+    if (raw is List) {
+      final sessions = raw
+          .whereType<Map>()
+          .map((e) => SessionModel.fromMap(Map<String, dynamic>.from(e)))
+          .toList();
+      if (sessions.isEmpty) return null;
+      sessions.sort((a, b) {
+        final da = DateTime.tryParse(a.endedAt ?? a.createdAt ?? '') ?? DateTime(0);
+        final db = DateTime.tryParse(b.endedAt ?? b.createdAt ?? '') ?? DateTime(0);
+        return db.compareTo(da);
+      });
+      return sessions.firstWhere(
+        (s) => (s.recordingUrl?.isNotEmpty ?? false),
+        orElse: () => sessions.first,
+      );
+    }
+    return null;
+  }
 
   /// Parses a Supabase row from the **client** perspective (no mapX/mapY needed).
   factory MissionModel.fromMap(Map<String, dynamic> m) {
@@ -75,6 +105,7 @@ class MissionModel extends MissionEntity {
           [],
       acceptedAt: m['accepted_at']?.toString(),
       completedAt: m['completed_at']?.toString(),
+      recordingSession: _parseSession(m['session']),
     );
   }
 

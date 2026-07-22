@@ -4,6 +4,8 @@ import 'package:get/get.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:zuru/config/client_colors.dart';
 import 'package:zuru/core/utils/extensions.dart';
+import 'package:zuru/core/widgets/reels_player_page.dart';
+import 'package:zuru/core/widgets/video_thumbnail_view.dart';
 import 'package:zuru/modules/missions/data/models/enum.dart';
 import 'package:zuru/modules/missions/domain/entities/mission.entity.dart';
 import 'package:zuru/modules/missions/presentation/controllers/missions_tab_controller.dart';
@@ -321,7 +323,161 @@ class _MissionCard extends GetView<MissionsTabController> {
                 ),
               ),
             ],
+
+            // ── Recording of the completed live check ────────────────────
+            if (mission.status == MissionStatus.completed &&
+                (mission.hasRecording ||
+                    mission.recordingProcessing ||
+                    mission.recordingUnavailable)) ...[
+              const SizedBox(height: 12),
+              _RecordingTile(mission: mission),
+            ],
           ],
+        ),
+      ),
+    );
+  }
+}
+
+// ─── Recording tile ───────────────────────────────────────────────────────────
+
+/// Shows the recording of a completed live check on the client card:
+///  • ready       → tappable thumbnail + play overlay + REC badge + duration
+///  • processing  → egress still running, disabled hint
+///  • unavailable → session failed, no recording will arrive
+class _RecordingTile extends StatelessWidget {
+  final MissionEntity mission;
+  const _RecordingTile({required this.mission});
+
+  @override
+  Widget build(BuildContext context) {
+    if (mission.hasRecording) {
+      final url = mission.recordingUrl!;
+      return GestureDetector(
+        onTap: () => ReelsPlayerPage.open(
+          [url],
+          titles: [
+            '${mission.type?.label ?? 'Live Check'} · ${mission.shortAddress}',
+          ],
+        ),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(12),
+          child: Stack(
+            children: [
+              AspectRatio(
+                aspectRatio: 16 / 9,
+                child: VideoThumbnailView(
+                  url: url,
+                  fit: BoxFit.cover,
+                  accent: ClientColors.primary,
+                ),
+              ),
+              const Positioned(top: 8, left: 8, child: _RecBadge()),
+              if (mission.recordingDurationSec != null)
+                Positioned(
+                  bottom: 8,
+                  right: 8,
+                  child: _DurationPill(seconds: mission.recordingDurationSec!),
+                ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    // Non-playable states.
+    final (icon, label) = mission.recordingProcessing
+        ? (Icons.hourglass_top_rounded, 'Recording processing…')
+        : (Icons.videocam_off_rounded, 'Recording unavailable');
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+      decoration: BoxDecoration(
+        color: ClientColors.surface,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: ClientColors.divider.withAlpha(40)),
+      ),
+      child: Row(
+        children: [
+          Icon(icon, size: 18, color: ClientColors.textSecondary),
+          const SizedBox(width: 10),
+          Text(
+            label,
+            style: TextStyle(
+              color: ClientColors.textSecondary,
+              fontSize: 13,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _RecBadge extends StatelessWidget {
+  const _RecBadge();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: Colors.black.withAlpha(140),
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            width: 7,
+            height: 7,
+            decoration: const BoxDecoration(
+              color: Color(0xFFEF4444),
+              shape: BoxShape.circle,
+            ),
+          ),
+          const SizedBox(width: 5),
+          const Text(
+            'REC',
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 10,
+              fontWeight: FontWeight.w800,
+              letterSpacing: 0.8,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _DurationPill extends StatelessWidget {
+  final int seconds;
+  const _DurationPill({required this.seconds});
+
+  String get _formatted {
+    final d = Duration(seconds: seconds);
+    final m = d.inMinutes;
+    final s = d.inSeconds % 60;
+    return '$m:${s.toString().padLeft(2, '0')}';
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+      decoration: BoxDecoration(
+        color: Colors.black.withAlpha(140),
+        borderRadius: BorderRadius.circular(6),
+      ),
+      child: Text(
+        _formatted,
+        style: const TextStyle(
+          color: Colors.white,
+          fontSize: 11,
+          fontWeight: FontWeight.w700,
         ),
       ),
     );
