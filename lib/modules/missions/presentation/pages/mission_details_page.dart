@@ -105,97 +105,8 @@ class MissionDetailsPage extends GetView<RadarController> {
                     // ── CTA area ─────────────────────────────────────────
                     if (mission.isMyMission) ...[
                       _OwnMissionNotice(),
-                    ] else ...[
-                      if ([
-                        MissionStatus.accepted,
-                        MissionStatus.enroute,
-                      ].contains(mission.status)) ...[
-                        // Already accepted → show navigation CTA
-                        ElevatedButton.icon(
-                          onPressed: () => Get.toNamed(
-                            NavigationPage.route,
-                            arguments: mission,
-                          ),
-                          icon: const Icon(Icons.navigation_rounded, size: 20),
-                          label: const Text(
-                            'Navigate to Location',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w700,
-                            ),
-                          ),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: ClientColors.primary,
-                            foregroundColor: ClientColors.background,
-                            minimumSize: const Size.fromHeight(56),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(14),
-                            ),
-                            elevation: 0,
-                          ),
-                        ),
-                      ] else ...[
-                        // Open mission → Accept / Decline
-                        Obx(
-                          () => ElevatedButton(
-                            onPressed: controller.isAccepting.value
-                                ? null
-                                : () => controller.acceptMission(mission.id!),
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: ClientColors.primary,
-                              foregroundColor: ClientColors.background,
-                              disabledBackgroundColor: ClientColors.primary
-                                  .withAlpha(100),
-                              minimumSize: const Size.fromHeight(56),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(14),
-                              ),
-                              elevation: 0,
-                            ),
-                            child: controller.isAccepting.value
-                                ? SizedBox(
-                                    width: 22,
-                                    height: 22,
-                                    child: CircularProgressIndicator(
-                                      strokeWidth: 2.5,
-                                      color: ClientColors.background,
-                                    ),
-                                  )
-                                : const Text(
-                                    'Accept Live Check',
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w700,
-                                    ),
-                                  ),
-                          ),
-                        ),
-
-                        12.verticalSpace,
-
-                        OutlinedButton(
-                          onPressed: () => Get.back(),
-                          style: OutlinedButton.styleFrom(
-                            foregroundColor: ClientColors.textSecondary,
-                            side: BorderSide(
-                              color: ClientColors.divider,
-                              width: 1.2,
-                            ),
-                            minimumSize: const Size.fromHeight(56),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(14),
-                            ),
-                          ),
-                          child: const Text(
-                            'Decline',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ],
+                    ] else
+                      _ScoutCta(mission: mission),
 
                     20.verticalSpace,
                   ],
@@ -205,6 +116,242 @@ class MissionDetailsPage extends GetView<RadarController> {
           ],
         ),
       ),
+    );
+  }
+}
+
+// ── Scout CTA ─────────────────────────────────────────────────────────────────
+
+/// Accept / Decline, or the post-acceptance CTA.
+///
+/// Reads the live copy of the mission from [RadarController] when it is the
+/// scout's active one, so the "awaiting payment" lock lifts by itself the
+/// moment the client's payment publishes the mission.
+class _ScoutCta extends GetView<RadarController> {
+  final MissionEntity mission;
+
+  const _ScoutCta({required this.mission});
+
+  @override
+  Widget build(BuildContext context) {
+    return Obx(() {
+      final active = controller.activeMission.value;
+      final current = (active != null && active.id == mission.id)
+          ? active
+          : mission;
+
+      // Accepted but unpaid — the guide holds the slot and waits.
+      if (current.awaitingClientPayment) {
+        return _AwaitingPaymentNotice(countdown: controller.paymentCountdown);
+      }
+
+      if ([
+        MissionStatus.accepted,
+        MissionStatus.enroute,
+      ].contains(current.status)) {
+        // Accepted and paid → show navigation CTA
+        return ElevatedButton.icon(
+          onPressed: () =>
+              Get.toNamed(NavigationPage.route, arguments: current),
+          icon: const Icon(Icons.navigation_rounded, size: 20),
+          label: const Text(
+            'Navigate to Location',
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
+          ),
+          style: ElevatedButton.styleFrom(
+            backgroundColor: ClientColors.primary,
+            foregroundColor: ClientColors.background,
+            minimumSize: const Size.fromHeight(56),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(14),
+            ),
+            elevation: 0,
+          ),
+        );
+      }
+
+      // Open mission / pending request → Accept / Decline
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          if (current.isLiveRequest && !current.isPublished) ...[
+            _PayOnAcceptHint(),
+            16.verticalSpace,
+          ],
+          ElevatedButton(
+            onPressed: controller.isAccepting.value
+                ? null
+                : () => controller.acceptMission(current),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: ClientColors.primary,
+              foregroundColor: ClientColors.background,
+              disabledBackgroundColor: ClientColors.primary.withAlpha(100),
+              minimumSize: const Size.fromHeight(56),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(14),
+              ),
+              elevation: 0,
+            ),
+            child: controller.isAccepting.value
+                ? SizedBox(
+                    width: 22,
+                    height: 22,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2.5,
+                      color: ClientColors.background,
+                    ),
+                  )
+                : const Text(
+                    'Accept Live Check',
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
+                  ),
+          ),
+
+          12.verticalSpace,
+
+          OutlinedButton(
+            onPressed: () => Get.back(),
+            style: OutlinedButton.styleFrom(
+              foregroundColor: ClientColors.textSecondary,
+              side: BorderSide(color: ClientColors.divider, width: 1.2),
+              minimumSize: const Size.fromHeight(56),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(14),
+              ),
+            ),
+            child: const Text(
+              'Decline',
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+            ),
+          ),
+        ],
+      );
+    });
+  }
+}
+
+/// Tells the guide up front that accepting a live request triggers the
+/// client's payment, not the trip.
+class _PayOnAcceptHint extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: ClientColors.surface,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: ClientColors.divider.withAlpha(120)),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(
+            Icons.info_outline_rounded,
+            size: 18,
+            color: ClientColors.textSecondary,
+          ),
+          12.horizontalSpace,
+          Expanded(
+            child: Text(
+              'Accepting asks the client to pay. You can set off as soon as '
+              'their payment clears.',
+              style: TextStyle(
+                color: ClientColors.textSecondary,
+                fontSize: 13,
+                height: 1.45,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Locked state between acceptance and payment.
+class _AwaitingPaymentNotice extends StatelessWidget {
+  final RxString countdown;
+
+  const _AwaitingPaymentNotice({required this.countdown});
+
+  @override
+  Widget build(BuildContext context) {
+    const amber = Color(0xFFF5A020);
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Container(
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            color: amber.withAlpha(18),
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: amber.withAlpha(90)),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  const Icon(Icons.lock_clock_rounded, color: amber, size: 22),
+                  12.horizontalSpace,
+                  const Expanded(
+                    child: Text(
+                      'Waiting for client payment',
+                      style: TextStyle(
+                        color: amber,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ),
+                  Obx(
+                    () => Text(
+                      countdown.value,
+                      style: const TextStyle(
+                        color: amber,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w800,
+                        fontFeatures: [FontFeature.tabularFigures()],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              12.verticalSpace,
+              Text(
+                'This live check is yours once the client pays. Navigation '
+                'unlocks automatically — don’t set off yet.',
+                style: TextStyle(
+                  color: ClientColors.textSecondary,
+                  fontSize: 13.5,
+                  height: 1.5,
+                ),
+              ),
+            ],
+          ),
+        ),
+
+        12.verticalSpace,
+
+        ElevatedButton.icon(
+          onPressed: null,
+          icon: const Icon(Icons.navigation_rounded, size: 20),
+          label: const Text(
+            'Navigate to Location',
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
+          ),
+          style: ElevatedButton.styleFrom(
+            disabledBackgroundColor: ClientColors.primary.withAlpha(60),
+            disabledForegroundColor: ClientColors.background.withAlpha(160),
+            minimumSize: const Size.fromHeight(56),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(14),
+            ),
+            elevation: 0,
+          ),
+        ),
+      ],
     );
   }
 }

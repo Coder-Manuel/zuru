@@ -41,7 +41,16 @@ class RadarController extends GetxController
   /// Countdown string in HH:MM:SS format — counts down from 5 hrs.
   final countdown = '05:00:00'.obs;
 
+  /// MM:SS the client has left to pay for an accepted live request before it
+  /// is released. '--:--' when the deadline is unknown.
+  final paymentCountdown = '--:--'.obs;
+
   bool get hasActiveMission => activeMission.value != null;
+
+  /// True while the accepted live check is still unpaid — the guide holds it
+  /// but can't start until the client's payment lands.
+  bool get isAwaitingPayment =>
+      activeMission.value?.awaitingClientPayment ?? false;
 
   Rx<String?> get locationError => _locationService.error;
   bool get hasLocationError => _locationService.error.value != null;
@@ -71,6 +80,7 @@ class RadarController extends GetxController
   StreamSubscription<dynamic>? _activeMissionSub;
   StreamSubscription<dynamic>? _requestsSub;
   Timer? _countdownTimer;
+  Timer? _paymentTimer;
 
   final missionsBuilder = Key('MissionsBuilder');
 
@@ -120,6 +130,7 @@ class RadarController extends GetxController
     _activeMissionSub?.cancel();
     _requestsSub?.cancel();
     _stopCountdown();
+    _stopPaymentCountdown();
     sweepController.dispose();
     super.onClose();
   }
@@ -182,9 +193,15 @@ class RadarController extends GetxController
                   _missionsSub?.cancel();
                   isLoading.value = false;
                   _startCountdown(data.acceptedAt);
+                  if (data.awaitingClientPayment) {
+                    _startPaymentCountdown(data);
+                  } else {
+                    _stopPaymentCountdown();
+                  }
                 } else {
                   // No active mission — resume nearby scan.
                   _stopCountdown();
+                  _stopPaymentCountdown();
                   if (_locationService.isReady.value) _startNearbyStream();
                 }
 
@@ -229,17 +246,24 @@ class RadarController extends GetxController
 
   // ── Actions ───────────────────────────────────────────────────────────────
 
-  Future<void> acceptMission(String missionId) async {
+  Future<void> acceptMission(MissionEntity mission) async {
+    final missionId = mission.id;
+    if (missionId == null) return;
+
     isAccepting.value = true;
 
     final result = await _acceptUseCase(
       AcceptMissionInput(missionId: missionId),
     );
 
-    result.fold(
-      (err) => Toast.error(err.message),
-      (_) => Get.back(), // close MissionDetailsPage
-    );
+    result.fold((err) => Toast.error(err.message), (_) {
+      Get.back(); // close MissionDetailsPage
+      // A live request is only paid for after acceptance — say so, otherwise
+      // the guide is left wondering why they can't set off.
+      if (mission.isLiveRequest && !mission.isPublished) {
+        Toast.success('Accepted — waiting for the client to pay');
+      }
+    });
 
     isAccepting.value = false;
   }
@@ -333,5 +357,39 @@ class RadarController extends GetxController
   void _stopCountdown() {
     _countdownTimer?.cancel();
     _countdownTimer = null;
+  }
+
+  // ── Payment countdown ─────────────────────────────────────────────────────
+
+  /// Ticks down the client's payment window. When it runs out the backend
+  /// releases the request; the active-mission stream then clears local state.
+  void _startPaymentCountdown(MissionEntity mission) {
+    _stopPaymentCountdown();
+    _tickPaymentCountdown(mission);
+    _paymentTimer = Timer.periodic(
+      const Duration(seconds: 1),
+      (_) => _tickPaymentCountdown(mission),
+    );
+  }
+
+  void _tickPaymentCountdown(MissionEntity mission) {
+    final left = mission.paymentTimeLeft;
+    if (left == null) {
+      paymentCountdown.value = '--:--';
+      _stopPaymentCountdown();
+      return;
+    }
+
+    final m = left.inMinutes.toString().padLeft(2, '0');
+    final s = (left.inSeconds % 60).toString().padLeft(2, '0');
+    paymentCountdown.value = '$m:$s';
+
+    if (left == Duration.zero) _stopPaymentCountdown();
+  }
+
+  void _stopPaymentCountdown() {
+    _paymentTimer?.cancel();
+    _paymentTimer = null;
+    paymentCountdown.value = '--:--';
   }
 }

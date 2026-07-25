@@ -10,8 +10,6 @@ import 'package:zuru/core/utils/toast.dart';
 import 'package:zuru/modules/missions/data/models/live_request.input.dart';
 import 'package:zuru/modules/missions/domain/entities/mission.entity.dart';
 import 'package:zuru/modules/missions/domain/usecases/create_live_request.usecase.dart';
-import 'package:zuru/modules/payments/presentation/widgets/payment_sheet.dart';
-import 'package:zuru/modules/user/presentation/controllers/user_controller.dart';
 
 enum LiveWhen { now, schedule }
 
@@ -146,17 +144,15 @@ class LiveRequestController extends GetxController {
 
   // ── Submit ───────────────────────────────────────────────────────────────
 
-  /// A request created this session but not yet paid for. Kept so a retry
-  /// resumes payment instead of creating a duplicate.
-  MissionEntity? _pendingMission;
-  final RxBool hasPendingPayment = false.obs;
+  /// A request already created this session. Kept so a second tap resumes the
+  /// existing request instead of creating a duplicate.
+  MissionEntity? _createdMission;
 
   Future<void> submit() async {
-    // Idempotency: resume paying for an already-created request rather than
-    // creating another one.
-    final pending = _pendingMission;
-    if (pending != null) {
-      await _collectPayment(pending);
+    // Idempotency: the request is already out with the guide.
+    final created = _createdMission;
+    if (created != null) {
+      _goToRequestSent(created);
       return;
     }
 
@@ -202,28 +198,14 @@ class LiveRequestController extends GetxController {
     isSubmitting.value = false;
 
     result.fold((err) => Toast.error(err.message), (mission) {
-      _pendingMission = mission;
-      hasPendingPayment.value = true;
-      _collectPayment(mission);
+      _createdMission = mission;
+      _goToRequestSent(mission);
     });
   }
 
-  Future<void> _collectPayment(MissionEntity mission) async {
-    final missionId = mission.id;
-    if (missionId == null) {
-      Toast.error('Something went wrong. Please try again.');
-      return;
-    }
-
-    final paid = await showPaymentSheet(
-      missionId: missionId,
-      amountLabel: mission.formattedPrice,
-      phone: Get.find<UserController>().currentUser.value?.phone,
-    );
-    if (!paid) return; // keep the pending request so a retry reuses it
-
-    _pendingMission = null;
-    hasPendingPayment.value = false;
+  /// Nothing is charged here — the client pays only once the guide accepts,
+  /// prompted by the payment dialog on the home tab.
+  void _goToRequestSent(MissionEntity mission) {
     Get.offNamed(
       AppRoutes.requestSent,
       arguments: {

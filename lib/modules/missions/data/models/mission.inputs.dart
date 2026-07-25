@@ -57,7 +57,9 @@ class DeclineMissionInput {
     }
 
     if (mission.type == MissionType.liveRequest) {
-      return {'status': MissionStatus.requested.name};
+      // Back to the client's request queue — clearing accepted_at also resets
+      // the payment window, since nothing is owed until it's accepted again.
+      return {'status': MissionStatus.requested.name, 'accepted_at': null};
     }
 
     return {

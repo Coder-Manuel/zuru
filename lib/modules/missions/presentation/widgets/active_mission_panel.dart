@@ -8,6 +8,9 @@ import 'package:zuru/modules/missions/domain/entities/mission.entity.dart';
 import 'package:zuru/modules/missions/presentation/controllers/radar_controller.dart';
 import 'package:zuru/modules/missions/presentation/pages/mission_details_page.dart';
 
+/// Accent used for the "waiting on the client's payment" state.
+const _amber = Color(0xFFF5A020);
+
 class ActiveMissionPanel extends GetView<RadarController> {
   const ActiveMissionPanel({super.key});
 
@@ -19,6 +22,8 @@ class ActiveMissionPanel extends GetView<RadarController> {
         final mission = controller.activeMission.value;
         if (mission == null) return const SizedBox.shrink();
 
+        final awaitingPayment = mission.awaitingClientPayment;
+
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -27,12 +32,14 @@ class ActiveMissionPanel extends GetView<RadarController> {
               padding: const EdgeInsets.fromLTRB(20, 16, 20, 12),
               child: Row(
                 children: [
-                  _PulsingDot(),
+                  _PulsingDot(color: awaitingPayment ? _amber : null),
                   10.horizontalSpace,
                   Text(
-                    'LIVE CHECK IN ACTION',
+                    awaitingPayment
+                        ? 'AWAITING CLIENT PAYMENT'
+                        : 'LIVE CHECK IN ACTION',
                     style: TextStyle(
-                      color: ScoutColors.scoutMarker,
+                      color: awaitingPayment ? _amber : ScoutColors.scoutMarker,
                       fontSize: 12,
                       fontWeight: FontWeight.w700,
                       letterSpacing: 1.2,
@@ -60,15 +67,25 @@ class ActiveMissionPanel extends GetView<RadarController> {
 
                     16.verticalSpace,
 
-                    // Countdown block
-                    _CountdownCard(countdown: controller.countdown.value),
+                    // Countdown block — the payment window while unpaid, the
+                    // 5 hr mission window once the client has paid.
+                    if (awaitingPayment)
+                      Obx(
+                        () => _PaymentPendingCard(
+                          countdown: controller.paymentCountdown.value,
+                        ),
+                      )
+                    else
+                      _CountdownCard(countdown: controller.countdown.value),
 
                     20.verticalSpace,
 
-                    // Complete CTA
+                    // Complete CTA — locked until the client pays.
                     Obx(
                       () => ElevatedButton(
-                        onPressed: controller.isUpdatingStatus.value
+                        onPressed:
+                            (controller.isUpdatingStatus.value ||
+                                awaitingPayment)
                             ? null
                             : controller.completeMission,
                         style: ElevatedButton.styleFrom(
@@ -91,9 +108,11 @@ class ActiveMissionPanel extends GetView<RadarController> {
                                   color: ScoutColors.background,
                                 ),
                               )
-                            : const Text(
-                                'Complete Live Check',
-                                style: TextStyle(
+                            : Text(
+                                awaitingPayment
+                                    ? 'Locked until the client pays'
+                                    : 'Complete Live Check',
+                                style: const TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.w700,
                                 ),
@@ -120,9 +139,11 @@ class ActiveMissionPanel extends GetView<RadarController> {
                             borderRadius: BorderRadius.circular(14),
                           ),
                         ),
-                        child: const Text(
-                          'Abandon Live Check',
-                          style: TextStyle(
+                        child: Text(
+                          awaitingPayment
+                              ? 'Release Request'
+                              : 'Abandon Live Check',
+                          style: const TextStyle(
                             fontSize: 15,
                             fontWeight: FontWeight.w600,
                           ),
@@ -140,13 +161,15 @@ class ActiveMissionPanel extends GetView<RadarController> {
   }
 
   void _confirmAbandon(BuildContext context) {
+    final awaitingPayment = controller.isAwaitingPayment;
+
     showDialog<void>(
       context: context,
       builder: (_) => AlertDialog(
         backgroundColor: ScoutColors.surface,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         title: Text(
-          'Abandon Live Check?',
+          awaitingPayment ? 'Release Request?' : 'Abandon Live Check?',
           style: TextStyle(
             color: ScoutColors.textPrimary,
             fontWeight: FontWeight.w700,
@@ -154,7 +177,10 @@ class ActiveMissionPanel extends GetView<RadarController> {
           ),
         ),
         content: Text(
-          'This live check will be released back to the pool. This action cannot be undone.',
+          awaitingPayment
+              ? 'The client will no longer be asked to pay, and this request '
+                    'goes back to pending. This action cannot be undone.'
+              : 'This live check will be released back to the pool. This action cannot be undone.',
           style: TextStyle(
             color: ScoutColors.textSecondary,
             fontSize: 14,
@@ -174,9 +200,9 @@ class ActiveMissionPanel extends GetView<RadarController> {
               Get.back();
               controller.abandonMission();
             },
-            child: const Text(
-              'Abandon',
-              style: TextStyle(
+            child: Text(
+              awaitingPayment ? 'Release' : 'Abandon',
+              style: const TextStyle(
                 color: Color(0xFFFF4444),
                 fontWeight: FontWeight.w700,
               ),
@@ -366,9 +392,85 @@ class _CountdownCard extends StatelessWidget {
   }
 }
 
+// ── Payment pending card ──────────────────────────────────────────────────────
+
+/// Replaces the mission countdown while the client still owes payment: the
+/// guide holds the slot, and the request is released when the timer runs out.
+class _PaymentPendingCard extends StatelessWidget {
+  final String countdown;
+  const _PaymentPendingCard({required this.countdown});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
+      decoration: BoxDecoration(
+        color: _amber.withAlpha(18),
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: _amber.withAlpha(90)),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'PAYMENT PENDING',
+                  style: TextStyle(
+                    color: _amber,
+                    fontSize: 11,
+                    fontWeight: FontWeight.w700,
+                    letterSpacing: 0.8,
+                  ),
+                ),
+                6.verticalSpace,
+                Text(
+                  'Hold off — the client has been asked to pay. You’ll be '
+                  'unlocked the moment it clears.',
+                  style: TextStyle(
+                    color: ScoutColors.textSecondary,
+                    fontSize: 12,
+                    height: 1.3,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          12.horizontalSpace,
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+            decoration: BoxDecoration(
+              color: ScoutColors.background,
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(color: _amber.withAlpha(120), width: 1),
+            ),
+            child: Text(
+              countdown,
+              style: const TextStyle(
+                color: _amber,
+                fontSize: 20,
+                fontWeight: FontWeight.w700,
+                fontFeatures: [FontFeature.tabularFigures()],
+                letterSpacing: 1.0,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 // ── Pulsing status dot ────────────────────────────────────────────────────────
 
 class _PulsingDot extends StatefulWidget {
+  /// Defaults to [ScoutColors.scoutMarker] when null.
+  final Color? color;
+
+  const _PulsingDot({this.color});
+
   @override
   State<_PulsingDot> createState() => _PulsingDotState();
 }
@@ -406,7 +508,7 @@ class _PulsingDotState extends State<_PulsingDot>
         height: 9,
         decoration: BoxDecoration(
           shape: BoxShape.circle,
-          color: ScoutColors.scoutMarker,
+          color: widget.color ?? ScoutColors.scoutMarker,
         ),
       ),
     );

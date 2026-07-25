@@ -95,7 +95,9 @@ class LiveRequestPage extends GetView<LiveRequestController> {
                       animate(const _FeeBreakdown()),
                       8.verticalSpace,
                       animate(const _LiveRateHint()),
-                      20.verticalSpace,
+                      16.verticalSpace,
+                      animate(const _PayLaterNotice()),
+                      16.verticalSpace,
                       // Submit — last item in the page.
                       const _SubmitBar(),
                       25.verticalSpace,
@@ -879,6 +881,48 @@ class _FeeRow extends StatelessWidget {
   }
 }
 
+// ── Pay-later notice ─────────────────────────────────────────────────────────
+
+/// Sets the expectation that sending the request costs nothing — payment is
+/// only collected once the guide accepts.
+class _PayLaterNotice extends StatelessWidget {
+  const _PayLaterNotice();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+      decoration: BoxDecoration(
+        color: ClientColors.inputBg.withAlpha(120),
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: ClientColors.divider.withAlpha(120)),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Icon(
+            Icons.lock_clock_rounded,
+            color: ClientColors.primary,
+            size: 18,
+          ),
+          12.horizontalSpace,
+          const Expanded(
+            child: Text(
+              'You won’t be charged yet. We’ll ask you to pay only once the '
+              'guide accepts your request.',
+              style: TextStyle(
+                color: ClientColors.textSecondary,
+                fontSize: 12.5,
+                height: 1.45,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 // ── Submit bar ───────────────────────────────────────────────────────────────
 
 class _SubmitBar extends GetView<LiveRequestController> {
@@ -914,14 +958,9 @@ class _SubmitBar extends GetView<LiveRequestController> {
                       color: ClientColors.background,
                     ),
                   )
-                : Text(
-                    controller.hasPendingPayment.value
-                        ? 'Complete Payment'
-                        : 'Send Request',
-                    style: const TextStyle(
-                      fontSize: 17,
-                      fontWeight: FontWeight.w800,
-                    ),
+                : const Text(
+                    'Send Request',
+                    style: TextStyle(fontSize: 17, fontWeight: FontWeight.w800),
                   ),
           ),
         ),

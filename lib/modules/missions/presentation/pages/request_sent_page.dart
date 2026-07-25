@@ -34,7 +34,8 @@ class RequestSentPage extends StatelessWidget {
   String get _subtitle {
     final schedule = _scheduledAt;
     final tail =
-        '$_scoutName will confirm shortly — your payment is safe in escrow.';
+        '$_scoutName will confirm shortly — you’ll only be asked to pay once '
+        'they accept.';
     if (schedule == null) return tail;
     final when = DateFormat('EEE d MMM · HH:mm').format(schedule);
     return 'Scheduled for $when. $tail';

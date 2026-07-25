@@ -464,7 +464,13 @@ class RemoteMissionsDatasourceImpl extends RemoteMissionsDatasource {
             """)
             .eq('scout_id', profileId)
             .eq('status', MissionStatus.requested.name)
-            .not('published_at', 'is', null)
+            // A live request reaches its target guide before payment — the
+            // client only pays once the guide accepts. Everything else still
+            // has to be published (paid) before a guide can see it.
+            .or(
+              'type.eq.${MissionType.liveRequest.apiValue},'
+              'published_at.not.is.null',
+            )
             .order('created_at', ascending: false);
 
         final rows = res

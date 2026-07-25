@@ -6,6 +6,7 @@ import 'package:get/get.dart';
 import 'package:zuru/config/scout_colors.dart';
 import 'package:zuru/core/services/location_service/location_service.dart';
 import 'package:zuru/core/utils/size.util.dart';
+import 'package:zuru/core/utils/toast.dart';
 import 'package:zuru/modules/missions/domain/entities/mission.entity.dart';
 import 'package:zuru/core/routes/app_routes.dart';
 
@@ -185,6 +186,14 @@ class _GpsVerificationPageState extends State<GpsVerificationPage>
   }
 
   void _onBeginStream() {
+    // Backstop for the pay-after-accept flow — the CTAs that lead here are
+    // already locked while a live request is unpaid, and the backend rejects
+    // the session too.
+    if (_mission.awaitingClientPayment) {
+      Toast.error('Waiting for the client to pay for this live check');
+      return;
+    }
+
     // StreamRoleMiddleware on AppRoutes.stream renders StreamPage for scouts.
     Get.toNamed(AppRoutes.stream, arguments: _mission);
   }

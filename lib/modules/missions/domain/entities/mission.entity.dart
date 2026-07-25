@@ -87,6 +87,49 @@ abstract class MissionEntity extends BaseEntity {
   /// True once payment has published the mission (visible to guides).
   bool get isPublished => publishedAt != null;
 
+  // ── Payment state ─────────────────────────────────────────────────────────
+
+  /// How long the client has to pay after a guide accepts a live request,
+  /// before the request is released. Mirrors the backend release job — the two
+  /// must stay in sync.
+  static const Duration paymentWindow = Duration(minutes: 30);
+
+  bool get isLiveRequest => type == MissionType.liveRequest;
+
+  /// A live request sitting with the guide, unanswered. The client owes
+  /// nothing until the guide accepts.
+  bool get awaitingScoutResponse =>
+      isLiveRequest && !isPublished && status == MissionStatus.requested;
+
+  /// The guide accepted but the client hasn't paid yet — the guide is blocked
+  /// from starting until the payment lands.
+  bool get awaitingClientPayment =>
+      isLiveRequest && !isPublished && status == MissionStatus.accepted;
+
+  /// True when the client can pay right now: an unpaid pool live check, or a
+  /// live request a guide has already accepted.
+  bool get isPayable =>
+      !isPublished &&
+      (awaitingClientPayment ||
+          (!isLiveRequest && status == MissionStatus.open));
+
+  /// UTC deadline for [awaitingClientPayment]; null when [acceptedAt] is
+  /// unknown.
+  DateTime? get paymentDeadline {
+    final raw = acceptedAt;
+    final accepted = raw != null ? DateTime.tryParse(raw)?.toUtc() : null;
+    return accepted?.add(paymentWindow);
+  }
+
+  /// Time left to pay before the request is released, or null when the
+  /// deadline is unknown.
+  Duration? get paymentTimeLeft {
+    final deadline = paymentDeadline;
+    if (deadline == null) return null;
+    final left = deadline.difference(DateTime.now().toUtc());
+    return left.isNegative ? Duration.zero : left;
+  }
+
   // ── Recording helpers ─────────────────────────────────────────────────────
 
   /// How long after a live check is marked completed a recording may still be

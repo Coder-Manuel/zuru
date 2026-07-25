@@ -7,6 +7,7 @@ import 'package:zuru/modules/home/presentation/controllers/maps_tab_controller.d
 import 'package:zuru/modules/missions/data/models/enum.dart';
 import 'package:zuru/modules/missions/domain/entities/mission.entity.dart';
 import 'package:zuru/modules/missions/presentation/pages/post_mission_page.dart';
+import 'package:zuru/modules/missions/presentation/widgets/payment_due_beacon.dart';
 
 // ─── Entry point ──────────────────────────────────────────────────────────────
 
@@ -98,6 +99,24 @@ class _MapView extends GetView<MapsTabController> {
 
             // ── Bottom overlay ───────────────────────────────────────────────
             Positioned(left: 0, right: 0, bottom: 0, child: _BottomOverlay()),
+
+            // ── Payment-due beacon ───────────────────────────────────────────
+            // Pinned above everything so an accepted-but-unpaid live request
+            // stays in view after the accept dialog is dismissed. Mounted only
+            // while something is owed, so its pulse ticker doesn't run idle.
+            Positioned(
+              top: 16,
+              left: 0,
+              right: 0,
+              child: Align(
+                alignment: Alignment.topCenter,
+                child: Obx(
+                  () => controller.hasPaymentDue
+                      ? const PaymentDueBeacon()
+                      : const SizedBox.shrink(),
+                ),
+              ),
+            ),
           ],
         ),
       ),

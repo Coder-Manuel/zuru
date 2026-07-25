@@ -226,9 +226,18 @@ class _MissionCard extends GetView<MissionsTabController> {
                   ),
                 ),
                 const SizedBox(width: 8),
-                mission.isPublished
-                    ? _StatusBadge(status: mission.status)
-                    : const _UnpaidBadge(),
+                if (mission.awaitingScoutResponse)
+                  const _PendingBadge(
+                    label: 'Awaiting guide',
+                    icon: Icons.hourglass_top_rounded,
+                  )
+                else if (mission.isPayable)
+                  const _PendingBadge(
+                    label: 'Unpaid',
+                    icon: Icons.lock_outline_rounded,
+                  )
+                else
+                  _StatusBadge(status: mission.status),
               ],
             ),
             const SizedBox(height: 8),
@@ -294,7 +303,32 @@ class _MissionCard extends GetView<MissionsTabController> {
                 ),
               ],
             ),
-            if (!mission.isPublished) ...[
+            // Nothing is owed until the guide accepts a live request.
+            if (mission.awaitingScoutResponse) ...[
+              const SizedBox(height: 12),
+              Row(
+                children: [
+                  Icon(
+                    Icons.hourglass_top_rounded,
+                    size: 14,
+                    color: ClientColors.textSecondary,
+                  ),
+                  const SizedBox(width: 6),
+                  Expanded(
+                    child: Text(
+                      'Waiting for ${mission.scout?.firstName ?? 'your guide'} '
+                      'to accept — you’ll pay once they do.',
+                      style: TextStyle(
+                        color: ClientColors.textSecondary,
+                        fontSize: 12,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+
+            if (mission.isPayable) ...[
               const SizedBox(height: 12),
               SizedBox(
                 width: double.infinity,
@@ -302,7 +336,9 @@ class _MissionCard extends GetView<MissionsTabController> {
                   onPressed: () => controller.payAndPublish(mission),
                   icon: const Icon(Icons.lock_open_rounded, size: 18),
                   label: Text(
-                    'Pay ${mission.formattedPrice} to publish',
+                    mission.awaitingClientPayment
+                        ? 'Pay ${mission.formattedPrice} to confirm'
+                        : 'Pay ${mission.formattedPrice} to publish',
                     style: const TextStyle(
                       fontWeight: FontWeight.w800,
                       fontSize: 13,
@@ -516,8 +552,13 @@ class _DurationPill extends StatelessWidget {
 }
 
 // ─── Status badge ─────────────────────────────────────────────────────────────
-class _UnpaidBadge extends StatelessWidget {
-  const _UnpaidBadge();
+/// Amber badge for the two pre-payment states: waiting on the guide to accept,
+/// and waiting on the client to pay.
+class _PendingBadge extends StatelessWidget {
+  final String label;
+  final IconData icon;
+
+  const _PendingBadge({required this.label, required this.icon});
 
   @override
   Widget build(BuildContext context) {
@@ -530,12 +571,12 @@ class _UnpaidBadge extends StatelessWidget {
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
-        children: const [
-          Icon(Icons.lock_outline_rounded, size: 12, color: color),
-          SizedBox(width: 4),
+        children: [
+          Icon(icon, size: 12, color: color),
+          const SizedBox(width: 4),
           Text(
-            'Unpaid',
-            style: TextStyle(
+            label,
+            style: const TextStyle(
               color: color,
               fontSize: 11,
               fontWeight: FontWeight.w700,
