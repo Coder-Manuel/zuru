@@ -4,7 +4,7 @@ import 'package:zuru/modules/payments/data/repositories_impl/payments_repository
 import 'package:zuru/modules/payments/data/sources/remote_payments_datasource.dart';
 import 'package:zuru/modules/payments/domain/repository/payments_repository.dart';
 import 'package:zuru/modules/payments/domain/usecases/get_statements.usecase.dart';
-import 'package:zuru/modules/payments/domain/usecases/initiate_stk_push.usecase.dart';
+import 'package:zuru/modules/payments/domain/usecases/collect_payment.usecase.dart';
 import 'package:zuru/modules/payments/domain/usecases/watch_payment.usecase.dart';
 import 'package:zuru/modules/payments/presentation/controllers/statements_controller.dart';
 
@@ -28,8 +28,8 @@ class PaymentsBindings extends Bindings {
       () => GetStatementsUseCase(repo: Get.find<PaymentsRepository>()),
       fenix: true,
     );
-    Get.lazyPut<InitiateStkPushUseCase>(
-      () => InitiateStkPushUseCase(repo: Get.find<PaymentsRepository>()),
+    Get.lazyPut<CollectPaymentUseCase>(
+      () => CollectPaymentUseCase(repo: Get.find<PaymentsRepository>()),
       fenix: true,
     );
     Get.lazyPut<WatchPaymentUseCase>(

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:get/get.dart';
 import 'package:zuru/config/client_colors.dart';
+import 'package:zuru/modules/payments/data/models/payments.inputs.dart';
 import 'package:zuru/modules/payments/presentation/controllers/payment_controller.dart';
 
 Future<bool> showPaymentSheet({
@@ -63,15 +64,30 @@ class PaymentSheet extends GetView<PaymentController> {
             Obx(() {
               return switch (controller.state.value) {
                 PaymentUiState.form => const _FormView(),
-                PaymentUiState.sending => const _ProcessingView(
-                  title: 'Sending STK push…',
-                  subtitle: 'Setting up your M-Pesa payment…',
-                ),
+                PaymentUiState.sending =>
+                  controller.method.value == PaymentMethod.card
+                      ? const _ProcessingView(
+                          title: 'Opening secure checkout…',
+                          subtitle: 'Setting up your card payment…',
+                          icon: Icons.credit_card_rounded,
+                        )
+                      : const _ProcessingView(
+                          title: 'Sending STK push…',
+                          subtitle: 'Setting up your M-Pesa payment…',
+                        ),
                 PaymentUiState.awaitingPin => const _ProcessingView(
                   title: 'Enter M-PESA PIN to complete payment',
                   subtitle:
                       "STK sent · check your phone for the prompt.\n"
                       "We're confirming your payment…",
+                ),
+                PaymentUiState.awaitingCard => const _ProcessingView(
+                  title: 'Complete payment in your browser',
+                  subtitle:
+                      "We'll confirm automatically once your card payment "
+                      'goes through',
+                  icon: Icons.credit_card_rounded,
+                  showCompletedButton: true,
                 ),
                 PaymentUiState.success => const _SuccessView(),
                 PaymentUiState.failed => const _FailedView(),
@@ -105,11 +121,35 @@ class _FormView extends GetView<PaymentController> {
         const SizedBox(height: 6),
         Center(
           child: Text(
-            'Pay with M-Pesa to publish your live check',
+            'Pay with M-Pesa or card to publish your live check',
             style: TextStyle(color: ClientColors.textSecondary, fontSize: 13),
           ),
         ),
         const SizedBox(height: 20),
+        Obx(
+          () => Row(
+            children: [
+              Expanded(
+                child: _MethodPill(
+                  label: 'M-Pesa',
+                  icon: Icons.phone_iphone_rounded,
+                  selected: controller.method.value == PaymentMethod.mpesa,
+                  onTap: () => controller.setMethod(PaymentMethod.mpesa),
+                ),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: _MethodPill(
+                  label: 'Card',
+                  icon: Icons.credit_card_rounded,
+                  selected: controller.method.value == PaymentMethod.card,
+                  onTap: () => controller.setMethod(PaymentMethod.card),
+                ),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 16),
         Container(
           width: double.infinity,
           padding: const EdgeInsets.symmetric(vertical: 18),
@@ -141,45 +181,58 @@ class _FormView extends GetView<PaymentController> {
             ],
           ),
         ),
-        const SizedBox(height: 20),
-        Text(
-          'M-PESA NUMBER',
-          style: TextStyle(
-            color: ClientColors.textSecondary,
-            fontSize: 11,
-            fontWeight: FontWeight.w700,
-            letterSpacing: 1.1,
-          ),
-        ),
-        const SizedBox(height: 6),
-        TextField(
-          controller: controller.phoneCtrl,
-          keyboardType: TextInputType.phone,
-          style: TextStyle(color: ClientColors.textPrimary, fontSize: 16),
-          decoration: InputDecoration(
-            hintText: 'e.g. 0712 345 678',
-            hintStyle: TextStyle(color: ClientColors.textSecondary),
-            prefixIcon: Icon(
-              Icons.phone_iphone_rounded,
-              color: ClientColors.textSecondary,
-              size: 20,
-            ),
-            filled: true,
-            fillColor: ClientColors.inputBg,
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide.none,
-            ),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide.none,
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(color: ClientColors.primary, width: 1.5),
-            ),
-          ),
-        ),
+        Obx(() {
+          if (controller.method.value != PaymentMethod.mpesa) {
+            return const SizedBox.shrink();
+          }
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const SizedBox(height: 20),
+              Text(
+                'M-PESA NUMBER',
+                style: TextStyle(
+                  color: ClientColors.textSecondary,
+                  fontSize: 11,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: 1.1,
+                ),
+              ),
+              const SizedBox(height: 6),
+              TextField(
+                controller: controller.phoneCtrl,
+                keyboardType: TextInputType.phone,
+                style: TextStyle(color: ClientColors.textPrimary, fontSize: 16),
+                decoration: InputDecoration(
+                  hintText: 'e.g. 0712 345 678',
+                  hintStyle: TextStyle(color: ClientColors.textSecondary),
+                  prefixIcon: Icon(
+                    Icons.phone_iphone_rounded,
+                    color: ClientColors.textSecondary,
+                    size: 20,
+                  ),
+                  filled: true,
+                  fillColor: ClientColors.inputBg,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide.none,
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide.none,
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(
+                      color: ClientColors.primary,
+                      width: 1.5,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          );
+        }),
         Obx(() {
           if (controller.error.value.isEmpty) return const SizedBox(height: 20);
           return Padding(
@@ -226,7 +279,14 @@ class _FormView extends GetView<PaymentController> {
 class _ProcessingView extends GetView<PaymentController> {
   final String title;
   final String subtitle;
-  const _ProcessingView({required this.title, required this.subtitle});
+  final IconData icon;
+  final bool showCompletedButton;
+  const _ProcessingView({
+    required this.title,
+    required this.subtitle,
+    this.icon = Icons.smartphone_rounded,
+    this.showCompletedButton = false,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -248,11 +308,7 @@ class _ProcessingView extends GetView<PaymentController> {
                   backgroundColor: ClientColors.inputBg,
                 ),
               ),
-              Icon(
-                    Icons.smartphone_rounded,
-                    color: ClientColors.primary,
-                    size: 36,
-                  )
+              Icon(icon, color: ClientColors.primary, size: 36)
                   .animate(onPlay: (c) => c.repeat(reverse: true))
                   .scaleXY(
                     begin: 0.9,
@@ -284,6 +340,27 @@ class _ProcessingView extends GetView<PaymentController> {
           ),
         ),
         const SizedBox(height: 20),
+        if (showCompletedButton) ...[
+          SizedBox(
+            width: double.infinity,
+            height: 54,
+            child: ElevatedButton(
+              onPressed: controller.refreshPayment,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: ClientColors.primary,
+                foregroundColor: Colors.black,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(50),
+                ),
+              ),
+              child: const Text(
+                "I've completed payment",
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800),
+              ),
+            ),
+          ),
+          const SizedBox(height: 6),
+        ],
         TextButton(
           onPressed: controller.cancel,
           child: Text(
@@ -367,12 +444,16 @@ class _FailedView extends GetView<PaymentController> {
           ),
         ).animate().scale(duration: 300.ms, curve: Curves.easeOutBack),
         const SizedBox(height: 24),
-        Text(
-          'Payment failed',
-          style: TextStyle(
-            color: ClientColors.textPrimary,
-            fontSize: 18,
-            fontWeight: FontWeight.w800,
+        Obx(
+          () => Text(
+            controller.timedOut.value
+                ? 'Payment not confirmed yet'
+                : 'Payment failed',
+            style: TextStyle(
+              color: ClientColors.textPrimary,
+              fontSize: 18,
+              fontWeight: FontWeight.w800,
+            ),
           ),
         ),
         const SizedBox(height: 8),
@@ -389,26 +470,38 @@ class _FailedView extends GetView<PaymentController> {
             ),
           ),
         ),
-        const SizedBox(height: 24),
-        SizedBox(
-          width: double.infinity,
-          height: 54,
-          child: ElevatedButton(
-            onPressed: controller.retry,
-            style: ElevatedButton.styleFrom(
-              backgroundColor: ClientColors.primary,
-              foregroundColor: Colors.black,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(50),
-              ),
-            ),
-            child: const Text(
-              'Try again',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800),
-            ),
+        Obx(
+          () => Column(
+            children: [
+              if (controller.canRetry.value) ...[
+                const SizedBox(height: 24),
+                SizedBox(
+                  width: double.infinity,
+                  height: 54,
+                  child: ElevatedButton(
+                    onPressed: controller.retry,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: ClientColors.primary,
+                      foregroundColor: Colors.black,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(50),
+                      ),
+                    ),
+                    child: const Text(
+                      'Try again',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 6),
+              ] else
+                const SizedBox(height: 18),
+            ],
           ),
         ),
-        const SizedBox(height: 6),
         TextButton(
           onPressed: controller.cancel,
           child: Text(
@@ -417,6 +510,56 @@ class _FailedView extends GetView<PaymentController> {
           ),
         ),
       ],
+    );
+  }
+}
+
+class _MethodPill extends StatelessWidget {
+  final String label;
+  final IconData icon;
+  final bool selected;
+  final VoidCallback onTap;
+
+  const _MethodPill({
+    required this.label,
+    required this.icon,
+    required this.selected,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final color = selected ? Colors.black : ClientColors.textSecondary;
+    return GestureDetector(
+      onTap: onTap,
+      child: AnimatedContainer(
+        duration: 200.ms,
+        height: 44,
+        decoration: BoxDecoration(
+          color: selected ? ClientColors.primary : ClientColors.inputBg,
+          borderRadius: BorderRadius.circular(50),
+          border: Border.all(
+            color: selected
+                ? ClientColors.primary
+                : ClientColors.divider.withAlpha(80),
+          ),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(icon, color: color, size: 18),
+            const SizedBox(width: 8),
+            Text(
+              label,
+              style: TextStyle(
+                color: color,
+                fontSize: 14,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

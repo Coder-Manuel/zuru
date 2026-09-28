@@ -6,7 +6,7 @@ import 'package:zuru/modules/payments/data/models/payments.inputs.dart';
 
 abstract class RemotePaymentsDatasource {
   Future<List<Map<String, dynamic>>> getStatements();
-  Future<FunctionResponse> initiateStkPush(StkPushInput input);
+  Future<FunctionResponse> collectPayment(CollectPaymentInput input);
   Stream<Map<String, dynamic>> watchPayment(String paymentId);
 }
 
@@ -25,8 +25,8 @@ class RemotePaymentsDatasourceImpl implements RemotePaymentsDatasource {
   }
 
   @override
-  Future<FunctionResponse> initiateStkPush(StkPushInput input) {
-    return client.functions.invoke('mpesa-stk-push', body: input.toBody());
+  Future<FunctionResponse> collectPayment(CollectPaymentInput input) {
+    return client.functions.invoke('intasend-collect', body: input.toBody());
   }
 
   @override

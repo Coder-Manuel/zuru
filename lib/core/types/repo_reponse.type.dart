@@ -10,6 +10,9 @@ class ApiFail implements Exception {
 
 class FailureResponse<T> extends Left<ApiFail, T> {
   FailureResponse(String message) : super(ApiFail(message));
+
+  /// Carries a typed [ApiFail] subclass so callers can branch on it.
+  FailureResponse.from(super.fail);
 }
 
 class SuccessResponse<T> extends Right<ApiFail, T> {
