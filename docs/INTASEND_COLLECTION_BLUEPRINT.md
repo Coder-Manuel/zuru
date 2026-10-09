@@ -97,9 +97,21 @@ status endpoint to poll and no meaningful status in the initiate response.
 | `cancelled` | Customer cancelled. Terminal |
 | `refunded` | Refunded later. Terminal |
 
-`failure_reason` carries the human-readable reason on a failure.
-The row also now has `payment_method` (`mpesa` | `card`) and `provider`
-(`intasend`).
+`failure_reason` carries the human-readable reason on a failure, and `provider`
+is `intasend`.
+
+No provider-specific columns were added — the existing ones are reused, so a
+future provider changes nothing here:
+
+| Column | Holds |
+| --- | --- |
+| `checkout_request_id` | The in-flight request id: the IntaSend invoice id for M-Pesa, the checkout id for card |
+| `merchant_request_id` | The settlement invoice id (filled in by the webhook for card) |
+| `provider_ref` | The final receipt, set only on success: the M-Pesa code, else the invoice id |
+| `metadata` | `{ "method": "mpesa" \| "card", "provider_event": … }` |
+
+So the method a payment used is `metadata->>'method'`, **not** a column. If the
+UI labels a row, read it from the metadata map.
 
 ---
 
@@ -208,7 +220,12 @@ resultDesc: m['failure_reason']?.toString() ??
     m['message']?.toString(),
 ```
 
-Add `paymentMethod` to the entity and model if the UI needs to label a row.
+If the UI needs to label a row with its method, read it out of the metadata
+map rather than expecting a column:
+
+```dart
+paymentMethod: (m['metadata'] as Map?)?['method']?.toString(),
+```
 
 ### 2.5 Repository, use case, bindings
 
