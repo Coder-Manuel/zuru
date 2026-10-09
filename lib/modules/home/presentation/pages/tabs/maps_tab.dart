@@ -372,7 +372,7 @@ class _BottomOverlay extends GetView<MapsTabController> {
                 elevation: 0,
               ),
               child: const Text(
-                '+ Post a Live Check',
+                '+ Post a Live',
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800),
               ),
             ),

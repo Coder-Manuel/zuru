@@ -164,7 +164,7 @@ void main() {
 
       expect(
         messageOf(result),
-        'This app is for Clients only. Use the Scout app.',
+        'This app is for Viewers only. Use the Scout app.',
       );
       verify(ds.logout()).called(1);
     });

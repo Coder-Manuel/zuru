@@ -102,7 +102,9 @@ class _ScoutsSection extends StatelessWidget {
         // Scouts notified counter
         Obx(
           () => Text(
-            '${controller.scoutsNotified.value} GUIDES NOTIFIED',
+            controller.scoutsNotified.value > 0
+                ? '${controller.scoutsNotified.value}+ GUIDES NOTIFIED'
+                : '',
             style: const TextStyle(
               color: Color(0xFF22C55E),
               fontSize: 15,

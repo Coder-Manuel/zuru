@@ -88,6 +88,15 @@ class ProfileModel extends Profile {
 
   static List<String> _parseTags(dynamic raw) {
     if (raw == null) return const [];
+    // A Postgres text[] arrives as a List; a plain text column arrives as a
+    // comma-separated string. toString() on a List yields '[a, b]', which
+    // would leak the brackets into the first and last tag.
+    if (raw is List) {
+      return raw
+          .map((t) => t.toString().trim())
+          .where((t) => t.isNotEmpty)
+          .toList();
+    }
     return raw
         .toString()
         .split(',')

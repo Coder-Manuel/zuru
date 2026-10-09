@@ -68,7 +68,7 @@ void main() {
 
       expect(
         messageOf(await repo.postMission(input)),
-        'Failed to post mission, kindly retry',
+        'Failed to post live check, kindly retry',
       );
     });
   });
@@ -152,7 +152,7 @@ void main() {
         radiusKm: 5,
       );
 
-      expect(messageOf(result), 'Failed to load nearby scouts');
+      expect(messageOf(result), 'Failed to load nearby guides');
     });
   });
 

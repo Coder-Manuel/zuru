@@ -50,8 +50,6 @@ class FindingScoutsController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    // The created MissionEntity is passed as a GetX argument from
-    // PostMissionController after a successful insert.
     _mission = Get.arguments as MissionEntity;
     _fetchNearbyScouts();
     _watchMissionAcceptance();
@@ -76,16 +74,10 @@ class FindingScoutsController extends GetxController {
     response.fold((error) => Toast.error(error.message), _revealProgressively);
   }
 
-  // ── No-scouts timeout ─────────────────────────────────────────────────────
-
-  /// Starts the 20-second window. If at least one scout is revealed before it
-  /// fires, [_cancelNoScoutsTimer] suppresses it.
   void _startNoScoutsTimer() {
     _noScoutsTimer = Timer(_noScoutsTimeout, _onNoScoutsTimeout);
   }
 
-  /// Suppresses the fallback — called only when real scouts are being revealed
-  /// or when a scout accepts the mission so the redirect doesn't interfere.
   void _cancelNoScoutsTimer() {
     _noScoutsTimer?.cancel();
     _noScoutsTimer = null;
@@ -105,33 +97,22 @@ class FindingScoutsController extends GetxController {
     });
   }
 
-  // ── Progressive reveal (keeps the Uber-radar feel with real data) ─────────
-
   void _revealProgressively(List<NearbyScout> nearbyScouts) {
-    // Only suppress the timeout when there are real scouts to show.
-    // An empty response leaves the timer running so the 20 s fallback fires.
     if (nearbyScouts.isEmpty) return;
 
     _cancelNoScoutsTimer();
 
-    // Animate the "X SCOUTS NOTIFIED" counter to ~8× the actual count,
-    // capped at 50, to give a sense of broadcast reach.
-    final notifyTarget = (nearbyScouts.length * 8).clamp(1, 50);
-    _notifyTimer = Timer.periodic(const Duration(milliseconds: 300), (t) {
+    final notifyTarget = nearbyScouts.length;
+    _notifyTimer = Timer.periodic(const Duration(milliseconds: 120), (t) {
       if (scoutsNotified.value >= notifyTarget) {
         t.cancel();
         return;
       }
-      scoutsNotified.value = min(
-        scoutsNotified.value + Random().nextInt(4) + 1,
-        notifyTarget,
-      );
+      scoutsNotified.value = min(scoutsNotified.value + 1, notifyTarget);
     });
 
-    // Reveal each scout card one-by-one with a stagger so the radar dots
-    // appear progressively rather than all at once.
     int index = 0;
-    _revealTimer = Timer.periodic(const Duration(milliseconds: 1800), (t) {
+    _revealTimer = Timer.periodic(const Duration(milliseconds: 350), (t) {
       if (index >= nearbyScouts.length) {
         t.cancel();
         return;
@@ -143,10 +124,6 @@ class FindingScoutsController extends GetxController {
     });
   }
 
-  /// Converts a [NearbyScout] into a normalised radar position.
-  ///
-  /// Uses the golden-angle spread so multiple scouts never overlap on the
-  /// radar, and maps their real distance to the radar radius band [0.25–0.85].
   RadarDot _radarDotFor(NearbyScout scout, int index) {
     const maxDistanceM = 5000.0; // matches the 5 km RPC radius
     final r =
