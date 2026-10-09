@@ -39,7 +39,7 @@ void main() {
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 100));
 
-    expect(find.text('Missions'), findsOneWidget);
+    expect(find.text('Live Checks'), findsOneWidget);
     expect(find.text('All'), findsOneWidget);
     expect(find.text('Active'), findsOneWidget);
     expect(find.text('Completed'), findsOneWidget);

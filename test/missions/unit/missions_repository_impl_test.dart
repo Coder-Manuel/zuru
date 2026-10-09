@@ -115,7 +115,7 @@ void main() {
 
       expect(
         messageOf(await repo.getMyMissions()),
-        'Failed to load missions, kindly retry',
+        'Failed to load live checks, kindly retry',
       );
     });
   });
@@ -168,7 +168,7 @@ void main() {
 
       expect(
         messageOf(await repo.getScoutMissions()),
-        'Failed to load missions, kindly retry',
+        'Failed to load live checks, kindly retry',
       );
     });
   });
@@ -188,7 +188,7 @@ void main() {
 
       expect(
         messageOf(await repo.acceptMission(input)),
-        'Failed to accept mission. Please try again.',
+        'Failed to accept live check. Please try again.',
       );
     });
 
@@ -235,7 +235,7 @@ void main() {
 
       expect(
         messageOf(await repo.updateMissionStatus(input)),
-        'Failed to update mission. Please try again.',
+        'Failed to update live check. Please try again.',
       );
     });
   });
