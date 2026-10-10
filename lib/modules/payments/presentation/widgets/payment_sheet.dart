@@ -82,7 +82,7 @@ class PaymentSheet extends GetView<PaymentController> {
                       "We're confirming your payment…",
                 ),
                 PaymentUiState.awaitingCard => const _ProcessingView(
-                  title: 'Complete payment in your browser',
+                  title: 'Confirming your card payment',
                   subtitle:
                       "We'll confirm automatically once your card payment "
                       'goes through',

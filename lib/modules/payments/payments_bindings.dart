@@ -7,6 +7,7 @@ import 'package:zuru/modules/payments/domain/usecases/get_statements.usecase.dar
 import 'package:zuru/modules/payments/domain/usecases/collect_payment.usecase.dart';
 import 'package:zuru/modules/payments/domain/usecases/watch_payment.usecase.dart';
 import 'package:zuru/modules/payments/presentation/controllers/statements_controller.dart';
+import 'package:zuru/modules/payments/presentation/services/card_checkout_launcher.dart';
 
 class PaymentsBindings extends Bindings {
   @override
@@ -20,6 +21,12 @@ class PaymentsBindings extends Bindings {
       () => PaymentsRepositoryImpl(
         remoteDatasource: Get.find<RemotePaymentsDatasource>(),
       ),
+      fenix: true,
+    );
+
+    // ── Presentation services ─────────────────────────────────────────────────
+    Get.lazyPut<CardCheckoutLauncher>(
+      () => CardCheckoutLauncherImpl(),
       fenix: true,
     );
 
