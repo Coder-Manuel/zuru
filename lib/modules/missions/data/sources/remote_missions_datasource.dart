@@ -94,16 +94,60 @@ class RemoteMissionsDatasourceImpl extends RemoteMissionsDatasource {
         ),
         session:sessions!sessions_mission_id_fkey (
           id,
-          recording_url,
-          recording_id,
           actual_duration_sec,
           status,
-          ended_at
+          ended_at,
+          session_recordings (
+            id,
+            status,
+            storage_path,
+            duration_sec,
+            started_at,
+            created_at
+          )
         )
       """)
         .eq('$role.user_id', userId);
 
-    return query.order('created_at', ascending: false);
+    final rows = await query.order('created_at', ascending: false);
+    await _signRecordings(rows);
+    return rows;
+  }
+
+  static const _recordingUrlTtlSec = 6 * 60 * 60;
+
+  Future<void> _signRecordings(List<Map<String, dynamic>> missions) async {
+    final recordings = [
+      for (final mission in missions)
+        for (final session in switch (mission['session']) {
+          final Map s => [s],
+          final List l => l,
+          _ => const [],
+        })
+          for (final r in (session as Map)['session_recordings'] as List? ?? [])
+            if (r is Map &&
+                r['status'] == 'complete' &&
+                r['storage_path'] != null)
+              r,
+    ];
+    if (recordings.isEmpty) return;
+
+    try {
+      final signed = await client.storage.from('recordings').createSignedUrls([
+        for (final r in recordings) r['storage_path'] as String,
+      ], _recordingUrlTtlSec);
+      final urls = {for (final s in signed) s.path: s.signedUrl};
+      for (final r in recordings) {
+        r['signed_url'] = urls[r['storage_path']];
+      }
+    } catch (e, stack) {
+      MonitorService.report(
+        ex: e,
+        library: 'missions_datasource',
+        description: 'while signing recording URLs',
+        stack: stack,
+      );
+    }
   }
 
   @override

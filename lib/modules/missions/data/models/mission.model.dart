@@ -62,7 +62,7 @@ class MissionModel extends MissionEntity {
         return db.compareTo(da);
       });
       return sessions.firstWhere(
-        (s) => (s.recordingUrl?.isNotEmpty ?? false),
+        (s) => s.recordings.isNotEmpty,
         orElse: () => sessions.first,
       );
     }

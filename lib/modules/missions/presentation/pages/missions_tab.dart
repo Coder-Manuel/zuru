@@ -408,10 +408,6 @@ class _MissionCard extends GetView<MissionsTabController> {
 
 // ─── Recording tile ───────────────────────────────────────────────────────────
 
-/// Shows the recording of a completed live check on the client card:
-///  • ready       → tappable thumbnail + play overlay + REC badge + duration
-///  • processing  → egress still running, disabled hint
-///  • unavailable → session failed, no recording will arrive
 class _RecordingTile extends StatelessWidget {
   final MissionEntity mission;
   const _RecordingTile({required this.mission});
@@ -419,12 +415,15 @@ class _RecordingTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (mission.hasRecording) {
-      final url = mission.recordingUrl!;
+      final urls = mission.recordingUrls;
+      final title =
+          '${mission.type?.label ?? 'Live Check'} · ${mission.shortAddress}';
       return GestureDetector(
         onTap: () => ReelsPlayerPage.open(
-          [url],
+          urls,
           titles: [
-            '${mission.type?.label ?? 'Live Check'} · ${mission.shortAddress}',
+            for (var i = 0; i < urls.length; i++)
+              urls.length > 1 ? '$title · Part ${i + 1}/${urls.length}' : title,
           ],
         ),
         child: ClipRRect(
@@ -434,7 +433,7 @@ class _RecordingTile extends StatelessWidget {
               AspectRatio(
                 aspectRatio: 16 / 9,
                 child: VideoThumbnailView(
-                  url: url,
+                  url: urls.first,
                   fit: BoxFit.cover,
                   accent: ClientColors.primary,
                 ),

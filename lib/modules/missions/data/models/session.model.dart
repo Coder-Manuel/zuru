@@ -1,3 +1,4 @@
+import 'package:zuru/modules/missions/data/models/session_recording.model.dart';
 import 'package:zuru/modules/missions/domain/entities/session.entity.dart';
 
 class SessionModel extends SessionEntity {
@@ -13,8 +14,7 @@ class SessionModel extends SessionEntity {
     super.status,
     super.scheduledDurationSec,
     super.actualDurationSec,
-    super.recordingId,
-    super.recordingUrl,
+    super.recordings,
     super.startedAt,
     super.endedAt,
   });
@@ -31,8 +31,10 @@ class SessionModel extends SessionEntity {
     status: _parseStatus(data['status']?.toString()),
     scheduledDurationSec: data['scheduled_duration_sec'] as int?,
     actualDurationSec: data['actual_duration_sec'] as int?,
-    recordingId: data['recording_id']?.toString(),
-    recordingUrl: data['recording_url']?.toString(),
+    recordings: [
+      for (final r in data['session_recordings'] as List? ?? const [])
+        SessionRecordingModel.fromMap(Map<String, dynamic>.from(r as Map)),
+    ],
     startedAt: data['started_at']?.toString(),
     endedAt: data['ended_at']?.toString(),
   );

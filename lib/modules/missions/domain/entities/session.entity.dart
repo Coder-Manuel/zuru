@@ -1,4 +1,5 @@
 import 'package:zuru/core/entities/base.entity.dart';
+import 'package:zuru/modules/missions/domain/entities/session_recording.entity.dart';
 
 enum SessionStatus { scheduled, active, ended, failed }
 
@@ -14,8 +15,7 @@ class SessionEntity extends BaseEntity {
 
   final int? scheduledDurationSec;
   final int? actualDurationSec;
-  final String? recordingId;
-  final String? recordingUrl;
+  final List<SessionRecordingEntity> recordings;
 
   final String? startedAt;
   final String? endedAt;
@@ -32,8 +32,7 @@ class SessionEntity extends BaseEntity {
     this.status,
     this.scheduledDurationSec,
     this.actualDurationSec,
-    this.recordingId,
-    this.recordingUrl,
+    this.recordings = const [],
     this.startedAt,
     this.endedAt,
   });
