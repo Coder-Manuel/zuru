@@ -6,6 +6,12 @@ import 'package:zuru/core/models/enums.dart';
 abstract class RemoteUserDatasource {
   Future<Map<String, dynamic>?> getUseInfo();
   Future<void> updateFcmToken(String token);
+
+  /// Saves the push setting; [token] is null when notifications are off.
+  Future<void> updateNotificationPreference({
+    required bool enabled,
+    String? token,
+  });
   Future<void> updateDefaultRole(String role);
 
   // ── Scout World Profile ─────────────────────────────────────────────────
@@ -39,6 +45,17 @@ class RemoteUserDatasourceImpl extends RemoteUserDatasource {
   @override
   Future<void> updateFcmToken(String token) {
     return client.from('users').update({'fcm_token': token}).eq('id', _uid);
+  }
+
+  @override
+  Future<void> updateNotificationPreference({
+    required bool enabled,
+    String? token,
+  }) {
+    return client
+        .from('users')
+        .update({'notifications_enabled': enabled, 'fcm_token': token})
+        .eq('id', _uid);
   }
 
   @override

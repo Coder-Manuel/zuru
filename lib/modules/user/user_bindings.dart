@@ -10,6 +10,7 @@ import 'package:zuru/modules/user/domain/usecases/get_profile_clips.usecase.dart
 import 'package:zuru/modules/user/domain/usecases/get_user_info.usecase.dart';
 import 'package:zuru/modules/user/domain/usecases/update_default_role.usecase.dart';
 import 'package:zuru/modules/user/domain/usecases/update_fcm_token.usecase.dart';
+import 'package:zuru/modules/user/domain/usecases/update_notification_preference.usecase.dart';
 import 'package:zuru/modules/user/domain/usecases/update_scout_profile.usecase.dart';
 import 'package:zuru/modules/user/domain/usecases/upload_media.usecase.dart';
 import 'package:zuru/modules/user/presentation/controllers/profile_controller.dart';
@@ -34,6 +35,11 @@ class UserBindings extends Bindings {
     );
     Get.lazyPut<UpdateFcmTokenUseCase>(
       () => UpdateFcmTokenUseCase(repo: Get.find<UserRepository>()),
+      fenix: true,
+    );
+    Get.lazyPut<UpdateNotificationPreferenceUseCase>(
+      () =>
+          UpdateNotificationPreferenceUseCase(repo: Get.find<UserRepository>()),
       fenix: true,
     );
     Get.lazyPut<UpdateDefaultRoleUseCase>(

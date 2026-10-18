@@ -9,6 +9,7 @@ abstract class User extends BaseEntity {
   final UserStatus? status;
   final String? fcmToken;
   final bool? isOnline;
+  final bool notificationsEnabled;
   final List<Profile> profiles;
 
   User({
@@ -21,6 +22,7 @@ abstract class User extends BaseEntity {
     this.status,
     this.fcmToken,
     this.isOnline,
+    this.notificationsEnabled = true,
     this.profiles = const [],
   });
 

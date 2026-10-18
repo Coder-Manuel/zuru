@@ -14,12 +14,16 @@ import 'package:zuru/modules/auth/domain/usecases/logout.usecase.dart';
 import 'package:zuru/modules/auth/presentation/pages/login_page.dart';
 import 'package:zuru/modules/user/domain/usecases/get_user_info.usecase.dart';
 import 'package:zuru/modules/user/domain/usecases/update_default_role.usecase.dart';
+import 'package:zuru/modules/user/data/models/notification_preference.input.dart';
 import 'package:zuru/modules/user/domain/usecases/update_fcm_token.usecase.dart';
+import 'package:zuru/modules/user/domain/usecases/update_notification_preference.usecase.dart';
 
 class UserController extends GetxController {
   final _getUserInfoUsecase = Get.find<GetUserInfoUseCase>();
   final _updateFcmTokenUseCase = Get.find<UpdateFcmTokenUseCase>();
   final _updateDefaultRoleUseCase = Get.find<UpdateDefaultRoleUseCase>();
+  final _updateNotificationPreferenceUseCase =
+      Get.find<UpdateNotificationPreferenceUseCase>();
   final _logoutUseCase = Get.find<LogoutUseCase>();
 
   Rx<User?> currentUser = Rx<User?>(null);
@@ -33,6 +37,7 @@ class UserController extends GetxController {
 
   /// Periodic retry timer — active only while the FCM token is still null.
   Timer? _fcmRetryTimer;
+  StreamSubscription<String>? _tokenRefreshSub;
 
   /// Maximum number of retry ticks before giving up on FCM token sync.
   static const _fcmMaxRetries = 5;
@@ -44,11 +49,15 @@ class UserController extends GetxController {
   void onInit() {
     super.onInit();
     _loadBiometricSetting();
+    _tokenRefreshSub = NotificationService.tokenRefreshes.listen(
+      (_) => _syncFcmToken(),
+    );
   }
 
   @override
   void onClose() {
     _cancelFcmRetry();
+    _tokenRefreshSub?.cancel();
     super.onClose();
   }
 
@@ -84,9 +93,41 @@ class UserController extends GetxController {
 
     response.fold((_) => null, (data) {
       currentUser.value = data;
+      notificationsEnabled.value = data.notificationsEnabled;
       RoleService.instance.setRole(data.defaultRole);
       _syncFcmToken();
     });
+  }
+
+  /// Off clears the saved token and stops it being saved again; on asks for
+  /// permission and saves a fresh token.
+  Future<void> toggleNotifications(bool value) async {
+    if (value == notificationsEnabled.value) return;
+
+    String? token;
+    if (value) {
+      if (!await NotificationService.requestPermission()) {
+        Toast.error('Allow notifications for Zuru in your phone settings');
+        return;
+      }
+      token = await NotificationService.fetchToken();
+    }
+
+    notificationsEnabled.value = value;
+    final result = await _updateNotificationPreferenceUseCase(
+      NotificationPreferenceInput(enabled: value, token: token),
+    );
+
+    result.fold(
+      (err) {
+        notificationsEnabled.value = !value;
+        Toast.error(err.message);
+      },
+      (_) {
+        if (!value) _cancelFcmRetry();
+        if (value && token == null) _syncFcmToken();
+      },
+    );
   }
 
   // ── Role switch ───────────────────────────────────────────────────────────
@@ -190,6 +231,8 @@ class UserController extends GetxController {
   /// pings [NotificationService.fetchToken] on every tick until the token
   /// is obtained and synced — or the controller is disposed.
   Future<void> _syncFcmToken() async {
+    if (currentUser.value == null || !notificationsEnabled.value) return;
+
     final token = NotificationService.fcmToken;
 
     if (token == null) {
@@ -232,6 +275,7 @@ class UserController extends GetxController {
     _fcmRetryCount = 0;
 
     _fcmRetryTimer = Timer.periodic(const Duration(seconds: 20), (_) async {
+      if (!notificationsEnabled.value) return _cancelFcmRetry();
       _fcmRetryCount++;
 
       log(

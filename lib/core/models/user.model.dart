@@ -14,6 +14,7 @@ class UserModel extends User {
     super.status,
     super.fcmToken,
     super.isOnline,
+    super.notificationsEnabled,
     super.profiles,
   });
 
@@ -33,6 +34,7 @@ class UserModel extends User {
     ),
     fcmToken: data['fcm_token']?.toString(),
     isOnline: data['is_online'] as bool?,
+    notificationsEnabled: data['notifications_enabled'] != false,
     profiles:
         data['profiles']
             ?.map<Profile>((data) => ProfileModel.fromMap(data))

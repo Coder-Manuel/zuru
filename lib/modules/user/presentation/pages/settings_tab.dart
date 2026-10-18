@@ -104,8 +104,7 @@ class SettingsTab extends GetView<UserController> {
                       trailing: _AppSwitch(
                         value: controller.notificationsEnabled.value,
                         activeColor: scheme.primary,
-                        onChanged: (v) =>
-                            controller.notificationsEnabled.value = v,
+                        onChanged: controller.toggleNotifications,
                       ),
                     ),
                   ),

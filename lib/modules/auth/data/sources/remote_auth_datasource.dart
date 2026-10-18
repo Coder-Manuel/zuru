@@ -105,8 +105,17 @@ class RemoteAuthDatasourceImpl extends RemoteAuthDatasource {
   }
 
   @override
-  Future<void> logout() {
-    return client.auth.signOut();
+  Future<void> logout() async {
+    // Before signOut: the users row is only writable while signed in.
+    final uid = client.auth.currentUser?.id;
+    if (uid != null) {
+      try {
+        await client.from('users').update({'fcm_token': null}).eq('id', uid);
+      } catch (_) {
+        // Signing out matters more than clearing the token.
+      }
+    }
+    await client.auth.signOut();
   }
 
   // ── Password reset ─────────────────────────────────────────────────────────

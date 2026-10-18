@@ -9,6 +9,7 @@ import 'package:zuru/core/models/profile_clip.model.dart';
 import 'package:zuru/core/models/user.model.dart';
 import 'package:zuru/core/types/repo_reponse.type.dart';
 import 'package:zuru/core/utils/error_wrapper.dart';
+import 'package:zuru/modules/user/data/models/notification_preference.input.dart';
 import 'package:zuru/modules/user/data/models/scout_profile_edit.input.dart';
 import 'package:zuru/modules/user/data/sources/remote_user_datasource.dart';
 import 'package:zuru/modules/user/domain/repository/user_repository.dart';
@@ -53,6 +54,25 @@ class UserRepositoryImpl extends UserRepository {
       onError: (_) => FailureResponse('Failed to update notification token'),
       library: _library,
       description: 'while updating FCM token',
+    );
+    return response!;
+  }
+
+  @override
+  Future<RepoResponse<void>> updateNotificationPreference(
+    NotificationPreferenceInput input,
+  ) async {
+    final response = await ErrorWrapper.async<RepoResponse<void>>(
+      () async {
+        await remoteDatasource.updateNotificationPreference(
+          enabled: input.enabled,
+          token: input.enabled ? input.token : null,
+        );
+        return SuccessResponse(null);
+      },
+      onError: (_) => FailureResponse('Failed to update notification settings'),
+      library: _library,
+      description: 'while updating notification preference',
     );
     return response!;
   }

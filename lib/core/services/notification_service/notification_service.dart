@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:developer';
 
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -11,6 +12,11 @@ class NotificationService {
   static final _messaging = FirebaseMessaging.instance;
 
   static String? fcmToken;
+
+  static final _tokenRefreshes = StreamController<String>.broadcast();
+
+  /// Emits whenever Firebase rotates the token, so it can be saved again.
+  static Stream<String> get tokenRefreshes => _tokenRefreshes.stream;
 
   static Future<void> init() async {
     await ErrorWrapper.async<void>(
@@ -45,12 +51,26 @@ class NotificationService {
 
         _messaging.onTokenRefresh.listen((newToken) {
           fcmToken = newToken;
+          _tokenRefreshes.add(newToken);
           log('FCM token refreshed', name: _library);
         });
       },
       library: _library,
       description: 'while initialising notification service',
     );
+  }
+
+  /// Asks for permission again (e.g. when the user turns notifications back
+  /// on). False when the user has denied it at the OS level.
+  static Future<bool> requestPermission() async {
+    final settings = await ErrorWrapper.async<NotificationSettings>(
+      () => _messaging.requestPermission(alert: true, badge: true, sound: true),
+      library: _library,
+      description: 'while requesting notification permission',
+    );
+    final status = settings?.authorizationStatus;
+    return status == AuthorizationStatus.authorized ||
+        status == AuthorizationStatus.provisional;
   }
 
   static Future<String?> fetchToken() async {

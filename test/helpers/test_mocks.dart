@@ -19,11 +19,14 @@ import 'package:zuru/modules/missions/data/sources/remote_missions_datasource.da
 import 'package:zuru/modules/missions/domain/entities/mission.entity.dart';
 import 'package:zuru/modules/missions/domain/entities/nearby_scout.entity.dart';
 import 'package:zuru/modules/missions/domain/repository/missions_repository.dart';
+import 'package:zuru/modules/user/data/sources/remote_user_datasource.dart';
+import 'package:zuru/modules/user/domain/repository/user_repository.dart';
 
 @GenerateNiceMocks([
   // ── Repository interfaces (domain seam) ────────────────────────────────────
   MockSpec<AuthRepository>(),
   MockSpec<MissionsRepository>(),
+  MockSpec<UserRepository>(),
 
   // ── Domain entities returned by the repos ──────────────────────────────────
   MockSpec<User>(),
@@ -33,6 +36,7 @@ import 'package:zuru/modules/missions/domain/repository/missions_repository.dart
   // ── Remote datasources (data seam) ─────────────────────────────────────────
   MockSpec<RemoteAuthDatasource>(),
   MockSpec<RemoteMissionsDatasource>(),
+  MockSpec<RemoteUserDatasource>(),
 
   // ── Supabase response types the auth datasource returns ────────────────────
   MockSpec<supa.AuthResponse>(as: #MockAuthResponse),

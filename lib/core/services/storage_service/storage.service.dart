@@ -8,7 +8,6 @@ enum StorageKeys {
   emailKey,
   passwordKey,
   biometricsKey,
-  notificationKey,
   roleKey,
   fxRatesKey,
   appConfigKey,

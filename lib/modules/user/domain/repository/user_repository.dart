@@ -5,11 +5,15 @@ import 'package:zuru/core/entities/profile_clip.entity.dart';
 import 'package:zuru/core/entities/user.entity.dart';
 import 'package:zuru/core/models/enums.dart';
 import 'package:zuru/core/types/repo_reponse.type.dart';
+import 'package:zuru/modules/user/data/models/notification_preference.input.dart';
 import 'package:zuru/modules/user/data/models/scout_profile_edit.input.dart';
 
 abstract class UserRepository {
   Future<RepoResponse<User>> getUserInfo();
   Future<RepoResponse<void>> updateFcmToken(String token);
+  Future<RepoResponse<void>> updateNotificationPreference(
+    NotificationPreferenceInput input,
+  );
 
   /// Persists [role] as the user's `default_role` in the `users` table.
   Future<RepoResponse<void>> updateDefaultRole(UserRole role);
