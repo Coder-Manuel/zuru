@@ -2,9 +2,12 @@ import 'package:dio/dio.dart';
 import 'package:get/get.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:zuru/core/remote/network_client.dart';
+import 'package:zuru/core/services/remote_config_service/remote_config_service.dart';
+import 'package:zuru/modules/missions/data/models/live_request_payment.config.dart';
 import 'package:zuru/modules/missions/data/repositories_impl/missions_repository_impl.dart';
 import 'package:zuru/modules/missions/data/sources/remote_missions_datasource.dart';
 import 'package:zuru/modules/missions/data/sources/remote_places_datasource.dart';
+import 'package:zuru/modules/missions/domain/entities/mission.entity.dart';
 import 'package:zuru/modules/missions/domain/repository/missions_repository.dart';
 import 'package:zuru/modules/missions/domain/usecases/accept_mission.usecase.dart';
 import 'package:zuru/modules/missions/domain/usecases/create_live_request.usecase.dart';
@@ -49,6 +52,14 @@ class MissionsBindings extends Bindings {
       ),
       fenix: true,
     );
+
+    final remoteConfig = Get.find<RemoteConfigService>();
+    void applyPaymentWindow() => MissionEntity.paymentWindow =
+        LiveRequestPaymentConfig.windowFromSection(
+          remoteConfig.section(LiveRequestPaymentConfig.key),
+        );
+    applyPaymentWindow();
+    ever(remoteConfig.values, (_) => applyPaymentWindow());
 
     // ── Use cases: client ─────────────────────────────────────────────────────
     Get.lazyPut<PostMissionUseCase>(

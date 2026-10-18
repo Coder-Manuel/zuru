@@ -10,6 +10,7 @@ import 'package:zuru/core/types/repo_reponse.type.dart';
 import 'package:zuru/modules/missions/data/models/enum.dart';
 import 'package:zuru/modules/missions/data/models/live_request.input.dart';
 import 'package:zuru/modules/missions/data/models/mission.inputs.dart';
+import 'package:zuru/modules/missions/data/models/mission.model.dart';
 import 'package:zuru/modules/missions/data/repositories_impl/missions_repository_impl.dart';
 
 import '../../helpers/test_mocks.mocks.dart';
@@ -237,6 +238,65 @@ void main() {
         messageOf(await repo.updateMissionStatus(input)),
         'Failed to update live check. Please try again.',
       );
+    });
+  });
+
+  group('declineMission', () {
+    DeclineMissionInput inputFor(String? id) => DeclineMissionInput(
+      mission: MissionModel(
+        id: id,
+        description: 'Verify the venue',
+        currency: 'KES',
+        price: 1500,
+        durationInSec: 1800,
+        address: '123 Riverside',
+      ),
+    );
+
+    test('calls decline_mission and maps a released pool mission', () async {
+      when(ds.declineMission('m1')).thenAnswer((_) async => 'released');
+
+      final result = await repo.declineMission(inputFor('m1'));
+
+      expect(
+        result.getOrElse(() => DeclineOutcome.declined),
+        DeclineOutcome.released,
+      );
+      verify(ds.declineMission('m1')).called(1);
+      verifyNever(
+        ds.updateMissionStatus(
+          missionId: anyNamed('missionId'),
+          values: anyNamed('values'),
+        ),
+      );
+    });
+
+    test('maps a declined live request', () async {
+      when(ds.declineMission('m1')).thenAnswer((_) async => 'declined');
+
+      final result = await repo.declineMission(inputFor('m1'));
+
+      expect(
+        result.getOrElse(() => DeclineOutcome.released),
+        DeclineOutcome.declined,
+      );
+    });
+
+    test('fails when the RPC throws', () async {
+      when(ds.declineMission(any)).thenThrow(Exception('not assigned'));
+
+      expect(
+        messageOf(await repo.declineMission(inputFor('m1'))),
+        'Failed to decline live check. Please try again.',
+      );
+    });
+
+    test('fails without calling the RPC when the mission has no id', () async {
+      expect(
+        messageOf(await repo.declineMission(inputFor(null))),
+        'Failed to decline live check. Please try again.',
+      );
+      verifyNever(ds.declineMission(any));
     });
   });
 

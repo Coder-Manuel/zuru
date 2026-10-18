@@ -1,6 +1,7 @@
 import 'package:zuru/core/entities/base.entity.dart';
 import 'package:zuru/core/entities/profile.entity.dart';
 import 'package:zuru/modules/missions/data/models/enum.dart';
+import 'package:zuru/modules/missions/data/models/live_request_payment.config.dart';
 import 'package:zuru/modules/missions/domain/entities/session.entity.dart';
 import 'package:zuru/modules/missions/domain/entities/session_recording.entity.dart';
 import 'package:zuru/modules/rating/domain/entities/rating.entity.dart';
@@ -90,10 +91,9 @@ abstract class MissionEntity extends BaseEntity {
 
   // ── Payment state ─────────────────────────────────────────────────────────
 
-  /// How long the client has to pay after a guide accepts a live request,
-  /// before the request is released. Mirrors the backend release job — the two
-  /// must stay in sync.
-  static const Duration paymentWindow = Duration(minutes: 30);
+  /// How long the client has to pay after a guide accepts a live request.
+  /// Kept in sync with `app_config` by [MissionsBindings].
+  static Duration paymentWindow = LiveRequestPaymentConfig.fallbackWindow;
 
   bool get isLiveRequest => type == MissionType.liveRequest;
 

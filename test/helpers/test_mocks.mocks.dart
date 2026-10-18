@@ -7,29 +7,31 @@ import 'dart:async' as _i6;
 
 import 'package:dartz/dartz.dart' as _i2;
 import 'package:mockito/mockito.dart' as _i1;
-import 'package:mockito/src/dummies.dart' as _i17;
+import 'package:mockito/src/dummies.dart' as _i18;
 import 'package:supabase_flutter/supabase_flutter.dart' as _i4;
-import 'package:zuru/core/entities/profile.entity.dart' as _i16;
+import 'package:zuru/core/entities/profile.entity.dart' as _i17;
 import 'package:zuru/core/entities/user.entity.dart' as _i3;
 import 'package:zuru/core/types/repo_reponse.type.dart' as _i7;
 import 'package:zuru/modules/auth/data/models/auth.inputs.dart' as _i8;
 import 'package:zuru/modules/auth/data/models/scout_profile.input.dart' as _i9;
 import 'package:zuru/modules/auth/data/sources/remote_auth_datasource.dart'
-    as _i20;
+    as _i21;
 import 'package:zuru/modules/auth/domain/repository/auth_repository.dart'
     as _i5;
-import 'package:zuru/modules/missions/data/models/enum.dart' as _i18;
+import 'package:zuru/modules/missions/data/models/enum.dart' as _i16;
 import 'package:zuru/modules/missions/data/models/live_request.input.dart'
     as _i13;
 import 'package:zuru/modules/missions/data/models/mission.inputs.dart' as _i12;
 import 'package:zuru/modules/missions/data/sources/remote_missions_datasource.dart'
-    as _i21;
+    as _i22;
 import 'package:zuru/modules/missions/domain/entities/mission.entity.dart'
     as _i11;
 import 'package:zuru/modules/missions/domain/entities/nearby_scout.entity.dart'
     as _i14;
 import 'package:zuru/modules/missions/domain/entities/session.entity.dart'
     as _i15;
+import 'package:zuru/modules/missions/domain/entities/session_recording.entity.dart'
+    as _i20;
 import 'package:zuru/modules/missions/domain/repository/missions_repository.dart'
     as _i10;
 import 'package:zuru/modules/rating/domain/entities/rating.entity.dart' as _i19;
@@ -631,26 +633,27 @@ class MockMissionsRepository extends _i1.Mock
           as _i6.Future<_i2.Either<_i7.ApiFail, void>>);
 
   @override
-  _i6.Future<_i2.Either<_i7.ApiFail, void>> declineMission(
+  _i6.Future<_i2.Either<_i7.ApiFail, _i16.DeclineOutcome>> declineMission(
     _i12.DeclineMissionInput? input,
   ) =>
       (super.noSuchMethod(
             Invocation.method(#declineMission, [input]),
-            returnValue: _i6.Future<_i2.Either<_i7.ApiFail, void>>.value(
-              _FakeEither_0<_i7.ApiFail, void>(
-                this,
-                Invocation.method(#declineMission, [input]),
-              ),
-            ),
+            returnValue:
+                _i6.Future<_i2.Either<_i7.ApiFail, _i16.DeclineOutcome>>.value(
+                  _FakeEither_0<_i7.ApiFail, _i16.DeclineOutcome>(
+                    this,
+                    Invocation.method(#declineMission, [input]),
+                  ),
+                ),
             returnValueForMissingStub:
-                _i6.Future<_i2.Either<_i7.ApiFail, void>>.value(
-                  _FakeEither_0<_i7.ApiFail, void>(
+                _i6.Future<_i2.Either<_i7.ApiFail, _i16.DeclineOutcome>>.value(
+                  _FakeEither_0<_i7.ApiFail, _i16.DeclineOutcome>(
                     this,
                     Invocation.method(#declineMission, [input]),
                   ),
                 ),
           )
-          as _i6.Future<_i2.Either<_i7.ApiFail, void>>);
+          as _i6.Future<_i2.Either<_i7.ApiFail, _i16.DeclineOutcome>>);
 }
 
 /// A class which mocks [User].
@@ -658,13 +661,13 @@ class MockMissionsRepository extends _i1.Mock
 /// See the documentation for Mockito's code generation for more information.
 class MockUser extends _i1.Mock implements _i3.User {
   @override
-  List<_i16.Profile> get profiles =>
+  List<_i17.Profile> get profiles =>
       (super.noSuchMethod(
             Invocation.getter(#profiles),
-            returnValue: <_i16.Profile>[],
-            returnValueForMissingStub: <_i16.Profile>[],
+            returnValue: <_i17.Profile>[],
+            returnValueForMissingStub: <_i17.Profile>[],
           )
-          as List<_i16.Profile>);
+          as List<_i17.Profile>);
 }
 
 /// A class which mocks [MissionEntity].
@@ -675,11 +678,11 @@ class MockMissionEntity extends _i1.Mock implements _i11.MissionEntity {
   String get description =>
       (super.noSuchMethod(
             Invocation.getter(#description),
-            returnValue: _i17.dummyValue<String>(
+            returnValue: _i18.dummyValue<String>(
               this,
               Invocation.getter(#description),
             ),
-            returnValueForMissingStub: _i17.dummyValue<String>(
+            returnValueForMissingStub: _i18.dummyValue<String>(
               this,
               Invocation.getter(#description),
             ),
@@ -690,11 +693,11 @@ class MockMissionEntity extends _i1.Mock implements _i11.MissionEntity {
   String get currency =>
       (super.noSuchMethod(
             Invocation.getter(#currency),
-            returnValue: _i17.dummyValue<String>(
+            returnValue: _i18.dummyValue<String>(
               this,
               Invocation.getter(#currency),
             ),
-            returnValueForMissingStub: _i17.dummyValue<String>(
+            returnValueForMissingStub: _i18.dummyValue<String>(
               this,
               Invocation.getter(#currency),
             ),
@@ -723,11 +726,11 @@ class MockMissionEntity extends _i1.Mock implements _i11.MissionEntity {
   String get address =>
       (super.noSuchMethod(
             Invocation.getter(#address),
-            returnValue: _i17.dummyValue<String>(
+            returnValue: _i18.dummyValue<String>(
               this,
               Invocation.getter(#address),
             ),
-            returnValueForMissingStub: _i17.dummyValue<String>(
+            returnValueForMissingStub: _i18.dummyValue<String>(
               this,
               Invocation.getter(#address),
             ),
@@ -735,13 +738,13 @@ class MockMissionEntity extends _i1.Mock implements _i11.MissionEntity {
           as String);
 
   @override
-  _i18.MissionStatus get status =>
+  _i16.MissionStatus get status =>
       (super.noSuchMethod(
             Invocation.getter(#status),
-            returnValue: _i18.MissionStatus.open,
-            returnValueForMissingStub: _i18.MissionStatus.open,
+            returnValue: _i16.MissionStatus.open,
+            returnValueForMissingStub: _i16.MissionStatus.open,
           )
-          as _i18.MissionStatus);
+          as _i16.MissionStatus);
 
   @override
   double get mapX =>
@@ -769,6 +772,96 @@ class MockMissionEntity extends _i1.Mock implements _i11.MissionEntity {
             returnValueForMissingStub: <_i19.RatingEntity>[],
           )
           as List<_i19.RatingEntity>);
+
+  @override
+  bool get isPublished =>
+      (super.noSuchMethod(
+            Invocation.getter(#isPublished),
+            returnValue: false,
+            returnValueForMissingStub: false,
+          )
+          as bool);
+
+  @override
+  bool get isLiveRequest =>
+      (super.noSuchMethod(
+            Invocation.getter(#isLiveRequest),
+            returnValue: false,
+            returnValueForMissingStub: false,
+          )
+          as bool);
+
+  @override
+  bool get awaitingScoutResponse =>
+      (super.noSuchMethod(
+            Invocation.getter(#awaitingScoutResponse),
+            returnValue: false,
+            returnValueForMissingStub: false,
+          )
+          as bool);
+
+  @override
+  bool get awaitingClientPayment =>
+      (super.noSuchMethod(
+            Invocation.getter(#awaitingClientPayment),
+            returnValue: false,
+            returnValueForMissingStub: false,
+          )
+          as bool);
+
+  @override
+  bool get isPayable =>
+      (super.noSuchMethod(
+            Invocation.getter(#isPayable),
+            returnValue: false,
+            returnValueForMissingStub: false,
+          )
+          as bool);
+
+  @override
+  List<_i20.SessionRecordingEntity> get recordingParts =>
+      (super.noSuchMethod(
+            Invocation.getter(#recordingParts),
+            returnValue: <_i20.SessionRecordingEntity>[],
+            returnValueForMissingStub: <_i20.SessionRecordingEntity>[],
+          )
+          as List<_i20.SessionRecordingEntity>);
+
+  @override
+  List<String> get recordingUrls =>
+      (super.noSuchMethod(
+            Invocation.getter(#recordingUrls),
+            returnValue: <String>[],
+            returnValueForMissingStub: <String>[],
+          )
+          as List<String>);
+
+  @override
+  bool get hasRecording =>
+      (super.noSuchMethod(
+            Invocation.getter(#hasRecording),
+            returnValue: false,
+            returnValueForMissingStub: false,
+          )
+          as bool);
+
+  @override
+  bool get recordingProcessing =>
+      (super.noSuchMethod(
+            Invocation.getter(#recordingProcessing),
+            returnValue: false,
+            returnValueForMissingStub: false,
+          )
+          as bool);
+
+  @override
+  bool get recordingUnavailable =>
+      (super.noSuchMethod(
+            Invocation.getter(#recordingUnavailable),
+            returnValue: false,
+            returnValueForMissingStub: false,
+          )
+          as bool);
 
   @override
   bool get hasRatedByClient =>
@@ -807,14 +900,29 @@ class MockMissionEntity extends _i1.Mock implements _i11.MissionEntity {
           as bool);
 
   @override
+  String get shortAddress =>
+      (super.noSuchMethod(
+            Invocation.getter(#shortAddress),
+            returnValue: _i18.dummyValue<String>(
+              this,
+              Invocation.getter(#shortAddress),
+            ),
+            returnValueForMissingStub: _i18.dummyValue<String>(
+              this,
+              Invocation.getter(#shortAddress),
+            ),
+          )
+          as String);
+
+  @override
   String get durationLabel =>
       (super.noSuchMethod(
             Invocation.getter(#durationLabel),
-            returnValue: _i17.dummyValue<String>(
+            returnValue: _i18.dummyValue<String>(
               this,
               Invocation.getter(#durationLabel),
             ),
-            returnValueForMissingStub: _i17.dummyValue<String>(
+            returnValueForMissingStub: _i18.dummyValue<String>(
               this,
               Invocation.getter(#durationLabel),
             ),
@@ -825,11 +933,11 @@ class MockMissionEntity extends _i1.Mock implements _i11.MissionEntity {
   String get formattedPrice =>
       (super.noSuchMethod(
             Invocation.getter(#formattedPrice),
-            returnValue: _i17.dummyValue<String>(
+            returnValue: _i18.dummyValue<String>(
               this,
               Invocation.getter(#formattedPrice),
             ),
-            returnValueForMissingStub: _i17.dummyValue<String>(
+            returnValueForMissingStub: _i18.dummyValue<String>(
               this,
               Invocation.getter(#formattedPrice),
             ),
@@ -867,7 +975,7 @@ class MockNearbyScout extends _i1.Mock implements _i14.NearbyScout {
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockRemoteAuthDatasource extends _i1.Mock
-    implements _i20.RemoteAuthDatasource {
+    implements _i21.RemoteAuthDatasource {
   @override
   _i6.Future<_i4.AuthResponse> loginWithPassword({
     required Map<String, dynamic>? data,
@@ -1081,7 +1189,7 @@ class MockRemoteAuthDatasource extends _i1.Mock
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockRemoteMissionsDatasource extends _i1.Mock
-    implements _i21.RemoteMissionsDatasource {
+    implements _i22.RemoteMissionsDatasource {
   @override
   _i6.Future<Map<String, dynamic>> postMission(Map<String, dynamic>? data) =>
       (super.noSuchMethod(
@@ -1233,6 +1341,25 @@ class MockRemoteMissionsDatasource extends _i1.Mock
                 _i6.Future<Map<String, dynamic>?>.value(),
           )
           as _i6.Future<Map<String, dynamic>?>);
+
+  @override
+  _i6.Future<String> declineMission(String? missionId) =>
+      (super.noSuchMethod(
+            Invocation.method(#declineMission, [missionId]),
+            returnValue: _i6.Future<String>.value(
+              _i18.dummyValue<String>(
+                this,
+                Invocation.method(#declineMission, [missionId]),
+              ),
+            ),
+            returnValueForMissingStub: _i6.Future<String>.value(
+              _i18.dummyValue<String>(
+                this,
+                Invocation.method(#declineMission, [missionId]),
+              ),
+            ),
+          )
+          as _i6.Future<String>);
 }
 
 /// A class which mocks [AuthResponse].
@@ -1253,11 +1380,11 @@ class MockSession extends _i1.Mock implements _i4.Session {
   String get accessToken =>
       (super.noSuchMethod(
             Invocation.getter(#accessToken),
-            returnValue: _i17.dummyValue<String>(
+            returnValue: _i18.dummyValue<String>(
               this,
               Invocation.getter(#accessToken),
             ),
-            returnValueForMissingStub: _i17.dummyValue<String>(
+            returnValueForMissingStub: _i18.dummyValue<String>(
               this,
               Invocation.getter(#accessToken),
             ),
@@ -1268,11 +1395,11 @@ class MockSession extends _i1.Mock implements _i4.Session {
   String get tokenType =>
       (super.noSuchMethod(
             Invocation.getter(#tokenType),
-            returnValue: _i17.dummyValue<String>(
+            returnValue: _i18.dummyValue<String>(
               this,
               Invocation.getter(#tokenType),
             ),
-            returnValueForMissingStub: _i17.dummyValue<String>(
+            returnValueForMissingStub: _i18.dummyValue<String>(
               this,
               Invocation.getter(#tokenType),
             ),
@@ -1371,8 +1498,8 @@ class MockSupaUser extends _i1.Mock implements _i4.User {
   String get id =>
       (super.noSuchMethod(
             Invocation.getter(#id),
-            returnValue: _i17.dummyValue<String>(this, Invocation.getter(#id)),
-            returnValueForMissingStub: _i17.dummyValue<String>(
+            returnValue: _i18.dummyValue<String>(this, Invocation.getter(#id)),
+            returnValueForMissingStub: _i18.dummyValue<String>(
               this,
               Invocation.getter(#id),
             ),
@@ -1392,8 +1519,8 @@ class MockSupaUser extends _i1.Mock implements _i4.User {
   String get aud =>
       (super.noSuchMethod(
             Invocation.getter(#aud),
-            returnValue: _i17.dummyValue<String>(this, Invocation.getter(#aud)),
-            returnValueForMissingStub: _i17.dummyValue<String>(
+            returnValue: _i18.dummyValue<String>(this, Invocation.getter(#aud)),
+            returnValueForMissingStub: _i18.dummyValue<String>(
               this,
               Invocation.getter(#aud),
             ),
@@ -1404,11 +1531,11 @@ class MockSupaUser extends _i1.Mock implements _i4.User {
   String get createdAt =>
       (super.noSuchMethod(
             Invocation.getter(#createdAt),
-            returnValue: _i17.dummyValue<String>(
+            returnValue: _i18.dummyValue<String>(
               this,
               Invocation.getter(#createdAt),
             ),
-            returnValueForMissingStub: _i17.dummyValue<String>(
+            returnValueForMissingStub: _i18.dummyValue<String>(
               this,
               Invocation.getter(#createdAt),
             ),

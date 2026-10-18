@@ -40,3 +40,13 @@ enum MissionType {
     MissionType.liveRequest => 'live_request',
   };
 }
+
+/// What `decline_mission` did: a live request is declined, a pool mission is
+/// released back to the board.
+enum DeclineOutcome {
+  declined,
+  released;
+
+  static DeclineOutcome fromApi(String? value) =>
+      value == 'released' ? DeclineOutcome.released : DeclineOutcome.declined;
+}

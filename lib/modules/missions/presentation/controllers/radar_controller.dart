@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:zuru/core/services/location_service/location_service.dart';
 import 'package:zuru/core/utils/toast.dart';
+import 'package:zuru/modules/missions/data/models/enum.dart';
 import 'package:zuru/modules/missions/data/models/mission.inputs.dart';
 import 'package:zuru/modules/missions/domain/entities/mission.entity.dart';
 import 'package:zuru/modules/missions/domain/usecases/accept_mission.usecase.dart';
@@ -310,9 +311,14 @@ class RadarController extends GetxController
       DeclineMissionInput(mission: mission!),
     );
 
-    result.fold((err) => Toast.error(err.message), (_) {
-      // activeMission stream will clear state automatically.
-    });
+    // activeMission stream clears local state once the status changes.
+    result.fold(
+      (err) => Toast.error(err.message),
+      (outcome) => Toast.success(switch (outcome) {
+        DeclineOutcome.declined => 'Live request declined',
+        DeclineOutcome.released => 'Live check released back to the board',
+      }),
+    );
 
     isUpdatingStatus.value = false;
   }

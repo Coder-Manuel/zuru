@@ -97,14 +97,15 @@ class _NavigationPageState extends State<NavigationPage> {
 
       MapBoxNavigation.instance.registerRouteEventListener(_onRouteEvent);
 
+      // Set before navigating so the client is told as the guide sets off.
+      if (_mission.status == MissionStatus.accepted) _updateStatus();
+
       // `startNavigation` opens the full-screen Mapbox Navigation UI.
       // The Future resolves only when the user closes/finishes navigation.
       await MapBoxNavigation.instance.startNavigation(
         wayPoints: wayPoints,
         options: options,
       );
-
-      _updateStatus();
 
       if (!mounted || _closedManually) return;
 

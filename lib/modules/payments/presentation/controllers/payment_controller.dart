@@ -143,7 +143,7 @@ class PaymentController extends GetxController {
       case CollectFailKind.invalid:
         error.value = fail.message;
         state.value = PaymentUiState.form;
-      case CollectFailKind.forbidden:
+      case CollectFailKind.forbidden || CollectFailKind.expired:
         _fail(fail.message, retryable: false);
       case CollectFailKind.retryable:
         _fail(fail.message);

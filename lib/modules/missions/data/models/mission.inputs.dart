@@ -50,24 +50,6 @@ class DeclineMissionInput {
   final MissionEntity mission;
 
   const DeclineMissionInput({required this.mission});
-
-  Map<String, dynamic> toMap() {
-    if (mission.status == MissionStatus.requested) {
-      return {'status': MissionStatus.declined.name};
-    }
-
-    if (mission.type == MissionType.liveRequest) {
-      // Back to the client's request queue — clearing accepted_at also resets
-      // the payment window, since nothing is owed until it's accepted again.
-      return {'status': MissionStatus.requested.name, 'accepted_at': null};
-    }
-
-    return {
-      'status': MissionStatus.cancelled.name,
-      'scout_id': null,
-      'accepted_at': null,
-    };
-  }
 }
 
 // ── Client inputs ─────────────────────────────────────────────────────────────

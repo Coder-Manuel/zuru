@@ -1,5 +1,6 @@
 import 'package:zuru/core/types/repo_reponse.type.dart';
 import 'package:zuru/core/utils/error_wrapper.dart';
+import 'package:zuru/modules/missions/data/models/enum.dart';
 import 'package:zuru/modules/missions/data/models/live_request.input.dart';
 import 'package:zuru/modules/missions/data/models/mission.inputs.dart';
 import 'package:zuru/modules/missions/data/models/mission.model.dart';
@@ -266,26 +267,24 @@ class MissionsRepositoryImpl extends MissionsRepository {
   }
 
   @override
-  Future<RepoResponse<void>> declineMission(DeclineMissionInput input) async {
+  Future<RepoResponse<DeclineOutcome>> declineMission(
+    DeclineMissionInput input,
+  ) async {
     final missionId = input.mission.id;
     if (missionId == null || missionId.isEmpty) {
       return FailureResponse('Failed to decline live check. Please try again.');
     }
-    final ok = await ErrorWrapper.async<bool>(
-      () async {
-        await remoteDatasource.updateMissionStatus(
-          missionId: missionId,
-          values: input.toMap(),
-        );
-        return true;
-      },
-      onError: (_) => false,
+    final outcome = await ErrorWrapper.async<DeclineOutcome>(
+      () async => DeclineOutcome.fromApi(
+        await remoteDatasource.declineMission(missionId),
+      ),
+      onError: (_) => null,
       library: _library,
       description: 'while declining mission',
     );
-    if (ok != true) {
+    if (outcome == null) {
       return FailureResponse('Failed to decline live check. Please try again.');
     }
-    return SuccessResponse(null);
+    return SuccessResponse(outcome);
   }
 }

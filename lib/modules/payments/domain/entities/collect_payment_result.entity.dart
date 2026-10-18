@@ -27,6 +27,9 @@ enum CollectFailKind {
   /// 409 — the mission is already paid; the UI treats this as success.
   alreadyPaid,
 
+  /// 410 — the live request's payment window has closed.
+  expired,
+
   /// 502, network errors, anything else — offer a retry.
   retryable,
 }

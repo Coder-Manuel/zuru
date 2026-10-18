@@ -5,7 +5,9 @@
 // stays blocked until `published_at` is set by the payment callback.
 import 'package:flutter_test/flutter_test.dart';
 import 'package:zuru/modules/missions/data/models/enum.dart';
+import 'package:zuru/modules/missions/data/models/live_request_payment.config.dart';
 import 'package:zuru/modules/missions/data/models/mission.model.dart';
+import 'package:zuru/modules/missions/domain/entities/mission.entity.dart';
 
 MissionModel mission({
   required MissionStatus status,
@@ -126,6 +128,50 @@ void main() {
         publishedAt: DateTime.now().toUtc().toIso8601String(),
       );
       expect(published.isPayable, isFalse);
+    });
+  });
+
+  group('payment window from app_config', () {
+    tearDown(
+      () =>
+          MissionEntity.paymentWindow = LiveRequestPaymentConfig.fallbackWindow,
+    );
+
+    test('reads minutes from the section', () {
+      expect(
+        LiveRequestPaymentConfig.windowFromSection({'minutes': 45}),
+        const Duration(minutes: 45),
+      );
+    });
+
+    test('falls back to 30 minutes when missing or invalid', () {
+      expect(
+        LiveRequestPaymentConfig.windowFromSection(null),
+        const Duration(minutes: 30),
+      );
+      expect(
+        LiveRequestPaymentConfig.windowFromSection({'minutes': 0}),
+        const Duration(minutes: 30),
+      );
+      expect(
+        LiveRequestPaymentConfig.windowFromSection({'minutes': 'x'}),
+        const Duration(minutes: 30),
+      );
+    });
+
+    test('a configured window moves the deadline', () {
+      final acceptedAt = DateTime.utc(2026, 10, 18, 12);
+      MissionEntity.paymentWindow = const Duration(minutes: 10);
+
+      final subject = mission(
+        status: MissionStatus.accepted,
+        acceptedAt: acceptedAt.toIso8601String(),
+      );
+
+      expect(
+        subject.paymentDeadline,
+        acceptedAt.add(const Duration(minutes: 10)),
+      );
     });
   });
 }

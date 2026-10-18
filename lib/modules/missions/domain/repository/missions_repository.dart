@@ -1,4 +1,5 @@
 import 'package:zuru/core/types/repo_reponse.type.dart';
+import 'package:zuru/modules/missions/data/models/enum.dart';
 import 'package:zuru/modules/missions/data/models/live_request.input.dart';
 import 'package:zuru/modules/missions/data/models/mission.inputs.dart';
 import 'package:zuru/modules/missions/domain/entities/mission.entity.dart';
@@ -38,5 +39,7 @@ abstract class MissionsRepository {
   Future<RepoResponse<void>> updateMissionStatus(
     UpdateMissionStatusInput input,
   );
-  Future<RepoResponse<void>> declineMission(DeclineMissionInput input);
+  Future<RepoResponse<DeclineOutcome>> declineMission(
+    DeclineMissionInput input,
+  );
 }

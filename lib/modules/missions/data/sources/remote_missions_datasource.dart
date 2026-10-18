@@ -29,6 +29,10 @@ abstract class RemoteMissionsDatasource {
     required String missionId,
     required Map<String, dynamic> values,
   });
+
+  /// Declines a live request or releases a pool mission; returns
+  /// `'declined'` or `'released'`.
+  Future<String> declineMission(String missionId);
 }
 
 class RemoteMissionsDatasourceImpl extends RemoteMissionsDatasource {
@@ -359,6 +363,14 @@ class RemoteMissionsDatasourceImpl extends RemoteMissionsDatasource {
   Future<bool> acceptMission(String missionId) {
     return client.rpc<bool>(
       'accept_mission',
+      params: {'p_mission_id': missionId},
+    );
+  }
+
+  @override
+  Future<String> declineMission(String missionId) {
+    return client.rpc<String>(
+      'decline_mission',
       params: {'p_mission_id': missionId},
     );
   }

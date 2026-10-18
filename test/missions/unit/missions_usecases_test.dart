@@ -17,6 +17,7 @@ import 'package:zuru/modules/missions/domain/entities/nearby_scout.entity.dart';
 import 'package:zuru/modules/missions/domain/entities/session.entity.dart';
 import 'package:zuru/modules/missions/domain/usecases/accept_mission.usecase.dart';
 import 'package:zuru/modules/missions/domain/usecases/create_live_request.usecase.dart';
+import 'package:zuru/modules/missions/domain/usecases/decline_mission.usecase.dart';
 import 'package:zuru/modules/missions/domain/usecases/get_my_missions.usecase.dart';
 import 'package:zuru/modules/missions/domain/usecases/get_nearby_scouts.usecase.dart';
 import 'package:zuru/modules/missions/domain/usecases/nearby_missions.usecase.dart';
@@ -208,6 +209,33 @@ void main() {
 
       expect((await useCase(input)).isLeft(), isTrue);
       verify(repo.acceptMission(input)).called(1);
+    });
+  });
+
+  group('DeclineMissionUseCase', () {
+    late DeclineMissionUseCase useCase;
+    final input = DeclineMissionInput(mission: MockMissionEntity());
+
+    setUp(() => useCase = DeclineMissionUseCase(repo: repo));
+
+    test('returns the outcome from the repository', () async {
+      when(
+        repo.declineMission(input),
+      ).thenAnswer((_) async => Right(DeclineOutcome.released));
+
+      final result = await useCase(input);
+
+      expect(
+        result.getOrElse(() => DeclineOutcome.declined),
+        DeclineOutcome.released,
+      );
+      verify(repo.declineMission(input)).called(1);
+    });
+
+    test('propagates the repository failure', () async {
+      when(repo.declineMission(input)).thenAnswer((_) async => Left(failure));
+
+      expect((await useCase(input)).isLeft(), isTrue);
     });
   });
 

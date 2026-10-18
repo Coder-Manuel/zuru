@@ -94,6 +94,10 @@ class PaymentsRepositoryImpl extends PaymentsRepository {
         serverMessage ?? 'Mission already paid',
         kind: CollectFailKind.alreadyPaid,
       ),
+      410 => CollectPaymentFail(
+        'The time to pay for this request has run out.',
+        kind: CollectFailKind.expired,
+      ),
       _ => CollectPaymentFail(
         _collectRetryMessage,
         kind: CollectFailKind.retryable,
