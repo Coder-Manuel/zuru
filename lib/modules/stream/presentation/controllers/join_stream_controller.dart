@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:get/get.dart';
 import 'package:livekit_client/livekit_client.dart';
+import 'package:wakelock_plus/wakelock_plus.dart';
 import 'package:zuru/modules/missions/domain/entities/mission.entity.dart';
 import 'package:zuru/modules/rating/presentation/pages/rate_scout_page.dart';
 import 'package:zuru/modules/stream/domain/usecases/join_stream.usecase.dart';
@@ -105,6 +106,7 @@ class JoinStreamController extends GetxController {
           _attachRoomListeners();
 
           await _room.connect(data.url, data.token);
+          WakelockPlus.enable().ignore();
 
           _room.addListener(_refreshVideoTrack);
           await Future.delayed(const Duration(milliseconds: 400));
@@ -293,6 +295,7 @@ class JoinStreamController extends GetxController {
     await _roomListener?.dispose();
     _roomListener = null;
     await _room.disconnect();
+    WakelockPlus.disable().ignore();
   }
 
   String _format(int totalSeconds) {
@@ -312,6 +315,7 @@ class JoinStreamController extends GetxController {
     _room.removeListener(_refreshVideoTrack);
     _roomListener?.dispose();
     _room.disconnect();
+    WakelockPlus.disable().ignore();
     super.onClose();
   }
 }

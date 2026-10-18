@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:get/get.dart';
 import 'package:livekit_client/livekit_client.dart';
+import 'package:wakelock_plus/wakelock_plus.dart';
 import 'package:zuru/modules/missions/domain/entities/mission.entity.dart';
 import 'package:zuru/modules/rating/presentation/pages/rate_client_page.dart';
 import 'package:zuru/modules/stream/data/models/stream.inputs.dart';
@@ -92,6 +93,7 @@ class LiveStreamController extends GetxController {
           _attachRoomListener();
 
           await _room.connect(session.url, session.token);
+          WakelockPlus.enable().ignore();
 
           // Publish our camera and microphone tracks.  The mic track must be
           // published BEFORE we touch the audio session routing — changing the
@@ -251,6 +253,7 @@ class LiveStreamController extends GetxController {
     await _roomListener?.dispose();
     _roomListener = null;
     await _room.disconnect();
+    WakelockPlus.disable().ignore();
   }
 
   void _navigateToRateMission() {
@@ -275,6 +278,7 @@ class LiveStreamController extends GetxController {
     _room.removeListener(_refreshVideoTrack);
     _roomListener?.dispose();
     _room.disconnect();
+    WakelockPlus.disable().ignore();
     super.onClose();
   }
 }
