@@ -66,6 +66,10 @@ abstract final class AppRoutes {
   static const rateScout = '/rate-scout';
   static const rateClient = '/rate-client';
 
+  // ── Notifications ───────────────────────────────────────────────────────
+  /// Client notification list (scouts use the Alerts tab).
+  static const notifications = '/notifications';
+
   // ── Payments ──────────────────────────────────────────────────────────────
   static const statements = '/statements';
 

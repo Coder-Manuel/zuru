@@ -8,7 +8,6 @@ import 'package:zuru/core/services/monitor_service/monitor.service.dart';
 import 'package:zuru/core/services/notification_service/notification_service.dart';
 import 'package:zuru/core/services/storage_service/storage.service.dart';
 import 'package:zuru/firebase_options.dart';
-import 'package:zuru/modules/alerts/alerts_bindings.dart';
 import 'package:zuru/modules/auth/auth_bindings.dart';
 import 'package:zuru/modules/home/home_bindings.dart';
 import 'package:zuru/modules/missions/missions_bindings.dart';
@@ -30,7 +29,6 @@ class Initializer {
     RatingBindings().dependencies();
     PaymentsBindings().dependencies();
     ScoutsBindings().dependencies();
-    AlertsBindings().dependencies();
     NotificationsBindings().dependencies();
   }
 

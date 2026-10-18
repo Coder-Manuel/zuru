@@ -1758,9 +1758,28 @@ class MockRemoteUserDatasource extends _i1.Mock
 class MockRemoteNotificationsDatasource extends _i1.Mock
     implements _i30.RemoteNotificationsDatasource {
   @override
+  _i6.Stream<List<Map<String, dynamic>>> watch(String? profileId) =>
+      (super.noSuchMethod(
+            Invocation.method(#watch, [profileId]),
+            returnValue: _i6.Stream<List<Map<String, dynamic>>>.empty(),
+            returnValueForMissingStub:
+                _i6.Stream<List<Map<String, dynamic>>>.empty(),
+          )
+          as _i6.Stream<List<Map<String, dynamic>>>);
+
+  @override
   _i6.Future<void> markRead(String? notificationId) =>
       (super.noSuchMethod(
             Invocation.method(#markRead, [notificationId]),
+            returnValue: _i6.Future<void>.value(),
+            returnValueForMissingStub: _i6.Future<void>.value(),
+          )
+          as _i6.Future<void>);
+
+  @override
+  _i6.Future<void> markAllRead(String? profileId) =>
+      (super.noSuchMethod(
+            Invocation.method(#markAllRead, [profileId]),
             returnValue: _i6.Future<void>.value(),
             returnValueForMissingStub: _i6.Future<void>.value(),
           )

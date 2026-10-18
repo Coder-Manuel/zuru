@@ -8,6 +8,7 @@ import 'package:zuru/modules/missions/data/models/enum.dart';
 import 'package:zuru/modules/missions/domain/entities/mission.entity.dart';
 import 'package:zuru/modules/missions/presentation/pages/post_mission_page.dart';
 import 'package:zuru/modules/missions/presentation/widgets/payment_due_beacon.dart';
+import 'package:zuru/modules/notifications/presentation/widgets/notification_bell.dart';
 
 // ─── Entry point ──────────────────────────────────────────────────────────────
 
@@ -117,6 +118,8 @@ class _MapView extends GetView<MapsTabController> {
                 ),
               ),
             ),
+
+            const Positioned(top: 16, right: 16, child: NotificationBell()),
           ],
         ),
       ),

@@ -2,6 +2,7 @@ import 'package:get/get.dart';
 import 'package:zuru/modules/auth/auth_routes.dart';
 import 'package:zuru/modules/home/home_routes.dart';
 import 'package:zuru/modules/missions/missions_routes.dart';
+import 'package:zuru/modules/notifications/notifications_routes.dart';
 import 'package:zuru/modules/payments/payments_routes.dart';
 import 'package:zuru/modules/rating/rating_routes.dart';
 import 'package:zuru/modules/scouts/scouts_routes.dart';
@@ -18,5 +19,6 @@ class AppPages {
     ...PaymentsRoutes().pages,
     ...UserRoutes().pages,
     ...ScoutsRoutes().pages,
+    ...NotificationsRoutes().pages,
   ];
 }

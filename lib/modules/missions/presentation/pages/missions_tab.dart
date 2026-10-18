@@ -11,6 +11,7 @@ import 'package:zuru/modules/missions/domain/entities/mission.entity.dart';
 import 'package:zuru/modules/missions/presentation/controllers/missions_tab_controller.dart';
 import 'package:zuru/modules/missions/presentation/pages/post_mission_page.dart';
 import 'package:zuru/modules/rating/presentation/pages/rate_scout_page.dart';
+import 'package:zuru/modules/notifications/presentation/widgets/notification_bell.dart';
 
 class MissionsTab extends GetView<MissionsTabController> {
   const MissionsTab({super.key});
@@ -36,6 +37,9 @@ class MissionsTab extends GetView<MissionsTabController> {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
+                  const Spacer(),
+                  const NotificationBell(),
+                  const SizedBox(width: 10),
                   GestureDetector(
                     onTap: () => Get.toNamed(PostMissionPage.route),
                     child: Container(

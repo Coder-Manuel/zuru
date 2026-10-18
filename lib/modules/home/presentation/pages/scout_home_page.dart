@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:zuru/config/scout_colors.dart';
-import 'package:zuru/modules/alerts/presentation/controllers/alerts_controller.dart';
-import 'package:zuru/modules/alerts/presentation/pages/alerts_tab.dart';
+import 'package:zuru/modules/notifications/presentation/controllers/notifications_controller.dart';
+import 'package:zuru/modules/notifications/presentation/pages/alerts_tab.dart';
 import 'package:zuru/modules/home/presentation/controllers/home_controller.dart';
 import 'package:zuru/modules/missions/presentation/pages/scout_missions_tab.dart';
 import 'package:zuru/modules/missions/presentation/pages/radar_page.dart';
@@ -73,7 +73,7 @@ class _BottomNav extends StatelessWidget {
                     icon: Icons.notifications_outlined,
                     label: 'ALERTS',
                     active: idx == 2,
-                    badgeCount: Get.find<AlertsController>().unreadCount,
+                    badgeCount: Get.find<NotificationsController>().unreadCount,
                     onTap: () => controller.onTabTapped(2),
                   ),
                 ),
