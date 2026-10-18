@@ -241,6 +241,34 @@ void main() {
     });
   });
 
+  group('getMissionById', () {
+    test('maps the row into a MissionEntity', () async {
+      when(ds.getMissionById('m1')).thenAnswer((_) async => missionRow());
+
+      final result = await repo.getMissionById('m1');
+
+      expect(result.getOrElse(() => null)?.id, 'm1');
+    });
+
+    test('is Right(null) when the mission is not visible', () async {
+      when(ds.getMissionById('m1')).thenAnswer((_) async => null);
+
+      final result = await repo.getMissionById('m1');
+
+      expect(result.isRight(), isTrue);
+      expect(result.getOrElse(() => null), isNull);
+    });
+
+    test('fails when the datasource throws', () async {
+      when(ds.getMissionById(any)).thenThrow(Exception('boom'));
+
+      expect(
+        messageOf(await repo.getMissionById('m1')),
+        'Could not load the live check.',
+      );
+    });
+  });
+
   group('declineMission', () {
     DeclineMissionInput inputFor(String? id) => DeclineMissionInput(
       mission: MissionModel(

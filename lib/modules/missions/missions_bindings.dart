@@ -12,6 +12,7 @@ import 'package:zuru/modules/missions/domain/repository/missions_repository.dart
 import 'package:zuru/modules/missions/domain/usecases/accept_mission.usecase.dart';
 import 'package:zuru/modules/missions/domain/usecases/create_live_request.usecase.dart';
 import 'package:zuru/modules/missions/domain/usecases/decline_mission.usecase.dart';
+import 'package:zuru/modules/missions/domain/usecases/get_mission_by_id.usecase.dart';
 import 'package:zuru/modules/missions/domain/usecases/get_my_missions.usecase.dart';
 import 'package:zuru/modules/missions/domain/usecases/get_nearby_scouts.usecase.dart';
 import 'package:zuru/modules/missions/domain/usecases/nearby_missions.usecase.dart';
@@ -62,6 +63,10 @@ class MissionsBindings extends Bindings {
     ever(remoteConfig.values, (_) => applyPaymentWindow());
 
     // ── Use cases: client ─────────────────────────────────────────────────────
+    Get.lazyPut<GetMissionByIdUseCase>(
+      () => GetMissionByIdUseCase(repo: Get.find<MissionsRepository>()),
+      fenix: true,
+    );
     Get.lazyPut<PostMissionUseCase>(
       () => PostMissionUseCase(repo: Get.find<MissionsRepository>()),
       fenix: true,

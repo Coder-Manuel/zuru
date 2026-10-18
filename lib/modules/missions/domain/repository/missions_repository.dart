@@ -42,4 +42,7 @@ abstract class MissionsRepository {
   Future<RepoResponse<DeclineOutcome>> declineMission(
     DeclineMissionInput input,
   );
+
+  /// Right(null) when the mission isn't visible to the caller.
+  Future<RepoResponse<MissionEntity?>> getMissionById(String missionId);
 }

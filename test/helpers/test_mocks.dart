@@ -19,6 +19,7 @@ import 'package:zuru/modules/missions/data/sources/remote_missions_datasource.da
 import 'package:zuru/modules/missions/domain/entities/mission.entity.dart';
 import 'package:zuru/modules/missions/domain/entities/nearby_scout.entity.dart';
 import 'package:zuru/modules/missions/domain/repository/missions_repository.dart';
+import 'package:zuru/modules/notifications/data/sources/remote_notifications_datasource.dart';
 import 'package:zuru/modules/user/data/sources/remote_user_datasource.dart';
 import 'package:zuru/modules/user/domain/repository/user_repository.dart';
 
@@ -37,6 +38,7 @@ import 'package:zuru/modules/user/domain/repository/user_repository.dart';
   MockSpec<RemoteAuthDatasource>(),
   MockSpec<RemoteMissionsDatasource>(),
   MockSpec<RemoteUserDatasource>(),
+  MockSpec<RemoteNotificationsDatasource>(),
 
   // ── Supabase response types the auth datasource returns ────────────────────
   MockSpec<supa.AuthResponse>(as: #MockAuthResponse),

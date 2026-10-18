@@ -12,6 +12,7 @@ import 'package:zuru/modules/alerts/alerts_bindings.dart';
 import 'package:zuru/modules/auth/auth_bindings.dart';
 import 'package:zuru/modules/home/home_bindings.dart';
 import 'package:zuru/modules/missions/missions_bindings.dart';
+import 'package:zuru/modules/notifications/notifications_bindings.dart';
 import 'package:zuru/modules/payments/payments_bindings.dart';
 import 'package:zuru/modules/rating/rating_bindings.dart';
 import 'package:zuru/modules/scouts/scouts_bindings.dart';
@@ -30,6 +31,7 @@ class Initializer {
     PaymentsBindings().dependencies();
     ScoutsBindings().dependencies();
     AlertsBindings().dependencies();
+    NotificationsBindings().dependencies();
   }
 
   static Future<void> init() async {

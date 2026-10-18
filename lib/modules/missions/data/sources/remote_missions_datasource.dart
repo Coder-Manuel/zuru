@@ -33,6 +33,9 @@ abstract class RemoteMissionsDatasource {
   /// Declines a live request or releases a pool mission; returns
   /// `'declined'` or `'released'`.
   Future<String> declineMission(String missionId);
+
+  /// Null when the mission doesn't exist or the caller can't see it.
+  Future<Map<String, dynamic>?> getMissionById(String missionId);
 }
 
 class RemoteMissionsDatasourceImpl extends RemoteMissionsDatasource {
@@ -365,6 +368,41 @@ class RemoteMissionsDatasourceImpl extends RemoteMissionsDatasource {
       'accept_mission',
       params: {'p_mission_id': missionId},
     );
+  }
+
+  @override
+  Future<Map<String, dynamic>?> getMissionById(String missionId) {
+    return client
+        .from('missions')
+        .select("""
+          *,
+          client:client_id (
+            id,
+            user_id,
+            first_name,
+            last_name,
+            avatar_url,
+            rating,
+            total_reviews
+          ),
+          scout:scout_id (
+            id,
+            user_id,
+            first_name,
+            last_name,
+            rating,
+            total_reviews
+          ),
+          session:sessions!sessions_mission_id_fkey (
+            id,
+            status,
+            room_name,
+            created_at,
+            ended_at
+          )
+        """)
+        .eq('id', missionId)
+        .maybeSingle();
   }
 
   @override

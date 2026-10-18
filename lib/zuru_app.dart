@@ -6,6 +6,7 @@ import 'package:zuru/config/scout_theme.dart';
 import 'package:zuru/core/routes/app_pages.dart';
 import 'package:zuru/core/services/connectivity_service/offline_widget.dart';
 import 'package:zuru/modules/home/presentation/pages/splash_page.dart';
+import 'package:zuru/modules/notifications/presentation/services/notification_router.dart';
 
 class ZuruApp extends StatelessWidget {
   const ZuruApp({super.key});
@@ -19,6 +20,7 @@ class ZuruApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       builder: (_, child) => Stack(children: [child!, const OfflineWidget()]),
       getPages: AppPages.routes,
+      routingCallback: NotificationRouter.instance.onRouteChanged,
       initialRoute: SplashPage.route,
       // Default to ClientTheme; ThemeService.applyScoutTheme() is called
       // after auth when the user's role is known.

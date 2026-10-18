@@ -132,15 +132,18 @@ class UserController extends GetxController {
 
   // ── Role switch ───────────────────────────────────────────────────────────
 
-  /// Switches the active role to the opposite of the current one:
+  /// Switches the active role to the opposite of the current one.
+  Future<void> switchRole() =>
+      switchTo(RoleService.instance.isScout ? UserRole.client : UserRole.scout);
+
+  /// Switches to [target]:
   /// - Persists the new `default_role` via [UpdateDefaultRoleUseCase]
   /// - Updates [RoleService] locally (theme + storage)
   /// - Refreshes user data, then routes via [resolvePostAuthDestination] so
   ///   any incomplete cross-role profile is caught automatically.
-  Future<void> switchRole() async {
-    final target = RoleService.instance.isScout
-        ? UserRole.client
-        : UserRole.scout;
+  ///
+  /// True when the switch landed on home.
+  Future<bool> switchTo(UserRole target) async {
     final label = target == UserRole.scout ? 'Guide' : 'Viewer';
 
     isSwitchingRole.value = true;
@@ -148,11 +151,12 @@ class UserController extends GetxController {
 
     final result = await _updateDefaultRoleUseCase(target);
 
-    result.fold(
-      (err) {
+    return result.fold<Future<bool>>(
+      (err) async {
         Loader.dismiss();
         isSwitchingRole.value = false;
         Toast.error(err.message);
+        return false;
       },
       (_) async {
         // 1. Update local role & theme immediately.
@@ -168,9 +172,11 @@ class UserController extends GetxController {
         isSwitchingRole.value = false;
 
         final user = currentUser.value;
-        Get.offAllNamed(
-          user != null ? resolvePostAuthDestination(user) : AppRoutes.home,
-        );
+        final destination = user != null
+            ? resolvePostAuthDestination(user)
+            : AppRoutes.home;
+        Get.offAllNamed(destination);
+        return destination == AppRoutes.home;
       },
     );
   }

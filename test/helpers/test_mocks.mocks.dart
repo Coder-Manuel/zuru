@@ -37,6 +37,8 @@ import 'package:zuru/modules/missions/domain/entities/session_recording.entity.d
     as _i26;
 import 'package:zuru/modules/missions/domain/repository/missions_repository.dart'
     as _i10;
+import 'package:zuru/modules/notifications/data/sources/remote_notifications_datasource.dart'
+    as _i30;
 import 'package:zuru/modules/rating/domain/entities/rating.entity.dart' as _i25;
 import 'package:zuru/modules/user/data/models/notification_preference.input.dart'
     as _i18;
@@ -665,6 +667,29 @@ class MockMissionsRepository extends _i1.Mock
                 ),
           )
           as _i6.Future<_i2.Either<_i7.ApiFail, _i16.DeclineOutcome>>);
+
+  @override
+  _i6.Future<_i2.Either<_i7.ApiFail, _i11.MissionEntity?>> getMissionById(
+    String? missionId,
+  ) =>
+      (super.noSuchMethod(
+            Invocation.method(#getMissionById, [missionId]),
+            returnValue:
+                _i6.Future<_i2.Either<_i7.ApiFail, _i11.MissionEntity?>>.value(
+                  _FakeEither_0<_i7.ApiFail, _i11.MissionEntity?>(
+                    this,
+                    Invocation.method(#getMissionById, [missionId]),
+                  ),
+                ),
+            returnValueForMissingStub:
+                _i6.Future<_i2.Either<_i7.ApiFail, _i11.MissionEntity?>>.value(
+                  _FakeEither_0<_i7.ApiFail, _i11.MissionEntity?>(
+                    this,
+                    Invocation.method(#getMissionById, [missionId]),
+                  ),
+                ),
+          )
+          as _i6.Future<_i2.Either<_i7.ApiFail, _i11.MissionEntity?>>);
 }
 
 /// A class which mocks [UserRepository].
@@ -1599,6 +1624,16 @@ class MockRemoteMissionsDatasource extends _i1.Mock
             ),
           )
           as _i6.Future<String>);
+
+  @override
+  _i6.Future<Map<String, dynamic>?> getMissionById(String? missionId) =>
+      (super.noSuchMethod(
+            Invocation.method(#getMissionById, [missionId]),
+            returnValue: _i6.Future<Map<String, dynamic>?>.value(),
+            returnValueForMissingStub:
+                _i6.Future<Map<String, dynamic>?>.value(),
+          )
+          as _i6.Future<Map<String, dynamic>?>);
 }
 
 /// A class which mocks [RemoteUserDatasource].
@@ -1711,6 +1746,21 @@ class MockRemoteUserDatasource extends _i1.Mock
   _i6.Future<void> deleteProfileClip(String? id) =>
       (super.noSuchMethod(
             Invocation.method(#deleteProfileClip, [id]),
+            returnValue: _i6.Future<void>.value(),
+            returnValueForMissingStub: _i6.Future<void>.value(),
+          )
+          as _i6.Future<void>);
+}
+
+/// A class which mocks [RemoteNotificationsDatasource].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockRemoteNotificationsDatasource extends _i1.Mock
+    implements _i30.RemoteNotificationsDatasource {
+  @override
+  _i6.Future<void> markRead(String? notificationId) =>
+      (super.noSuchMethod(
+            Invocation.method(#markRead, [notificationId]),
             returnValue: _i6.Future<void>.value(),
             returnValueForMissingStub: _i6.Future<void>.value(),
           )

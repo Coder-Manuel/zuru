@@ -9,6 +9,8 @@ class Toast {
     Color? color,
     String? title,
     Duration duration = const Duration(seconds: 3),
+    IconData? icon,
+    VoidCallback? onTap,
   }) {
     if (Get.overlayContext == null) return;
     if (Get.isSnackbarOpen) Get.closeCurrentSnackbar();
@@ -25,8 +27,17 @@ class Toast {
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
       borderRadius: 15,
       duration: duration,
+      onTap: onTap == null
+          ? null
+          : (_) {
+              Get.closeCurrentSnackbar();
+              onTap();
+            },
       icon: Icon(
-        isError ? Icons.error_outline_rounded : Icons.check_circle_outline,
+        icon ??
+            (isError
+                ? Icons.error_outline_rounded
+                : Icons.check_circle_outline),
         color: Colors.white,
         size: 28,
       ),
@@ -50,6 +61,17 @@ class Toast {
     title: title ?? 'Info',
     color: const Color.fromARGB(255, 195, 147, 5),
   );
+
+  /// An incoming notification while the app is open; tapping opens it.
+  static void notify(String title, String message, {VoidCallback? onTap}) =>
+      _show(
+        message,
+        title: title,
+        color: ClientColors.primary,
+        icon: Icons.notifications_active_outlined,
+        duration: const Duration(seconds: 5),
+        onTap: onTap,
+      );
 
   static void warning(String message, {String? title}) =>
       _show(message, title: title ?? 'Warning', color: Colors.orange);

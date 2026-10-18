@@ -60,6 +60,22 @@ class NotificationService {
     );
   }
 
+  /// Pushes received while the app is open.
+  static Stream<RemoteMessage> get foregroundMessages =>
+      FirebaseMessaging.onMessage;
+
+  /// Taps on a push while the app was in the background.
+  static Stream<RemoteMessage> get openedMessages =>
+      FirebaseMessaging.onMessageOpenedApp;
+
+  /// The push whose tap launched the app, if any. Firebase returns it once.
+  static Future<RemoteMessage?> initialMessage() =>
+      ErrorWrapper.async<RemoteMessage?>(
+        _messaging.getInitialMessage,
+        library: _library,
+        description: 'while reading the launch notification',
+      );
+
   /// Asks for permission again (e.g. when the user turns notifications back
   /// on). False when the user has denied it at the OS level.
   static Future<bool> requestPermission() async {

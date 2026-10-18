@@ -267,6 +267,20 @@ class MissionsRepositoryImpl extends MissionsRepository {
   }
 
   @override
+  Future<RepoResponse<MissionEntity?>> getMissionById(String missionId) async {
+    final response = await ErrorWrapper.async<RepoResponse<MissionEntity?>>(
+      () async {
+        final row = await remoteDatasource.getMissionById(missionId);
+        return SuccessResponse(row == null ? null : MissionModel.fromMap(row));
+      },
+      onError: (_) => FailureResponse('Could not load the live check.'),
+      library: _library,
+      description: 'while loading mission by id',
+    );
+    return response!;
+  }
+
+  @override
   Future<RepoResponse<DeclineOutcome>> declineMission(
     DeclineMissionInput input,
   ) async {
