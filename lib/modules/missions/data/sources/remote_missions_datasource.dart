@@ -159,8 +159,9 @@ class RemoteMissionsDatasourceImpl extends RemoteMissionsDatasource {
 
   @override
   Stream<List<Map<String, dynamic>>> watchActiveMissions() {
+    final notActive = [MissionStatus.completed, MissionStatus.declined];
     final statuses = MissionStatus.values
-        .where((s) => s != MissionStatus.completed)
+        .where((s) => !notActive.contains(s))
         .map((s) => s.name)
         .toList();
 

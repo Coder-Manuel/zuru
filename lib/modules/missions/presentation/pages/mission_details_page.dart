@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:zuru/config/client_colors.dart';
@@ -19,8 +17,6 @@ class MissionDetailsPage extends GetView<RadarController> {
   @override
   Widget build(BuildContext context) {
     final mission = Get.arguments as MissionEntity;
-
-    log('==== MISSION_S: ${mission.status}');
 
     return Scaffold(
       backgroundColor: ClientColors.background,

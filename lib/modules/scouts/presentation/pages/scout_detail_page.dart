@@ -245,7 +245,11 @@ class _PillsRow extends StatelessWidget {
         ),
         10.horizontalSpace,
         _Pill(
-          label: profile.rating?.toStringAsFixed(1) ?? '–',
+          label:
+              ((profile.totalReviews ?? 0) > 0
+                  ? profile.rating?.toStringAsFixed(1)
+                  : null) ??
+              '–',
           color: ClientColors.textPrimary,
           trailingStar: true,
         ),

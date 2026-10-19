@@ -90,7 +90,10 @@ class ScoutFeedCard extends StatelessWidget {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Text(
-                          profile?.rating?.toStringAsFixed(1) ?? '–',
+                          ((profile?.totalReviews ?? 0) > 0
+                                  ? profile?.rating?.toStringAsFixed(1)
+                                  : null) ??
+                              '–',
                           style: const TextStyle(
                             color: ClientColors.primary,
                             fontSize: 16,
