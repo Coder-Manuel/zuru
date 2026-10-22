@@ -52,15 +52,12 @@ class ScoutsRepositoryImpl extends ScoutsRepository {
     return response!;
   }
 
-  /// Reshapes a `profiles` row (with embedded parent `users`) into the shape
-  /// [UserModel.fromMap] expects: the user object with a single-element
-  /// `profiles` list holding this scout profile.
+  /// Reshapes a `profiles` row into the shape [UserModel.fromMap] expects: a
+  /// user with a single-element `profiles` list holding this scout profile.
   User _rowToUser(Map<String, dynamic> row) {
-    final userMap = Map<String, dynamic>.from(
-      (row['users'] as Map?)?.cast<String, dynamic>() ?? const {},
-    );
-    final profileMap = Map<String, dynamic>.from(row)..remove('users');
-    userMap['profiles'] = [profileMap];
-    return UserModel.fromMap(userMap);
+    return UserModel.fromMap({
+      'id': row['user_id'],
+      'profiles': [row],
+    });
   }
 }

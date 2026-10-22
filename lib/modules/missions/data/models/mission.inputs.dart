@@ -1,23 +1,40 @@
 import 'package:zuru/modules/missions/data/models/enum.dart';
 import 'package:zuru/modules/missions/domain/entities/mission.entity.dart';
+import 'package:zuru/modules/missions/domain/entities/mission_page.entity.dart';
 
 // ── Scout inputs ──────────────────────────────────────────────────────────────
 
-class NearbyMissionsInput {
+/// One page of the scout's live-check pool (`search_missions`).
+class SearchMissionsInput {
   final double lat;
   final double lng;
-  final double radiusMeters;
+  final MissionSort sort;
+  final int limit;
 
-  const NearbyMissionsInput({
+  /// The last row of the previous page; null for the first page.
+  final MissionPageCursor? cursor;
+
+  /// The app's USD → KES rate so "Highest pay" ranks USD and KES missions
+  /// together. It only affects ordering.
+  final double? usdToKes;
+
+  const SearchMissionsInput({
     required this.lat,
     required this.lng,
-    this.radiusMeters = 2000,
+    this.sort = MissionSort.nearest,
+    this.limit = 20,
+    this.cursor,
+    this.usdToKes,
   });
 
   Map<String, dynamic> toMap() => {
-    'lat': lat,
-    'lng': lng,
-    'radius_m': radiusMeters,
+    'p_lat': lat,
+    'p_lng': lng,
+    'p_sort': sort.apiValue,
+    'p_limit': limit,
+    if (cursor != null) 'p_cursor_key': cursor!.sortKey,
+    if (cursor != null) 'p_cursor_id': cursor!.id,
+    if (usdToKes != null) 'p_usd_kes': usdToKes,
   };
 }
 

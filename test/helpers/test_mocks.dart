@@ -13,12 +13,15 @@
 import 'package:mockito/annotations.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' as supa;
 import 'package:zuru/core/entities/user.entity.dart';
+import 'package:zuru/core/services/fx_service/fx_service.dart';
+import 'package:zuru/core/services/location_service/location_service.dart';
 import 'package:zuru/modules/auth/data/sources/remote_auth_datasource.dart';
 import 'package:zuru/modules/auth/domain/repository/auth_repository.dart';
 import 'package:zuru/modules/missions/data/sources/remote_missions_datasource.dart';
 import 'package:zuru/modules/missions/domain/entities/mission.entity.dart';
 import 'package:zuru/modules/missions/domain/entities/nearby_scout.entity.dart';
 import 'package:zuru/modules/missions/domain/repository/missions_repository.dart';
+import 'package:zuru/modules/missions/presentation/controllers/radar_controller.dart';
 import 'package:zuru/modules/notifications/data/sources/remote_notifications_datasource.dart';
 import 'package:zuru/modules/user/data/sources/remote_user_datasource.dart';
 import 'package:zuru/modules/user/domain/repository/user_repository.dart';
@@ -39,6 +42,11 @@ import 'package:zuru/modules/user/domain/repository/user_repository.dart';
   MockSpec<RemoteMissionsDatasource>(),
   MockSpec<RemoteUserDatasource>(),
   MockSpec<RemoteNotificationsDatasource>(),
+
+  // ── App services / controllers injected into page controllers ──────────────
+  MockSpec<LocationService>(),
+  MockSpec<FxService>(),
+  MockSpec<RadarController>(),
 
   // ── Supabase response types the auth datasource returns ────────────────────
   MockSpec<supa.AuthResponse>(as: #MockAuthResponse),

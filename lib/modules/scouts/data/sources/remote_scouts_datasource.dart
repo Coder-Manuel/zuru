@@ -20,10 +20,9 @@ class RemoteScoutsDatasourceImpl extends RemoteScoutsDatasource {
 
   RemoteScoutsDatasourceImpl({required this.client});
 
-  // Embed the parent user alongside the scout profile row so the repository
-  // can reconstruct a full [User]/[Profile].
-  static const _feedSelect = '*, users(*)';
-  static const _detailSelect = '*, users(is_online), profile_clips(*)';
+  // No `users` embed: RLS only lets a user read their own `users` row.
+  static const _feedSelect = '*';
+  static const _detailSelect = '*, profile_clips(*)';
 
   @override
   Future<List<Map<String, dynamic>>> getScoutsFeed({

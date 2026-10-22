@@ -13,6 +13,7 @@ import 'package:zuru/modules/missions/data/models/enum.dart';
 import 'package:zuru/modules/missions/data/models/live_request.input.dart';
 import 'package:zuru/modules/missions/data/models/mission.inputs.dart';
 import 'package:zuru/modules/missions/domain/entities/mission.entity.dart';
+import 'package:zuru/modules/missions/domain/entities/mission_page.entity.dart';
 import 'package:zuru/modules/missions/domain/entities/nearby_scout.entity.dart';
 import 'package:zuru/modules/missions/domain/entities/session.entity.dart';
 import 'package:zuru/modules/missions/domain/usecases/accept_mission.usecase.dart';
@@ -20,12 +21,13 @@ import 'package:zuru/modules/missions/domain/usecases/create_live_request.usecas
 import 'package:zuru/modules/missions/domain/usecases/decline_mission.usecase.dart';
 import 'package:zuru/modules/missions/domain/usecases/get_my_missions.usecase.dart';
 import 'package:zuru/modules/missions/domain/usecases/get_nearby_scouts.usecase.dart';
-import 'package:zuru/modules/missions/domain/usecases/nearby_missions.usecase.dart';
 import 'package:zuru/modules/missions/domain/usecases/post_mission.usecase.dart';
+import 'package:zuru/modules/missions/domain/usecases/search_missions.usecase.dart';
 import 'package:zuru/modules/missions/domain/usecases/update_mission_status.usecase.dart';
 import 'package:zuru/modules/missions/domain/usecases/watch_active_mission.usecase.dart';
 import 'package:zuru/modules/missions/domain/usecases/watch_active_missions.usecase.dart';
 import 'package:zuru/modules/missions/domain/usecases/watch_active_session.usecase.dart';
+import 'package:zuru/modules/missions/domain/usecases/watch_mission_pool.usecase.dart';
 
 import '../../helpers/test_mocks.mocks.dart';
 
@@ -271,29 +273,52 @@ void main() {
 
   // ── Stream use cases ────────────────────────────────────────────────────────
 
-  group('NearbyMissionsUseCase', () {
-    late NearbyMissionsUseCase useCase;
-    const input = NearbyMissionsInput(lat: -1.29, lng: 36.82);
+  group('SearchMissionsUseCase', () {
+    late SearchMissionsUseCase useCase;
+    const input = SearchMissionsInput(
+      lat: -1.29,
+      lng: 36.82,
+      sort: MissionSort.highestPay,
+    );
 
-    setUp(() => useCase = NearbyMissionsUseCase(repo: repo));
+    setUp(() => useCase = SearchMissionsUseCase(repo: repo));
 
-    test('emits the mission list stream from the repo', () {
-      final emission = Right<ApiFail, List<MissionEntity>>([mission]);
+    test('returns the page from the repo', () async {
+      final page = MissionPage(missions: [mission], totalCount: 1);
       when(
-        repo.watchNearbyMissions(input),
-      ).thenAnswer((_) => Stream.value(emission));
+        repo.searchMissions(input),
+      ).thenAnswer((_) async => Right<ApiFail, MissionPage>(page));
 
-      expect(useCase(input), emitsInOrder([emission, emitsDone]));
-      verify(repo.watchNearbyMissions(input)).called(1);
+      final result = await useCase(input);
+
+      expect(result.getOrElse(() => throw 'left'), same(page));
+      verify(repo.searchMissions(input)).called(1);
     });
 
-    test('forwards a failure emission unchanged', () {
-      final emission = Left<ApiFail, List<MissionEntity>>(failure);
+    test('forwards a failure unchanged', () async {
       when(
-        repo.watchNearbyMissions(input),
+        repo.searchMissions(input),
+      ).thenAnswer((_) async => Left<ApiFail, MissionPage>(failure));
+
+      expect((await useCase(input)).isLeft(), isTrue);
+    });
+  });
+
+  group('WatchMissionPoolUseCase', () {
+    late WatchMissionPoolUseCase useCase;
+
+    setUp(() => useCase = WatchMissionPoolUseCase(repo: repo));
+
+    test('emits the pool events from the repo', () {
+      final emission = Right<ApiFail, MissionPoolEvent>(
+        const MissionPoolEvent(type: MissionPoolEventType.removed, id: 'm1'),
+      );
+      when(
+        repo.watchMissionPool(),
       ).thenAnswer((_) => Stream.value(emission));
 
-      expect(useCase(input), emits(emission));
+      expect(useCase(), emitsInOrder([emission, emitsDone]));
+      verify(repo.watchMissionPool()).called(1);
     });
   });
 

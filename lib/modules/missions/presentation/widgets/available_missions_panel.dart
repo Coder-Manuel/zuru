@@ -4,8 +4,9 @@ import 'package:shimmer/shimmer.dart';
 import 'package:zuru/config/scout_colors.dart';
 import 'package:zuru/core/utils/size.util.dart';
 import 'package:zuru/modules/missions/presentation/controllers/radar_controller.dart';
-import 'package:zuru/modules/missions/presentation/widgets/all_missions_sheet.dart';
+import 'package:zuru/modules/missions/presentation/pages/live_checks_page.dart';
 import 'package:zuru/modules/missions/presentation/widgets/mission_card.dart';
+import 'package:zuru/modules/missions/presentation/widgets/mission_sort_widgets.dart';
 
 class MissionsPanel extends GetView<RadarController> {
   const MissionsPanel({super.key});
@@ -17,37 +18,51 @@ class MissionsPanel extends GetView<RadarController> {
       child: GetBuilder<RadarController>(
         id: controller.missionsBuilder,
         builder: (_) {
-          final all = controller.missions;
-          // Show at most 3 missions in the bottom list per design
-          final preview = all.take(3).toList();
-          final count = all.length;
+          // The first few in the scout's sort; the rest live on LiveChecksPage.
+          final preview = controller.preview;
+          final count = controller.totalCount;
 
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Header
               Padding(
-                padding: const EdgeInsets.fromLTRB(20, 5, 20, 12),
+                padding: const EdgeInsets.fromLTRB(20, 5, 16, 12),
                 child: Obx(
-                  () => Text(
-                    controller.hasLocationError
-                        ? 'LOCATION UNAVAILABLE'
-                        : controller.showLoading
-                        ? (controller.isResolvingLocation
-                              // The centred loader below owns this message.
-                              ? ''
-                              : 'SCANNING FOR LIVE CHECKS…')
-                        : count == 0
-                        ? 'NO ACTIVE LIVE CHECKS NEARBY'
-                        : '$count ACTIVE LIVE CHECK${count == 1 ? '' : 'S'} NEARBY',
-                    style: TextStyle(
-                      color: controller.hasLocationError
-                          ? ScoutColors.scoutMarker
-                          : ScoutColors.textAccent,
-                      fontSize: 12,
-                      fontWeight: FontWeight.w700,
-                      letterSpacing: 1.2,
-                    ),
+                  () => Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          controller.hasLocationError
+                              ? 'LOCATION UNAVAILABLE'
+                              : controller.showLoading
+                              ? (controller.isResolvingLocation
+                                    // The centred loader below owns this message.
+                                    ? ''
+                                    : 'SCANNING FOR LIVE CHECKS…')
+                              : count == 0
+                              ? 'NO ACTIVE LIVE CHECKS NEARBY'
+                              : '$count ACTIVE LIVE CHECK${count == 1 ? '' : 'S'} NEARBY',
+                          style: TextStyle(
+                            color: controller.hasLocationError
+                                ? ScoutColors.scoutMarker
+                                : ScoutColors.textAccent,
+                            fontSize: 12,
+                            fontWeight: FontWeight.w700,
+                            letterSpacing: 1.2,
+                          ),
+                        ),
+                      ),
+                      // Sorting one live check is meaningless; hide until
+                      // there's a list to order.
+                      if (!controller.showLoading &&
+                          !controller.hasLocationError &&
+                          count > 1)
+                        MissionSortButton(
+                          value: controller.sort.value,
+                          onChanged: controller.setSort,
+                        ),
+                    ],
                   ),
                 ),
               ),
@@ -91,7 +106,7 @@ class MissionsPanel extends GetView<RadarController> {
                             if (hasMore && i == preview.length) {
                               return _SeeAllButton(
                                 count: count,
-                                onTap: () => showAllMissionsSheet(context),
+                                onTap: () => Get.toNamed(LiveChecksPage.route),
                               );
                             }
                             return MissionCard(mission: preview[i]);

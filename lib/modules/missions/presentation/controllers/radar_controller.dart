@@ -1,32 +1,70 @@
 import 'dart:async';
+import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:zuru/core/services/analytics_service/analytics_service.dart';
+import 'package:zuru/core/services/analytics_service/static/event_enum.dart';
+import 'package:zuru/core/services/fx_service/fx_service.dart';
 import 'package:zuru/core/services/location_service/location_service.dart';
+import 'package:zuru/core/services/storage_service/storage.service.dart';
+import 'package:zuru/core/types/repo_reponse.type.dart';
 import 'package:zuru/core/utils/toast.dart';
 import 'package:zuru/modules/missions/data/models/enum.dart';
 import 'package:zuru/modules/missions/data/models/mission.inputs.dart';
 import 'package:zuru/modules/missions/domain/entities/mission.entity.dart';
+import 'package:zuru/modules/missions/domain/entities/mission_page.entity.dart';
 import 'package:zuru/modules/missions/domain/usecases/accept_mission.usecase.dart';
 import 'package:zuru/modules/missions/domain/usecases/decline_mission.usecase.dart';
-import 'package:zuru/modules/missions/domain/usecases/nearby_missions.usecase.dart';
+import 'package:zuru/modules/missions/domain/usecases/search_missions.usecase.dart';
 import 'package:zuru/modules/missions/domain/usecases/watch_active_mission.usecase.dart';
+import 'package:zuru/modules/missions/domain/usecases/watch_mission_pool.usecase.dart';
 import 'package:zuru/modules/missions/domain/usecases/watch_scout_requests.usecase.dart';
 import 'package:zuru/modules/missions/presentation/pages/mission_details_page.dart';
 import 'package:zuru/modules/user/presentation/controllers/user_controller.dart';
 
 class RadarController extends GetxController
-    with GetSingleTickerProviderStateMixin {
-  final _watchNearbyUseCase = Get.find<NearbyMissionsUseCase>();
+    with GetSingleTickerProviderStateMixin, WidgetsBindingObserver {
+  /// How far the radar looks for live checks.
+  static const radiusMeters = 60000.0;
+
+  /// Markers drawn on the radar — the nearest ones; the rest show as "+N".
+  static const mapLimit = 30;
+
+  /// Cards previewed in the panel under the radar.
+  static const previewLimit = 3;
+
+  /// The pool is re-queried once the scout has moved this far.
+  static const requeryDistanceMeters = 1000.0;
+
+  final _searchUseCase = Get.find<SearchMissionsUseCase>();
+  final _watchPoolUseCase = Get.find<WatchMissionPoolUseCase>();
   final _watchActiveUseCase = Get.find<WatchActiveMissionUseCase>();
   final _watchRequestsUseCase = Get.find<WatchScoutRequestsUseCase>();
   final _acceptUseCase = Get.find<AcceptMissionUseCase>();
   final _declineMissionUseCase = Get.find<DeclineMissionUseCase>();
   final _locationService = Get.find<LocationService>();
+  final _fx = Get.find<FxService>();
 
   late final AnimationController sweepController;
 
-  List<MissionEntity> missions = <MissionEntity>[].obs;
+  /// The nearest pool missions within [radiusMeters] — the radar markers.
+  /// Always nearest-first; the scout's [sort] never changes the map.
+  List<MissionEntity> missions = <MissionEntity>[];
+
+  /// The first [previewLimit] missions in the scout's [sort].
+  List<MissionEntity> preview = <MissionEntity>[];
+
+  /// Every pool mission within [radiusMeters], shown or not.
+  int totalCount = 0;
+
+  /// The scout's chosen order for the preview and the Live Checks page.
+  final sort = MissionSort.nearest.obs;
+
+  /// Pool changes within range, for the Live Checks page. The radar owns the
+  /// one `mission_pool` subscription.
+  Stream<MissionPoolEvent> get poolEvents => _poolEvents.stream;
+  final _poolEvents = StreamController<MissionPoolEvent>.broadcast();
   final isLoading = true.obs;
   final isAccepting = false.obs;
   final isUpdatingStatus = false.obs;
@@ -77,11 +115,21 @@ class RadarController extends GetxController
       _locationService.openLocationSettings();
   Future<void> openAppSettings() => _locationService.openAppSettings();
 
-  StreamSubscription<dynamic>? _missionsSub;
+  StreamSubscription<dynamic>? _poolSub;
   StreamSubscription<dynamic>? _activeMissionSub;
   StreamSubscription<dynamic>? _requestsSub;
   Timer? _countdownTimer;
   Timer? _paymentTimer;
+  Timer? _poolRefreshTimer;
+
+  /// Where the pool was last queried from.
+  ({double lat, double lng})? _lastOrigin;
+
+  /// Bumped per query so a slow, superseded response is dropped. The preview
+  /// has its own counter so a sort change never discards the map's result.
+  int _poolQueryId = 0;
+  int _previewQueryId = 0;
+  final _random = Random();
 
   final missionsBuilder = Key('MissionsBuilder');
 
@@ -93,6 +141,9 @@ class RadarController extends GetxController
       vsync: this,
       duration: const Duration(seconds: 5),
     )..repeat();
+
+    WidgetsBinding.instance.addObserver(this);
+    _restoreSort();
 
     // 1. Always start watching the active mission first.
     //    Nearby missions are only opened when no active mission is found.
@@ -109,25 +160,40 @@ class RadarController extends GetxController
     });
 
     ever(_locationService.isReady, (bool ready) {
-      if (ready && !hasActiveMission) _startNearbyStream();
+      if (ready && !hasActiveMission) _startPool();
     });
 
+    // Position ticks every few metres; only a real move re-queries the pool.
     ever(_locationService.position, (_) {
-      if (_locationService.isReady.value && !hasActiveMission) {
-        _startNearbyStream();
+      if (_locationService.isReady.value &&
+          !hasActiveMission &&
+          _movedSinceLastQuery) {
+        _startPool();
       }
     });
 
     if (_locationService.isReady.value) {
-      if (!hasActiveMission) _startNearbyStream();
+      if (!hasActiveMission) _startPool();
     } else {
       _locationService.ensureInitialized();
     }
   }
 
   @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    // No pushes while backgrounded; catch up once on return.
+    if (state == AppLifecycleState.paused) {
+      _stopPool();
+    } else if (state == AppLifecycleState.resumed) {
+      if (_locationService.isReady.value && !hasActiveMission) _startPool();
+    }
+  }
+
+  @override
   void onClose() {
-    _missionsSub?.cancel();
+    WidgetsBinding.instance.removeObserver(this);
+    _stopPool();
+    _poolEvents.close();
     _activeMissionSub?.cancel();
     _requestsSub?.cancel();
     _stopCountdown();
@@ -181,9 +247,9 @@ class RadarController extends GetxController
           (response) {
             response.fold(
               (_) {
-                // On error watching active mission, fall through to nearby stream.
+                // On error watching active mission, fall through to the pool.
                 if (!hasActiveMission && _locationService.isReady.value) {
-                  _startNearbyStream();
+                  _startPool();
                 }
               },
               (data) {
@@ -191,7 +257,7 @@ class RadarController extends GetxController
 
                 if (data != null) {
                   // Lock radar — stop scanning for nearby missions.
-                  _missionsSub?.cancel();
+                  _stopPool();
                   isLoading.value = false;
                   _startCountdown(data.acceptedAt);
                   if (data.awaitingClientPayment) {
@@ -203,7 +269,7 @@ class RadarController extends GetxController
                   // No active mission — resume nearby scan.
                   _stopCountdown();
                   _stopPaymentCountdown();
-                  if (_locationService.isReady.value) _startNearbyStream();
+                  if (_locationService.isReady.value) _startPool();
                 }
 
                 update([missionsBuilder]);
@@ -211,38 +277,200 @@ class RadarController extends GetxController
             );
           },
           onError: (_) {
-            if (_locationService.isReady.value) _startNearbyStream();
+            if (_locationService.isReady.value) _startPool();
           },
         );
   }
 
-  // ── Nearby missions stream ────────────────────────────────────────────────
-  void _startNearbyStream() {
+  // ── Mission pool ──────────────────────────────────────────────────────────
+  //
+  // Three small reads instead of one big stream: the nearest [mapLimit] for
+  // the radar, the first [previewLimit] in the scout's [sort] for the panel,
+  // and pushed pool events that patch both in place. A full re-query only
+  // happens on a real move, on resume, or when an event needs a backfill.
+
+  bool get _movedSinceLastQuery {
+    final origin = _lastOrigin;
+    if (origin == null) return true;
+    final moved = _locationService.distanceTo(origin.lat, origin.lng);
+    return moved == null || moved >= requeryDistanceMeters;
+  }
+
+  void _startPool() {
+    _watchPool();
+    _refreshPool();
+  }
+
+  void _stopPool() {
+    _poolSub?.cancel();
+    _poolSub = null;
+    _poolRefreshTimer?.cancel();
+    _poolRefreshTimer = null;
+  }
+
+  void _watchPool() {
+    if (_poolSub != null) return;
+    _poolSub = _watchPoolUseCase().listen(
+      (response) => response.fold((_) {}, _onPoolEvent),
+      onError: (_) {},
+      // Lets the next start re-subscribe after the channel drops.
+      onDone: () => _poolSub = null,
+    );
+  }
+
+  Future<void> _refreshPool() async {
     final lat = _locationService.latitude;
     final lng = _locationService.longitude;
-
     if (lat == null || lng == null) return;
 
+    _lastOrigin = (lat: lat, lng: lng);
+    _poolRefreshTimer?.cancel();
+    final queryId = ++_poolQueryId;
+    final previewQueryId = ++_previewQueryId;
     if (missions.isEmpty) isLoading.value = true;
-    _missionsSub?.cancel();
 
-    _missionsSub =
-        _watchNearbyUseCase(
-          NearbyMissionsInput(lat: lat, lng: lng, radiusMeters: 500000),
-        ).listen(
-          (response) {
-            response.fold(
-              (error) => Toast.error(error.message),
-              (data) => missions = data,
-            );
-            isLoading.value = false;
-            update([missionsBuilder]);
-          },
-          onError: (_) {
-            isLoading.value = false;
-            Toast.error('Failed to load live checks. Kindly retry.');
-          },
-        );
+    final currentSort = sort.value;
+    final results = await Future.wait([
+      _searchUseCase(SearchMissionsInput(lat: lat, lng: lng, limit: mapLimit)),
+      if (currentSort != MissionSort.nearest)
+        _searchUseCase(_previewInput(lat, lng, currentSort)),
+    ]);
+    if (queryId != _poolQueryId) return;
+
+    results.first.fold((error) => Toast.error(error.message), (page) {
+      missions = page.missions;
+      totalCount = page.totalCount;
+    });
+    if (previewQueryId == _previewQueryId) {
+      if (currentSort == MissionSort.nearest) {
+        preview = missions.take(previewLimit).toList();
+      } else {
+        results.last.fold((_) {}, (page) => preview = page.missions);
+      }
+    }
+
+    isLoading.value = false;
+    update([missionsBuilder]);
+  }
+
+  /// Re-reads only the panel preview, after the scout changes [sort].
+  Future<void> _refreshPreview() async {
+    final currentSort = sort.value;
+    if (currentSort == MissionSort.nearest) {
+      preview = missions.take(previewLimit).toList();
+      update([missionsBuilder]);
+      return;
+    }
+
+    final origin = _lastOrigin;
+    if (origin == null) return;
+    final queryId = ++_previewQueryId;
+    final RepoResponse<MissionPage> result = await _searchUseCase(
+      _previewInput(origin.lat, origin.lng, currentSort),
+    );
+    if (queryId != _previewQueryId) return;
+
+    result.fold(
+      (error) => Toast.error(error.message),
+      (page) => preview = page.missions,
+    );
+    update([missionsBuilder]);
+  }
+
+  SearchMissionsInput _previewInput(double lat, double lng, MissionSort by) =>
+      SearchMissionsInput(
+        lat: lat,
+        lng: lng,
+        sort: by,
+        limit: previewLimit,
+        usdToKes: _fx.usdToKes.value,
+      );
+
+  /// Coalesces a burst of pool events into one re-query, staggered by a
+  /// random 1–3 s so every scout doesn't hit the backend at once.
+  void _schedulePoolRefresh() {
+    if (_poolRefreshTimer?.isActive ?? false) return;
+    _poolRefreshTimer = Timer(
+      Duration(milliseconds: 1000 + _random.nextInt(2000)),
+      _refreshPool,
+    );
+  }
+
+  bool _isWithinRange(MissionPoolEvent event) {
+    final lat = event.latitude;
+    final lng = event.longitude;
+    if (lat == null || lng == null) return true;
+    final distance = _locationService.distanceTo(lat, lng);
+    return distance == null || distance <= radiusMeters;
+  }
+
+  void _onPoolEvent(MissionPoolEvent event) {
+    if (hasActiveMission) return;
+
+    final isShown =
+        missions.any((m) => m.id == event.id) ||
+        preview.any((m) => m.id == event.id);
+    if (!isShown && !_isWithinRange(event)) return;
+
+    _poolEvents.add(event);
+
+    switch (event.type) {
+      case MissionPoolEventType.removed:
+        missions = missions.where((m) => m.id != event.id).toList();
+        preview = preview.where((m) => m.id != event.id).toList();
+        totalCount = max(0, totalCount - 1);
+        update([missionsBuilder]);
+
+        // Only re-query when something hidden can take the freed slot.
+        final previewFull = preview.length >= min(previewLimit, totalCount);
+        if (totalCount > missions.length || !previewFull) {
+          _schedulePoolRefresh();
+        }
+      case MissionPoolEventType.added:
+        _schedulePoolRefresh();
+      case MissionPoolEventType.updated:
+        if (isShown) _schedulePoolRefresh();
+    }
+  }
+
+  // ── Sort ──────────────────────────────────────────────────────────────────
+
+  Future<void> setSort(MissionSort value, {String source = 'radar'}) async {
+    if (sort.value == value) return;
+    sort.value = value;
+
+    _guard(
+      () => StorageService.save(StorageKeys.missionSortKey, value: value.name),
+    );
+    _guard(
+      () => AnalyticsService.instance.trackEvent(
+        event: AnalyticsEvent.MISSION_SORT_CHANGED,
+        properties: {'sort': value.name, 'source': source},
+      ),
+    );
+
+    await _refreshPreview();
+  }
+
+  Future<void> _restoreSort() async {
+    try {
+      final saved = await StorageService.get<String>(
+        StorageKeys.missionSortKey,
+      );
+      final restored = MissionSort.fromName(saved);
+      if (restored == sort.value) return;
+      sort.value = restored;
+      if (_lastOrigin != null) await _refreshPreview();
+    } catch (_) {
+      // Keep the default order when storage isn't available.
+    }
+  }
+
+  /// Fire-and-forget for side effects that must never break the radar.
+  void _guard(Future<void> Function() run) {
+    try {
+      unawaited(run().catchError((_) {}));
+    } catch (_) {}
   }
 
   // ── Actions ───────────────────────────────────────────────────────────────
@@ -350,7 +578,7 @@ class RadarController extends GetxController
       // Mission window expired on the client side — clear local state.
       // activeMission.value = null;
       update([missionsBuilder]);
-      if (_locationService.isReady.value) _startNearbyStream();
+      if (_locationService.isReady.value) _startPool();
       return;
     }
 

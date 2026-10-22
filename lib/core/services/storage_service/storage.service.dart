@@ -11,6 +11,7 @@ enum StorageKeys {
   roleKey,
   fxRatesKey,
   appConfigKey,
+  missionSortKey,
 }
 
 class StorageService {

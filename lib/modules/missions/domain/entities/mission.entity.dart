@@ -32,6 +32,9 @@ abstract class MissionEntity extends BaseEntity {
   final double? latitude;
   final double? longitude;
 
+  /// Metres from the scout when the pool was queried (scout view only).
+  final double? distanceM;
+
   final MissionStatus status;
   final MissionType? type;
 
@@ -74,6 +77,7 @@ abstract class MissionEntity extends BaseEntity {
     required this.address,
     this.latitude,
     this.longitude,
+    this.distanceM,
     this.status = MissionStatus.open,
     this.type,
     this.scheduledAt,

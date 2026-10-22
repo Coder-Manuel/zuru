@@ -9,6 +9,7 @@ import 'package:zuru/core/utils/size.util.dart';
 import 'package:zuru/core/widgets/location_listener.builder.dart';
 import 'package:zuru/modules/missions/domain/entities/mission.entity.dart';
 import 'package:zuru/modules/missions/presentation/controllers/radar_controller.dart';
+import 'package:zuru/modules/missions/presentation/pages/live_checks_page.dart';
 import 'package:zuru/modules/missions/presentation/pages/mission_details_page.dart';
 import 'package:zuru/modules/missions/presentation/widgets/incoming_requests_beacon.dart';
 import 'package:zuru/modules/missions/presentation/widgets/mission_marker_widget.dart';
@@ -98,7 +99,7 @@ class RadarMap extends GetView<RadarController> {
                           // ── Step 1: compute actual km distance & bearing ──
                           // Use flat-earth km conversion; cos(lat) corrects for
                           // longitude compression away from the equator.
-                          const kmPerDeg = 500;
+                          const kmPerDeg = 111.32;
                           final mLat = m.latitude ?? 0.0;
                           final mLng = m.longitude ?? 0.0;
                           final dxKm =
@@ -113,14 +114,15 @@ class RadarMap extends GetView<RadarController> {
                           // ── Step 2: logarithmic compression ─────────────
                           // Linear scale bunches every nearby mission inside
                           // the clearance ring.  log(1 + d) / log(1 + max)
-                          // spreads short distances apart while 400 km still
-                          // reaches the edge.
+                          // spreads short distances apart while the radar's
+                          // full range still reaches the edge.
                           //
-                          //   4 km  → 26 % of usableRadius
-                          //  50 km  → 65 % of usableRadius
-                          // 137 km  → 82 % of usableRadius
-                          // 400 km  → 100 % of usableRadius
-                          const maxRangeKm = 500.0;
+                          //   2 km  → 27 % of usableRadius
+                          //  10 km  → 58 % of usableRadius
+                          //  30 km  → 84 % of usableRadius
+                          //  60 km  → 100 % of usableRadius
+                          const maxRangeKm =
+                              RadarController.radiusMeters / 1000;
                           final logDist =
                               log(1 + distKm.clamp(1, maxRangeKm)) /
                               log(1 + maxRangeKm);
@@ -171,6 +173,24 @@ class RadarMap extends GetView<RadarController> {
                   ],
                 );
               },
+            ),
+
+            // Markers stop at the nearest [RadarController.mapLimit]; say how
+            // many more are in range rather than crowding the radar.
+            Positioned(
+              right: 12,
+              bottom: 12,
+              child: GetBuilder<RadarController>(
+                id: controller.missionsBuilder,
+                builder: (_) {
+                  final hidden =
+                      controller.totalCount - controller.missions.length;
+                  if (hidden <= 0 || controller.hasActiveMission) {
+                    return const SizedBox.shrink();
+                  }
+                  return _MoreMissionsChip(count: hidden);
+                },
+              ),
             ),
 
             // "YOU ARE HERE" badge
@@ -342,6 +362,36 @@ class _LockedRadarOverlay extends StatelessWidget {
             },
           ),
         ],
+      ),
+    );
+  }
+}
+
+// ── "+N more" chip ────────────────────────────────────────────────────────────
+class _MoreMissionsChip extends StatelessWidget {
+  final int count;
+  const _MoreMissionsChip({required this.count});
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () => Get.toNamed(LiveChecksPage.route),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
+        decoration: BoxDecoration(
+          color: ScoutColors.surface.withAlpha(220),
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: ScoutColors.primary.withAlpha(60)),
+        ),
+        child: Text(
+          '+$count more',
+          style: TextStyle(
+            color: ScoutColors.textAccent,
+            fontSize: 11,
+            fontWeight: FontWeight.w700,
+            letterSpacing: 0.4,
+          ),
+        ),
       ),
     );
   }

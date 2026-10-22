@@ -20,6 +20,8 @@ class MissionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final published = DateTime.tryParse(mission.publishedAt ?? '')?.toLocal();
+
     return GestureDetector(
       onTap:
           onTap ??
@@ -70,8 +72,12 @@ class MissionCard extends StatelessWidget {
                         latitude: mission.latitude ?? 0.0,
                         longitude: mission.longitude ?? 0.0,
                         builder: (_, distance) {
+                          // Live GPS when available, else the server's figure.
+                          final metres = distance ?? mission.distanceM;
                           return Text(
-                            '${distance?.formatDistance} away',
+                            metres == null
+                                ? ''
+                                : '${metres.formatDistance} away',
                             style: TextStyle(
                               color: ScoutColors.textSecondary,
                               fontSize: 13,
@@ -79,6 +85,19 @@ class MissionCard extends StatelessWidget {
                           );
                         },
                       ),
+                      if (published != null) ...[
+                        10.horizontalSpace,
+                        Flexible(
+                          child: Text(
+                            published.timeAgo,
+                            style: TextStyle(
+                              color: ScoutColors.textSecondary,
+                              fontSize: 13,
+                            ),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      ],
                     ],
                   ),
                 ],

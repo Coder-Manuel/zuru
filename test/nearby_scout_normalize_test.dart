@@ -8,13 +8,11 @@ void main() {
     'id': 'd7d7d240-ee62-44d3-b023-667ad82f526b',
     'first_name': 'Smith',
     'last_name': 'Rowe',
-    'phone': '254712345678',
     'rating': 1.0,
     'total_reviews': 3,
     'tags': 'Security,Surveillance,Real Estate,Sports,Environmental',
     'avatar_url': 'https://example.supabase.co/storage/v1/object/public/a.jpg',
     'is_online': true,
-    'fcm_token': 'cEYnT4rlQg29WVm1jFOXHH:APA91bEbmhuAAgg',
     'created_at': '2026-06-01T14:01:28.969535+00:00',
     'updated_at': '2026-07-25T11:05:54.425715+00:00',
     'distance_meters': 3404.74252258,
@@ -33,12 +31,16 @@ void main() {
     expect(profile.id, 'd7d7d240-ee62-44d3-b023-667ad82f526b');
     expect(profile.role, UserRole.scout);
     expect(profile.tags, [
-      'Security', 'Surveillance', 'Real Estate', 'Sports', 'Environmental',
+      'Security',
+      'Surveillance',
+      'Real Estate',
+      'Sports',
+      'Environmental',
     ]);
 
     expect(scout.user.isOnline, isTrue);
-    expect(scout.user.phone, '254712345678');
-    expect(scout.user.fcmToken, startsWith('cEYnT4r'));
+    expect(scout.user.phone, isNull);
+    expect(scout.user.fcmToken, isNull);
     expect(scout.user.status, UserStatus.active);
     expect(scout.distanceMeters, closeTo(3404.74, 0.01));
   });

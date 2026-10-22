@@ -4,7 +4,9 @@ import 'package:zuru/core/routes/middlewares/client_only_middleware.dart';
 import 'package:zuru/core/routes/middlewares/scout_only_middleware.dart';
 import 'package:zuru/modules/missions/missions_bindings.dart';
 import 'package:zuru/modules/missions/presentation/pages/finding_scouts_page.dart';
+import 'package:zuru/modules/missions/presentation/controllers/live_checks_controller.dart';
 import 'package:zuru/modules/missions/presentation/pages/gps_verification_page.dart';
+import 'package:zuru/modules/missions/presentation/pages/live_checks_page.dart';
 import 'package:zuru/modules/missions/presentation/pages/location_picker_page.dart';
 import 'package:zuru/modules/missions/presentation/pages/mission_complete_page.dart';
 import 'package:zuru/modules/missions/presentation/pages/live_request_page.dart';
@@ -54,6 +56,15 @@ class MissionsRoutes implements AppRoute {
     GetPage(
       name: MissionDetailsPage.route,
       page: () => const MissionDetailsPage(),
+      middlewares: [ScoutOnlyMiddleware()],
+    ),
+    GetPage(
+      name: LiveChecksPage.route,
+      page: () => const LiveChecksPage(),
+      binding: BindingsBuilder(
+        () => Get.lazyPut<LiveChecksController>(() => LiveChecksController()),
+      ),
+      transition: Transition.rightToLeft,
       middlewares: [ScoutOnlyMiddleware()],
     ),
     GetPage(

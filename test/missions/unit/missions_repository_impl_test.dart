@@ -12,6 +12,7 @@ import 'package:zuru/modules/missions/data/models/live_request.input.dart';
 import 'package:zuru/modules/missions/data/models/mission.inputs.dart';
 import 'package:zuru/modules/missions/data/models/mission.model.dart';
 import 'package:zuru/modules/missions/data/repositories_impl/missions_repository_impl.dart';
+import 'package:zuru/modules/missions/domain/entities/mission_page.entity.dart';
 
 import '../../helpers/test_mocks.mocks.dart';
 
@@ -357,17 +358,127 @@ void main() {
     });
   });
 
-  group('watchNearbyMissions', () {
-    const input = NearbyMissionsInput(lat: -1.29, lng: 36.82);
+  group('searchMissions', () {
+    Map<String, dynamic> poolRow(String id, double sortKey) => {
+      ...missionRow(id: id),
+      'lat': -1.2676,
+      'lng': 36.8108,
+      'distance_m': 981.5,
+      'published_at': '2026-10-16T19:58:30.514984+00:00',
+      'sort_key': sortKey,
+      'total_count': 13,
+    };
 
-    test('emits a mapped success snapshot', () {
+    test('sends the sort, page size and rate as RPC params', () async {
+      when(ds.searchMissions(any)).thenAnswer((_) async => []);
+
+      await repo.searchMissions(
+        const SearchMissionsInput(
+          lat: -1.29,
+          lng: 36.82,
+          sort: MissionSort.highestPay,
+          limit: 20,
+          cursor: MissionPageCursor(sortKey: -1295, id: 'm9'),
+          usdToKes: 129.5,
+        ),
+      );
+
+      final params =
+          verify(ds.searchMissions(captureAny)).captured.single
+              as Map<String, dynamic>;
+      expect(params, {
+        'p_lat': -1.29,
+        'p_lng': 36.82,
+        'p_sort': 'pay_desc',
+        'p_limit': 20,
+        'p_cursor_key': -1295,
+        'p_cursor_id': 'm9',
+        'p_usd_kes': 129.5,
+      });
+    });
+
+    test('maps rows, total count and plain lat/lng', () async {
       when(
-        ds.watchNearbyMissions(any),
-      ).thenAnswer((_) => Stream.value([missionRow()]));
+        ds.searchMissions(any),
+      ).thenAnswer((_) async => [poolRow('m1', 10), poolRow('m2', 20)]);
+
+      final result = await repo.searchMissions(
+        const SearchMissionsInput(lat: -1.29, lng: 36.82, limit: 20),
+      );
+      final page = result.getOrElse(() => throw 'left');
+
+      expect(page.missions.map((m) => m.id), ['m1', 'm2']);
+      expect(page.totalCount, 13);
+      expect(page.missions.first.latitude, -1.2676);
+      expect(page.missions.first.longitude, 36.8108);
+      expect(page.missions.first.distanceM, 981.5);
+    });
+
+    test('a short page is the last one', () async {
+      when(
+        ds.searchMissions(any),
+      ).thenAnswer((_) async => [poolRow('m1', 10)]);
+
+      final result = await repo.searchMissions(
+        const SearchMissionsInput(lat: 0, lng: 0, limit: 20),
+      );
+
+      expect(result.getOrElse(() => throw 'left').hasMore, isFalse);
+    });
+
+    test('a full page carries the last row as the cursor', () async {
+      when(
+        ds.searchMissions(any),
+      ).thenAnswer((_) async => [poolRow('m1', 10), poolRow('m2', 20)]);
+
+      final result = await repo.searchMissions(
+        const SearchMissionsInput(lat: 0, lng: 0, limit: 2),
+      );
+      final cursor = result.getOrElse(() => throw 'left').nextCursor;
+
+      expect(cursor?.id, 'm2');
+      expect(cursor?.sortKey, 20);
+    });
+
+    test('an empty pool has no count and no cursor', () async {
+      when(ds.searchMissions(any)).thenAnswer((_) async => []);
+
+      final result = await repo.searchMissions(
+        const SearchMissionsInput(lat: 0, lng: 0),
+      );
+      final page = result.getOrElse(() => throw 'left');
+
+      expect(page.totalCount, 0);
+      expect(page.hasMore, isFalse);
+    });
+
+    test('maps a thrown error to a failure', () async {
+      when(ds.searchMissions(any)).thenThrow(Exception('rpc boom'));
+
+      final result = await repo.searchMissions(
+        const SearchMissionsInput(lat: 0, lng: 0),
+      );
+
+      expect(messageOf(result), 'Could not load live checks. Retry.');
+    });
+  });
+
+  group('watchMissionPool', () {
+    test('maps broadcasts and drops malformed ones', () {
+      when(ds.watchMissionPool()).thenAnswer(
+        (_) => Stream.fromIterable([
+          {'event': 'added', 'id': 'm1', 'lat': -1.2, 'lng': 36.8},
+          {'event': 'renamed', 'id': 'm2'},
+          {'event': 'removed'},
+          {'event': 'removed', 'id': 'm3'},
+        ]),
+      );
 
       expect(
-        repo.watchNearbyMissions(input).map((e) => e.isRight()),
-        emitsInOrder([true, emitsDone]),
+        repo.watchMissionPool().map(
+          (r) => r.fold((_) => null, (e) => '${e.type.name}:${e.id}'),
+        ),
+        emitsInOrder(['added:m1', 'removed:m3', emitsDone]),
       );
     });
   });

@@ -28,6 +28,7 @@ class MissionModel extends MissionEntity {
     required super.address,
     super.latitude,
     super.longitude,
+    super.distanceM,
     super.status,
     super.type,
     super.scheduledAt,
@@ -120,9 +121,10 @@ class MissionModel extends MissionEntity {
     double scoutLat = 0,
     double scoutLng = 0,
   }) {
-    final (:latitude, :longitude) = EwkbParser.parsePoint(
-      map['location']?.toString(),
-    );
+    // search_missions returns plain lat/lng; older RPCs return EWKB.
+    final ewkb = EwkbParser.parsePoint(map['location']?.toString());
+    final latitude = (map['lat'] as num?)?.toDouble() ?? ewkb.latitude;
+    final longitude = (map['lng'] as num?)?.toDouble() ?? ewkb.longitude;
 
     const scoutMapX = 0.15;
     const scoutMapY = 0.12;
@@ -160,6 +162,7 @@ class MissionModel extends MissionEntity {
       address: map['address'] as String? ?? '',
       latitude: lat,
       longitude: lng,
+      distanceM: (map['distance_m'] as num?)?.toDouble(),
       mapX: mapX,
       mapY: mapY,
       status: MissionStatus.values.firstWhere(

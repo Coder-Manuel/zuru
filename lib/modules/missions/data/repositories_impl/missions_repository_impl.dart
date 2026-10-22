@@ -8,6 +8,7 @@ import 'package:zuru/modules/missions/data/models/nearby_scout.model.dart';
 import 'package:zuru/modules/missions/data/models/session.model.dart';
 import 'package:zuru/modules/missions/data/sources/remote_missions_datasource.dart';
 import 'package:zuru/modules/missions/domain/entities/mission.entity.dart';
+import 'package:zuru/modules/missions/domain/entities/mission_page.entity.dart';
 import 'package:zuru/modules/missions/domain/entities/nearby_scout.entity.dart';
 import 'package:zuru/modules/missions/domain/entities/session.entity.dart';
 import 'package:zuru/modules/missions/domain/repository/missions_repository.dart';
@@ -142,30 +143,72 @@ class MissionsRepositoryImpl extends MissionsRepository {
   }
 
   @override
-  Stream<RepoResponse<List<MissionEntity>>> watchNearbyMissions(
-    NearbyMissionsInput input,
-  ) async* {
-    yield* ErrorWrapper.stream<RepoResponse<List<MissionEntity>>>(
+  Future<RepoResponse<MissionPage>> searchMissions(
+    SearchMissionsInput input,
+  ) async {
+    final response = await ErrorWrapper.async<RepoResponse<MissionPage>>(
+      () async {
+        final rows = await remoteDatasource.searchMissions(input.toMap());
+        final missions = rows
+            .map(
+              (row) => MissionModel.fromScoutMap(
+                row,
+                scoutLat: input.lat,
+                scoutLng: input.lng,
+              ),
+            )
+            .toList();
+
+        // A full page means there may be more; the last row is the cursor.
+        MissionPageCursor? next;
+        if (rows.length >= input.limit && rows.isNotEmpty) {
+          final last = rows.last;
+          final key = (last['sort_key'] as num?)?.toDouble();
+          final id = last['id']?.toString();
+          if (key != null && id != null) {
+            next = MissionPageCursor(sortKey: key, id: id);
+          }
+        }
+
+        return SuccessResponse(
+          MissionPage(
+            missions: missions,
+            totalCount: rows.isEmpty
+                ? 0
+                : (rows.first['total_count'] as num?)?.toInt() ??
+                      missions.length,
+            nextCursor: next,
+          ),
+        );
+      },
+      onError: (_) => FailureResponse('Could not load live checks. Retry.'),
+      library: _library,
+      description: 'while searching the mission pool',
+    );
+    return response!;
+  }
+
+  @override
+  Stream<RepoResponse<MissionPoolEvent>> watchMissionPool() async* {
+    yield* ErrorWrapper.stream<RepoResponse<MissionPoolEvent>>(
       () async* {
-        await for (final rows in remoteDatasource.watchNearbyMissions(
-          input.toMap(),
-        )) {
+        await for (final raw in remoteDatasource.watchMissionPool()) {
+          final type = MissionPoolEventType.fromApi(raw['event']?.toString());
+          final id = raw['id']?.toString();
+          if (type == null || id == null) continue;
           yield SuccessResponse(
-            rows
-                .map(
-                  (row) => MissionModel.fromScoutMap(
-                    row,
-                    scoutLat: input.lat,
-                    scoutLng: input.lng,
-                  ),
-                )
-                .toList(),
+            MissionPoolEvent(
+              type: type,
+              id: id,
+              latitude: (raw['lat'] as num?)?.toDouble(),
+              longitude: (raw['lng'] as num?)?.toDouble(),
+            ),
           );
         }
       },
-      onError: (_) => FailureResponse('An error occurred. Kindly retry.'),
+      onError: (_) => FailureResponse('Live check updates were interrupted.'),
       library: _library,
-      description: 'while streaming nearby missions',
+      description: 'while watching the mission pool',
     );
   }
 

@@ -3,6 +3,7 @@ import 'package:zuru/modules/missions/data/models/enum.dart';
 import 'package:zuru/modules/missions/data/models/live_request.input.dart';
 import 'package:zuru/modules/missions/data/models/mission.inputs.dart';
 import 'package:zuru/modules/missions/domain/entities/mission.entity.dart';
+import 'package:zuru/modules/missions/domain/entities/mission_page.entity.dart';
 import 'package:zuru/modules/missions/domain/entities/nearby_scout.entity.dart';
 import 'package:zuru/modules/missions/domain/entities/session.entity.dart';
 
@@ -24,9 +25,12 @@ abstract class MissionsRepository {
 
   // ── Scout ─────────────────────────────────────────────────────────────────
   Future<RepoResponse<List<MissionEntity>>> getScoutMissions();
-  Stream<RepoResponse<List<MissionEntity>>> watchNearbyMissions(
-    NearbyMissionsInput input,
-  );
+
+  /// One sorted page of the live-check pool.
+  Future<RepoResponse<MissionPage>> searchMissions(SearchMissionsInput input);
+
+  /// Pool changes as they happen; unknown or malformed events are dropped.
+  Stream<RepoResponse<MissionPoolEvent>> watchMissionPool();
   Future<RepoResponse<void>> acceptMission(AcceptMissionInput input);
   Stream<RepoResponse<MissionEntity?>> watchActiveMission(
     WatchActiveMissionInput input,

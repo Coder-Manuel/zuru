@@ -7,7 +7,7 @@ import 'package:zuru/modules/missions/domain/entities/nearby_scout.entity.dart';
 ///
 /// The `get_nearby_scouts` RPC returns one **flat** row per scout, mixing
 /// profile columns (first_name, rating, tags, avatar_url…) with user columns
-/// (phone, is_online, fcm_token). [UserModel.fromMap] cannot read that shape —
+/// (is_online). [UserModel.fromMap] cannot read that shape —
 /// it expects profile fields nested under `profiles` — so this normalises the
 /// row into the User + Profile shape the rest of the app already uses.
 ///
@@ -39,8 +39,6 @@ class NearbyScoutModel extends NearbyScout {
     return NearbyScoutModel(
       user: UserModel(
         id: data['user_id']?.toString(),
-        phone: data['phone']?.toString(),
-        fcmToken: data['fcm_token']?.toString(),
         isOnline: data['is_online'] as bool?,
         defaultRole: UserRole.scout,
         status: UserStatus.active,

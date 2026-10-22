@@ -15,12 +15,13 @@ import 'package:zuru/modules/missions/domain/usecases/decline_mission.usecase.da
 import 'package:zuru/modules/missions/domain/usecases/get_mission_by_id.usecase.dart';
 import 'package:zuru/modules/missions/domain/usecases/get_my_missions.usecase.dart';
 import 'package:zuru/modules/missions/domain/usecases/get_nearby_scouts.usecase.dart';
-import 'package:zuru/modules/missions/domain/usecases/nearby_missions.usecase.dart';
 import 'package:zuru/modules/missions/domain/usecases/post_mission.usecase.dart';
+import 'package:zuru/modules/missions/domain/usecases/search_missions.usecase.dart';
 import 'package:zuru/modules/missions/domain/usecases/update_mission_status.usecase.dart';
 import 'package:zuru/modules/missions/domain/usecases/watch_active_mission.usecase.dart';
 import 'package:zuru/modules/missions/domain/usecases/watch_active_missions.usecase.dart';
 import 'package:zuru/modules/missions/domain/usecases/watch_active_session.usecase.dart';
+import 'package:zuru/modules/missions/domain/usecases/watch_mission_pool.usecase.dart';
 import 'package:zuru/modules/missions/domain/usecases/watch_scout_requests.usecase.dart';
 import 'package:zuru/modules/missions/presentation/controllers/finding_scouts_controller.dart';
 import 'package:zuru/modules/missions/presentation/controllers/live_request_controller.dart';
@@ -93,8 +94,12 @@ class MissionsBindings extends Bindings {
       () => GetMyMissionsUseCase(repo: Get.find<MissionsRepository>()),
       fenix: true,
     );
-    Get.lazyPut<NearbyMissionsUseCase>(
-      () => NearbyMissionsUseCase(repo: Get.find<MissionsRepository>()),
+    Get.lazyPut<SearchMissionsUseCase>(
+      () => SearchMissionsUseCase(repo: Get.find<MissionsRepository>()),
+      fenix: true,
+    );
+    Get.lazyPut<WatchMissionPoolUseCase>(
+      () => WatchMissionPoolUseCase(repo: Get.find<MissionsRepository>()),
       fenix: true,
     );
     Get.lazyPut<WatchActiveMissionUseCase>(

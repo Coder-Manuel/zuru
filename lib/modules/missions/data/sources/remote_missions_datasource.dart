@@ -16,9 +16,13 @@ abstract class RemoteMissionsDatasource {
 
   // ── Scout ─────────────────────────────────────────────────────────────────
   Future<List<Map<String, dynamic>>> getScoutMissions();
-  Stream<List<Map<String, dynamic>>> watchNearbyMissions(
-    Map<String, dynamic> data,
-  );
+
+  /// One sorted page of the live-check pool (`search_missions`).
+  Future<List<Map<String, dynamic>>> searchMissions(Map<String, dynamic> data);
+
+  /// Pool changes pushed on the private `mission_pool` broadcast topic, as
+  /// `{event, id, lat, lng}`.
+  Stream<Map<String, dynamic>> watchMissionPool();
   Future<bool> acceptMission(String missionId);
   Stream<Map<String, dynamic>?> watchScoutActiveMission(String? profileId);
 
@@ -311,52 +315,37 @@ class RemoteMissionsDatasourceImpl extends RemoteMissionsDatasource {
   }
 
   @override
-  Stream<List<Map<String, dynamic>>> watchNearbyMissions(
+  Future<List<Map<String, dynamic>>> searchMissions(
     Map<String, dynamic> data,
-  ) {
-    final ctrl = StreamController<List<Map<String, dynamic>>>.broadcast();
-    Timer? debounceTimer;
-    RealtimeChannel? channel;
+  ) async {
+    final List raw = await client.rpc('search_missions', params: data);
+    return raw.map((e) => Map<String, dynamic>.from(e as Map)).toList();
+  }
 
-    Future<void> fetchNearby() async {
+  @override
+  Stream<Map<String, dynamic>> watchMissionPool() {
+    final ctrl = StreamController<Map<String, dynamic>>.broadcast();
+
+    // Database broadcasts arrive as {event, payload: {id, lat, lng}, ...}.
+    void forward(Map<String, dynamic> message) {
       if (ctrl.isClosed) return;
-      try {
-        List raw = await client.rpc('get_missions_within_radius', params: data);
-        final rows = raw
-            .map((e) => Map<String, dynamic>.from(e as Map))
-            .toList();
-        if (!ctrl.isClosed) ctrl.add(rows);
-      } catch (e, stack) {
-        MonitorService.report(
-          ex: e,
-          library: 'missions_datasource',
-          description: 'while calling get_missions_within_radius RPC',
-          stack: stack,
-        );
-        if (!ctrl.isClosed) ctrl.addError(e);
-      }
+      final payload = message['payload'];
+      ctrl.add({
+        if (payload is Map) ...Map<String, dynamic>.from(payload),
+        'event': message['event'],
+      });
     }
 
-    void debouncedFetch() {
-      debounceTimer?.cancel();
-      debounceTimer = Timer(const Duration(milliseconds: 300), fetchNearby);
-    }
-
-    channel = client
-        .channel('nearby_missions_watch')
-        .onPostgresChanges(
-          event: PostgresChangeEvent.all,
-          schema: 'public',
-          table: 'missions',
-          callback: (_) => debouncedFetch(),
+    final channel = client
+        .channel(
+          'mission_pool',
+          opts: const RealtimeChannelConfig(private: true),
         )
+        .onBroadcast(event: '*', callback: forward)
         .subscribe();
 
-    fetchNearby();
-
     ctrl.onCancel = () {
-      debounceTimer?.cancel();
-      client.removeChannel(channel!);
+      client.removeChannel(channel);
       ctrl.close();
     };
 
