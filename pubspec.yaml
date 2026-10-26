@@ -62,6 +62,9 @@ dependencies:
 
   # ── Streaming ─────────────────────────────────────────────────────────────
   livekit_client: ^2.2.0
+  # Direct for Helper.setSpeakerphoneOnButPreferBluetooth (headset routing).
+  # Already pulled in by livekit_client; keep the version in step with it.
+  flutter_webrtc: ^1.4.0
 
   # ── Navigation (Scout role only) ──────────────────────────────────────────
   # Requires Android minSdk 26+. Pinned to v1.0.0 — do not upgrade without testing.
@@ -74,6 +77,9 @@ dependencies:
 
 dev_dependencies:
   flutter_test:
+    sdk: flutter
+  # On-device tests in integration_test/ (real keyboard, wakelock, audio).
+  integration_test:
     sdk: flutter
   flutter_lints: ^6.0.0
 

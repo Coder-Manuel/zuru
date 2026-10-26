@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:get/get.dart';
@@ -18,16 +20,41 @@ Future<bool> showPaymentSheet({
     ),
   );
 
+  final sheetGone = Completer<void>();
   final result = await Get.bottomSheet<bool>(
-    const PaymentSheet(),
+    _OnDispose(onDispose: sheetGone.complete, child: const PaymentSheet()),
     isScrollControlled: true,
     isDismissible: false,
     enableDrag: false,
     backgroundColor: Colors.transparent,
   );
 
+  // The sheet keeps building (and its TextField keeps using phoneCtrl) while
+  // it animates out; delete the controller only once the sheet is gone.
+  await sheetGone.future.timeout(const Duration(seconds: 2), onTimeout: () {});
   await Get.delete<PaymentController>();
   return result ?? false;
+}
+
+class _OnDispose extends StatefulWidget {
+  final VoidCallback onDispose;
+  final Widget child;
+
+  const _OnDispose({required this.onDispose, required this.child});
+
+  @override
+  State<_OnDispose> createState() => _OnDisposeState();
+}
+
+class _OnDisposeState extends State<_OnDispose> {
+  @override
+  void dispose() {
+    widget.onDispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) => widget.child;
 }
 
 class PaymentSheet extends GetView<PaymentController> {
@@ -41,59 +68,61 @@ class PaymentSheet extends GetView<PaymentController> {
         color: ClientColors.surface,
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
-      padding: EdgeInsets.only(
-        left: 20,
-        right: 20,
-        top: 12,
-        bottom: MediaQuery.of(context).viewInsets.bottom + 24,
-      ),
+      // No keyboard inset here: Get.bottomSheet already lifts the sheet above
+      // the keyboard, and adding it again pushed Pay/Cancel out of reach.
+      padding: const EdgeInsets.fromLTRB(20, 12, 20, 24),
       child: SafeArea(
         top: false,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              width: 40,
-              height: 4,
-              decoration: BoxDecoration(
-                color: ClientColors.divider,
-                borderRadius: BorderRadius.circular(2),
+        // Scrolls when a small screen can't fit the form above the keyboard;
+        // an overflowing Column paints the buttons where taps never land.
+        child: SingleChildScrollView(
+          keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: ClientColors.divider,
+                  borderRadius: BorderRadius.circular(2),
+                ),
               ),
-            ),
-            const SizedBox(height: 20),
-            Obx(() {
-              return switch (controller.state.value) {
-                PaymentUiState.form => const _FormView(),
-                PaymentUiState.sending =>
-                  controller.method.value == PaymentMethod.card
-                      ? const _ProcessingView(
-                          title: 'Opening secure checkout…',
-                          subtitle: 'Setting up your card payment…',
-                          icon: Icons.credit_card_rounded,
-                        )
-                      : const _ProcessingView(
-                          title: 'Sending STK push…',
-                          subtitle: 'Setting up your M-Pesa payment…',
-                        ),
-                PaymentUiState.awaitingPin => const _ProcessingView(
-                  title: 'Enter M-PESA PIN to complete payment',
-                  subtitle:
-                      "STK sent · check your phone for the prompt.\n"
-                      "We're confirming your payment…",
-                ),
-                PaymentUiState.awaitingCard => const _ProcessingView(
-                  title: 'Confirming your card payment',
-                  subtitle:
-                      "We'll confirm automatically once your card payment "
-                      'goes through',
-                  icon: Icons.credit_card_rounded,
-                  showCompletedButton: true,
-                ),
-                PaymentUiState.success => const _SuccessView(),
-                PaymentUiState.failed => const _FailedView(),
-              };
-            }),
-          ],
+              const SizedBox(height: 20),
+              Obx(() {
+                return switch (controller.state.value) {
+                  PaymentUiState.form => const _FormView(),
+                  PaymentUiState.sending =>
+                    controller.method.value == PaymentMethod.card
+                        ? const _ProcessingView(
+                            title: 'Opening secure checkout…',
+                            subtitle: 'Setting up your card payment…',
+                            icon: Icons.credit_card_rounded,
+                          )
+                        : const _ProcessingView(
+                            title: 'Sending STK push…',
+                            subtitle: 'Setting up your M-Pesa payment…',
+                          ),
+                  PaymentUiState.awaitingPin => const _ProcessingView(
+                    title: 'Enter M-PESA PIN to complete payment',
+                    subtitle:
+                        "STK sent · check your phone for the prompt.\n"
+                        "We're confirming your payment…",
+                  ),
+                  PaymentUiState.awaitingCard => const _ProcessingView(
+                    title: 'Confirming your card payment',
+                    subtitle:
+                        "We'll confirm automatically once your card payment "
+                        'goes through',
+                    icon: Icons.credit_card_rounded,
+                    showCompletedButton: true,
+                  ),
+                  PaymentUiState.success => const _SuccessView(),
+                  PaymentUiState.failed => const _FailedView(),
+                };
+              }),
+            ],
+          ),
         ),
       ),
     );
@@ -202,6 +231,11 @@ class _FormView extends GetView<PaymentController> {
               TextField(
                 controller: controller.phoneCtrl,
                 keyboardType: TextInputType.phone,
+                textInputAction: TextInputAction.done,
+                // Mobile TextFields keep focus on outside taps by default, and
+                // the iOS phone pad has no key to close itself.
+                onTapOutside: (_) => _closeKeyboard(),
+                onSubmitted: (_) => _submit(),
                 style: TextStyle(color: ClientColors.textPrimary, fontSize: 16),
                 decoration: InputDecoration(
                   hintText: 'e.g. 0712 345 678',
@@ -247,7 +281,7 @@ class _FormView extends GetView<PaymentController> {
           width: double.infinity,
           height: 56,
           child: ElevatedButton(
-            onPressed: controller.pay,
+            onPressed: _submit,
             style: ElevatedButton.styleFrom(
               backgroundColor: ClientColors.primary,
               foregroundColor: Colors.black,
@@ -264,7 +298,10 @@ class _FormView extends GetView<PaymentController> {
         const SizedBox(height: 6),
         Center(
           child: TextButton(
-            onPressed: controller.cancel,
+            onPressed: () {
+              _closeKeyboard();
+              controller.cancel();
+            },
             child: Text(
               'Cancel',
               style: TextStyle(color: ClientColors.textSecondary),
@@ -274,6 +311,16 @@ class _FormView extends GetView<PaymentController> {
       ],
     );
   }
+
+  void _submit() {
+    _closeKeyboard();
+    controller.pay();
+  }
+
+  // Not FocusScope.of(context): that subscribes this view to focus changes,
+  // so the unfocus would rebuild it mid-close, after showPaymentSheet has
+  // already deleted the controller.
+  void _closeKeyboard() => FocusManager.instance.primaryFocus?.unfocus();
 }
 
 class _ProcessingView extends GetView<PaymentController> {

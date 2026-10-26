@@ -2,11 +2,11 @@ import 'dart:async';
 
 import 'package:get/get.dart';
 import 'package:livekit_client/livekit_client.dart';
-import 'package:wakelock_plus/wakelock_plus.dart';
 import 'package:zuru/modules/missions/domain/entities/mission.entity.dart';
 import 'package:zuru/modules/rating/presentation/pages/rate_client_page.dart';
 import 'package:zuru/modules/stream/data/models/stream.inputs.dart';
 import 'package:zuru/modules/stream/domain/usecases/go_live.usecase.dart';
+import 'package:zuru/modules/stream/presentation/services/stream_audio.dart';
 
 /// Lifecycle of the remote client as observed from the LiveKit room.
 enum ClientStreamState {
@@ -29,21 +29,26 @@ enum ClientStreamState {
 class LiveStreamController extends GetxController {
   final GoLiveUseCase _goLiveUseCase;
 
-  LiveStreamController({required GoLiveUseCase goLiveUseCase})
-    : _goLiveUseCase = goLiveUseCase;
+  /// [room] is for tests; a page gets a fresh room by default.
+  LiveStreamController({required GoLiveUseCase goLiveUseCase, Room? room})
+    : _goLiveUseCase = goLiveUseCase,
+      _room =
+          room ??
+          Room(
+            roomOptions: const RoomOptions(
+              adaptiveStream: true,
+              dynacast: true,
+              defaultCameraCaptureOptions: CameraCaptureOptions(
+                cameraPosition: CameraPosition.back,
+              ),
+            ),
+          );
 
   late MissionEntity mission;
 
-  final _room = Room(
-    roomOptions: const RoomOptions(
-      adaptiveStream: true,
-      dynacast: true,
-      defaultCameraCaptureOptions: CameraCaptureOptions(
-        cameraPosition: CameraPosition.back,
-      ),
-    ),
-  );
+  final Room _room;
   EventsListener<RoomEvent>? _roomListener;
+  StreamSubscription<List<MediaDevice>>? _audioDevicesSub;
 
   // ── Observable state ───────────────────────────────────────────────────────
 
@@ -92,8 +97,10 @@ class LiveStreamController extends GetxController {
           // participant-joined events.
           _attachRoomListener();
 
+          // Before connecting: Android only sees Bluetooth headsets once the
+          // permission is granted.
+          await StreamAudio.ensureBluetoothAccess();
           await _room.connect(session.url, session.token);
-          WakelockPlus.enable().ignore();
 
           // Publish our camera and microphone tracks.  The mic track must be
           // published BEFORE we touch the audio session routing — changing the
@@ -105,11 +112,10 @@ class LiveStreamController extends GetxController {
           // Allow WebRTC track negotiation to fully settle.
           await Future.delayed(const Duration(milliseconds: 500));
 
-          // NOW it is safe to route audio through the loudspeaker.  iOS audio
-          // session is stable at this point.  forceSpeakerOutput uses
-          // overrideOutputAudioPort(.speaker) which is more reliable than the
-          // standard speaker toggle when a mic is active simultaneously.
-          await _configureSpeaker();
+          // NOW it is safe to route audio.  iOS audio session is stable at
+          // this point.  Loudspeaker unless a headset is connected.
+          await StreamAudio.routeOutput();
+          _audioDevicesSub = StreamAudio.watchDevices();
 
           _refreshVideoTrack();
           _room.addListener(_refreshVideoTrack);
@@ -235,25 +241,15 @@ class LiveStreamController extends GetxController {
     if (track != null) videoTrack.value = track;
   }
 
-  /// Routes audio to the loudspeaker.
-  ///
-  /// Must be called AFTER the WebRTC audio unit is fully negotiated.
-  /// [forceSpeakerOutput] uses `overrideOutputAudioPort(.speaker)` on iOS,
-  /// which works correctly while a mic track is simultaneously active.
-  Future<void> _configureSpeaker() async {
-    try {
-      await Hardware.instance.setSpeakerphoneOn(true, forceSpeakerOutput: true);
-    } catch (_) {}
-  }
-
   Future<void> _teardown() async {
     _countdownTimer?.cancel();
     _countdownTimer = null;
+    await _audioDevicesSub?.cancel();
+    _audioDevicesSub = null;
     _room.removeListener(_refreshVideoTrack);
     await _roomListener?.dispose();
     _roomListener = null;
     await _room.disconnect();
-    WakelockPlus.disable().ignore();
   }
 
   void _navigateToRateMission() {
@@ -275,10 +271,21 @@ class LiveStreamController extends GetxController {
   @override
   void onClose() {
     _countdownTimer?.cancel();
+    _audioDevicesSub?.cancel();
     _room.removeListener(_refreshVideoTrack);
     _roomListener?.dispose();
-    _room.disconnect();
-    WakelockPlus.disable().ignore();
+    _releaseRoom();
     super.onClose();
+  }
+
+  /// Disconnects (if it ever connected) and disposes the room, which also
+  /// stops the engine's timers. Each page owns its own room.
+  Future<void> _releaseRoom() async {
+    // Disconnecting a room that never connected waits for an event that
+    // never comes and times out.
+    if (_room.connectionState != ConnectionState.disconnected) {
+      await _room.disconnect().catchError((_) {});
+    }
+    await _room.dispose().catchError((_) => true);
   }
 }

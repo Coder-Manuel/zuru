@@ -2,10 +2,10 @@ import 'dart:async';
 
 import 'package:get/get.dart';
 import 'package:livekit_client/livekit_client.dart';
-import 'package:wakelock_plus/wakelock_plus.dart';
 import 'package:zuru/modules/missions/domain/entities/mission.entity.dart';
 import 'package:zuru/modules/rating/presentation/pages/rate_scout_page.dart';
 import 'package:zuru/modules/stream/domain/usecases/join_stream.usecase.dart';
+import 'package:zuru/modules/stream/presentation/services/stream_audio.dart';
 
 // ── Scout presence status ─────────────────────────────────────────────────────
 
@@ -28,16 +28,26 @@ enum ScoutStatus {
 class JoinStreamController extends GetxController {
   final JoinStreamUseCase _joinStreamUseCase;
 
-  JoinStreamController({required JoinStreamUseCase joinStreamUseCase})
-    : _joinStreamUseCase = joinStreamUseCase;
+  /// [room] is for tests; a page gets a fresh room by default.
+  JoinStreamController({
+    required JoinStreamUseCase joinStreamUseCase,
+    Room? room,
+  }) : _joinStreamUseCase = joinStreamUseCase,
+       _room =
+           room ??
+           Room(
+             roomOptions: const RoomOptions(
+               adaptiveStream: true,
+               dynacast: true,
+             ),
+           );
 
   late MissionEntity mission;
 
-  final _room = Room(
-    roomOptions: const RoomOptions(adaptiveStream: true, dynacast: true),
-  );
+  final Room _room;
 
   EventsListener<RoomEvent>? _roomListener;
+  StreamSubscription<List<MediaDevice>>? _audioDevicesSub;
   Timer? _countdownTimer;
   Timer? _participantEventTimer;
   bool _hasNavigatedAway = false;
@@ -105,17 +115,21 @@ class JoinStreamController extends GetxController {
         try {
           _attachRoomListeners();
 
+          // Before connecting: Android only sees Bluetooth headsets once the
+          // permission is granted.
+          await StreamAudio.ensureBluetoothAccess();
           await _room.connect(data.url, data.token);
-          WakelockPlus.enable().ignore();
 
           _room.addListener(_refreshVideoTrack);
           await Future.delayed(const Duration(milliseconds: 400));
           _refreshVideoTrack();
 
-          // Route audio to loudspeaker now that the WebRTC audio unit has
-          // fully settled.  Calling this too early (before the delay) tears
-          // down the audio unit on iOS and silences incoming scout audio.
-          await _configureSpeaker();
+          // Route audio now that the WebRTC audio unit has fully settled.
+          // Calling this too early (before the delay) tears down the audio
+          // unit on iOS and silences incoming scout audio.  Loudspeaker unless
+          // a headset is connected.
+          await StreamAudio.routeOutput();
+          _audioDevicesSub = StreamAudio.watchDevices();
 
           isConnecting.value = false;
           _startCountdown();
@@ -136,20 +150,9 @@ class JoinStreamController extends GetxController {
     isMicEnabled.value = next;
 
     // Enabling the mic initialises the WebRTC audio unit on iOS, which
-    // resets the output route back to earpiece.  Re-apply loudspeaker
-    // routing so the client continues hearing the scout after unmuting.
-    if (next) await _configureSpeaker();
-  }
-
-  /// Routes incoming audio to the loudspeaker.
-  ///
-  /// Must be called AFTER the WebRTC audio unit is fully negotiated.
-  /// [forceSpeakerOutput] uses `overrideOutputAudioPort(.speaker)` on iOS,
-  /// which works correctly while a mic track is simultaneously active.
-  Future<void> _configureSpeaker() async {
-    try {
-      await Hardware.instance.setSpeakerphoneOn(true, forceSpeakerOutput: true);
-    } catch (_) {}
+    // resets the output route back to earpiece.  Re-apply the routing so the
+    // client continues hearing the scout after unmuting.
+    if (next) await StreamAudio.routeOutput();
   }
 
   /// Client voluntarily leaves — pops the page without opening the rating screen.
@@ -291,11 +294,12 @@ class JoinStreamController extends GetxController {
     _countdownTimer = null;
     _participantEventTimer?.cancel();
     _participantEventTimer = null;
+    await _audioDevicesSub?.cancel();
+    _audioDevicesSub = null;
     _room.removeListener(_refreshVideoTrack);
     await _roomListener?.dispose();
     _roomListener = null;
     await _room.disconnect();
-    WakelockPlus.disable().ignore();
   }
 
   String _format(int totalSeconds) {
@@ -312,10 +316,21 @@ class JoinStreamController extends GetxController {
   void onClose() {
     _countdownTimer?.cancel();
     _participantEventTimer?.cancel();
+    _audioDevicesSub?.cancel();
     _room.removeListener(_refreshVideoTrack);
     _roomListener?.dispose();
-    _room.disconnect();
-    WakelockPlus.disable().ignore();
+    _releaseRoom();
     super.onClose();
+  }
+
+  /// Disconnects (if it ever connected) and disposes the room, which also
+  /// stops the engine's timers. Each page owns its own room.
+  Future<void> _releaseRoom() async {
+    // Disconnecting a room that never connected waits for an event that
+    // never comes and times out.
+    if (_room.connectionState != ConnectionState.disconnected) {
+      await _room.disconnect().catchError((_) {});
+    }
+    await _room.dispose().catchError((_) => true);
   }
 }

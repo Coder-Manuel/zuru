@@ -2,7 +2,7 @@
 MIN_COVERAGE=20
 
 rm -rf test/.data/
-flutter test --coverage
+fvm flutter test --coverage
 TEST_EXIT=$?
 if [ $TEST_EXIT -ne 0 ]; then
   echo "❌ Tests Failed"

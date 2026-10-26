@@ -3,8 +3,10 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:livekit_client/livekit_client.dart';
 import 'package:zuru/config/client_colors.dart';
+import 'package:zuru/core/utils/keep_screen_on.dart';
 import 'package:zuru/core/utils/size.util.dart';
 import 'package:zuru/modules/missions/domain/entities/mission.entity.dart';
+import 'package:zuru/modules/stream/domain/usecases/join_stream.usecase.dart';
 import 'package:zuru/modules/stream/presentation/controllers/join_stream_controller.dart';
 
 /// Full-screen viewer page — client watches a scout's live stream.
@@ -18,9 +20,13 @@ class JoinStreamPage extends StatefulWidget {
   State<JoinStreamPage> createState() => _JoinStreamPageState();
 }
 
-class _JoinStreamPageState extends State<JoinStreamPage> {
+class _JoinStreamPageState extends State<JoinStreamPage> with KeepScreenOn {
   late final JoinStreamController _ctrl;
   late final MissionEntity _mission;
+
+  /// One controller (and LiveKit room) per page, so a page closing late can
+  /// never tear down a newer session.
+  late final String _tag = identityHashCode(this).toString();
 
   @override
   void initState() {
@@ -29,7 +35,10 @@ class _JoinStreamPageState extends State<JoinStreamPage> {
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
 
     _mission = Get.arguments as MissionEntity;
-    _ctrl = Get.find<JoinStreamController>();
+    _ctrl = Get.put(
+      JoinStreamController(joinStreamUseCase: Get.find<JoinStreamUseCase>()),
+      tag: _tag,
+    );
     _ctrl.mission = _mission;
 
     WidgetsBinding.instance.addPostFrameCallback(
@@ -41,6 +50,7 @@ class _JoinStreamPageState extends State<JoinStreamPage> {
   void dispose() {
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
     SystemChrome.setPreferredOrientations(DeviceOrientation.values);
+    Get.delete<JoinStreamController>(tag: _tag);
     super.dispose();
   }
 

@@ -3,8 +3,10 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:livekit_client/livekit_client.dart';
 import 'package:zuru/config/client_colors.dart';
+import 'package:zuru/core/utils/keep_screen_on.dart';
 import 'package:zuru/core/utils/size.util.dart';
 import 'package:zuru/modules/missions/domain/entities/mission.entity.dart';
+import 'package:zuru/modules/stream/domain/usecases/go_live.usecase.dart';
 import 'package:zuru/modules/stream/presentation/controllers/live_stream_controller.dart';
 
 /// Full-screen live-streaming page.
@@ -25,9 +27,13 @@ class StreamPage extends StatefulWidget {
   State<StreamPage> createState() => _StreamPageState();
 }
 
-class _StreamPageState extends State<StreamPage> {
+class _StreamPageState extends State<StreamPage> with KeepScreenOn {
   late final LiveStreamController _ctrl;
   late final MissionEntity _mission;
+
+  /// One controller (and LiveKit room) per page, so a page closing late can
+  /// never tear down a newer session.
+  late final String _tag = identityHashCode(this).toString();
 
   @override
   void initState() {
@@ -37,7 +43,10 @@ class _StreamPageState extends State<StreamPage> {
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
 
     _mission = Get.arguments as MissionEntity;
-    _ctrl = Get.find<LiveStreamController>();
+    _ctrl = Get.put(
+      LiveStreamController(goLiveUseCase: Get.find<GoLiveUseCase>()),
+      tag: _tag,
+    );
     _ctrl.mission = _mission;
 
     WidgetsBinding.instance.addPostFrameCallback(
@@ -49,6 +58,7 @@ class _StreamPageState extends State<StreamPage> {
   void dispose() {
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
     SystemChrome.setPreferredOrientations(DeviceOrientation.values);
+    Get.delete<LiveStreamController>(tag: _tag);
     super.dispose();
   }
 

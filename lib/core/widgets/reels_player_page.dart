@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:video_player/video_player.dart';
+import 'package:zuru/core/utils/keep_screen_on.dart';
 
 /// Full-screen, TikTok/Reels-style vertical video player.
 ///
@@ -43,7 +44,7 @@ class ReelsPlayerPage extends StatefulWidget {
   State<ReelsPlayerPage> createState() => _ReelsPlayerPageState();
 }
 
-class _ReelsPlayerPageState extends State<ReelsPlayerPage> {
+class _ReelsPlayerPageState extends State<ReelsPlayerPage> with KeepScreenOn {
   late final PageController _pageController;
   late int _index;
 
