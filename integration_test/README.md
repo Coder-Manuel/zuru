@@ -1,7 +1,7 @@
 # Device checks
 
-On-device checks for the QA fixes (BUG-002 payment sheet, BUG-005 audio
-routing, BUG-006 screen-on). They need a running emulator or simulator and,
+On-device checks for the QA fixes (BUG-001 foreground notification sound,
+BUG-002 payment sheet, BUG-005 audio routing, BUG-006 screen-on). They need a running emulator or simulator and,
 for some steps, someone at it (the Bluetooth permission dialog, the
 simulator's on-screen keyboard). See the note at the top of each file.
 

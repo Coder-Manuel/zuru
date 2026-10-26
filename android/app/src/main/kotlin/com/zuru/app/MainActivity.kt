@@ -4,6 +4,8 @@ import android.Manifest
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.pm.PackageManager
+import android.media.AudioAttributes
+import android.media.RingtoneManager
 import android.os.Build
 import android.os.Bundle
 import com.cloudwebrtc.webrtc.audio.AudioSwitchManager
@@ -26,6 +28,17 @@ class MainActivity : FlutterFragmentActivity() {
             .setMethodCallHandler { call, result ->
                 when (call.method) {
                     "ensureBluetoothPermission" -> ensureBluetoothPermission(result)
+                    else -> result.notImplemented()
+                }
+            }
+        // Must match NotificationService._androidChannel on the Dart side.
+        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "com.zuru.app/notifications")
+            .setMethodCallHandler { call, result ->
+                when (call.method) {
+                    "playAlert" -> {
+                        playNotificationSound(call.argument<String>("channelId"))
+                        result.success(null)
+                    }
                     else -> result.notImplemented()
                 }
             }
@@ -52,6 +65,32 @@ class MainActivity : FlutterFragmentActivity() {
                 },
             ),
         )
+    }
+
+    // FCM shows nothing for a push while the app is open, so it would arrive
+    // silently. Play the push's channel sound instead, unless the user has
+    // muted notifications or that channel. The notification audio usage also
+    // keeps Do Not Disturb and silent mode in charge.
+    private fun playNotificationSound(channelId: String?) {
+        val manager = getSystemService(NotificationManager::class.java) ?: return
+        if (!manager.areNotificationsEnabled()) return
+
+        val channel = manager.getNotificationChannel(channelId ?: DEFAULT_CHANNEL_ID)
+            ?: manager.getNotificationChannel(DEFAULT_CHANNEL_ID)
+        if (channel != null &&
+            (channel.importance < NotificationManager.IMPORTANCE_DEFAULT || channel.sound == null)
+        ) {
+            return
+        }
+
+        val sound = channel?.sound ?: RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
+        val ringtone = RingtoneManager.getRingtone(applicationContext, sound) ?: return
+        ringtone.audioAttributes = channel?.audioAttributes
+            ?: AudioAttributes.Builder()
+                .setUsage(AudioAttributes.USAGE_NOTIFICATION)
+                .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+                .build()
+        ringtone.play()
     }
 
     // ── Bluetooth audio ──────────────────────────────────────────────────────
@@ -112,5 +151,8 @@ class MainActivity : FlutterFragmentActivity() {
 
     private companion object {
         const val BLUETOOTH_REQUEST_CODE = 4201
+
+        // The manifest's default_notification_channel_id.
+        const val DEFAULT_CHANNEL_ID = "mission_updates"
     }
 }

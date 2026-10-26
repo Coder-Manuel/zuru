@@ -19,6 +19,16 @@ class MonitorService {
     log('Monitor Service Initialized');
   }
 
+  /// Records a step of a flow that can fail without an error (a notification
+  /// tap that opens nothing, say). Printed in debug builds and attached to the
+  /// next Crashlytics report.
+  static void breadcrumb(String message, {required String library}) {
+    log(message, name: library);
+    if (Get.testMode) return;
+    if (kDebugMode) debugPrint('[$library] $message');
+    FirebaseErrorProvider.crashlytics.log('[$library] $message').ignore();
+  }
+
   static void report({
     required Object ex,
     required String library,

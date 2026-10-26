@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:developer';
 
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:zuru/core/utils/error_wrapper.dart';
 
@@ -10,6 +11,9 @@ class NotificationService {
 
   static const _library = 'NotificationService';
   static final _messaging = FirebaseMessaging.instance;
+
+  /// Must match MainActivity's channel name.
+  static const _androidChannel = MethodChannel('com.zuru.app/notifications');
 
   static String? fcmToken;
 
@@ -39,6 +43,12 @@ class NotificationService {
           );
           return;
         }
+
+        // iOS: play the sound for pushes that arrive while the app is open.
+        // No banner; the app shows its own toast or dialog.
+        await _messaging.setForegroundNotificationPresentationOptions(
+          sound: true,
+        );
 
         if (GetPlatform.isIOS) await _messaging.getAPNSToken();
 
@@ -75,6 +85,21 @@ class NotificationService {
         library: _library,
         description: 'while reading the launch notification',
       );
+
+  /// Android: FCM shows nothing for a push while the app is open, so play
+  /// its channel's sound (the native side honours the user's channel
+  /// settings and Do Not Disturb). iOS handles this through the presentation
+  /// options set in [init].
+  static Future<void> playForegroundAlert(RemoteMessage message) async {
+    if (!GetPlatform.isAndroid) return;
+    await ErrorWrapper.async<void>(
+      () => _androidChannel.invokeMethod<void>('playAlert', {
+        'channelId': message.notification?.android?.channelId,
+      }),
+      library: _library,
+      description: 'while playing the foreground notification sound',
+    );
+  }
 
   /// Asks for permission again (e.g. when the user turns notifications back
   /// on). False when the user has denied it at the OS level.

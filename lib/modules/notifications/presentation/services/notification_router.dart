@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:zuru/core/models/enums.dart';
 import 'package:zuru/core/routes/app_routes.dart';
+import 'package:zuru/core/services/monitor_service/monitor.service.dart';
 import 'package:zuru/core/services/notification_service/notification_service.dart';
 import 'package:zuru/core/services/role_service/role_service.dart';
 import 'package:zuru/core/utils/toast.dart';
@@ -24,6 +25,30 @@ import 'package:zuru/modules/user/presentation/controllers/user_controller.dart'
 class NotificationRouter extends GetxService {
   static NotificationRouter get instance => Get.find<NotificationRouter>();
 
+  static const _library = 'NotificationRouter';
+
+  /// The optional arguments are for tests; the app uses Firebase and the
+  /// signed-in user.
+  NotificationRouter({
+    Stream<RemoteMessage>? openedMessages,
+    Stream<RemoteMessage>? foregroundMessages,
+    Future<RemoteMessage?> Function()? initialMessage,
+    bool Function()? isSignedIn,
+    UserRole Function()? currentRole,
+  }) : _openedMessages = openedMessages,
+       _foregroundMessages = foregroundMessages,
+       _initialMessage = initialMessage ?? NotificationService.initialMessage,
+       _isSignedIn =
+           isSignedIn ??
+           (() => Get.find<UserController>().currentUser.value != null),
+       _currentRole = currentRole ?? (() => RoleService.instance.role.value);
+
+  final Stream<RemoteMessage>? _openedMessages;
+  final Stream<RemoteMessage>? _foregroundMessages;
+  final Future<RemoteMessage?> Function() _initialMessage;
+  final bool Function() _isSignedIn;
+  final UserRole Function() _currentRole;
+
   final _getMissionById = Get.find<GetMissionByIdUseCase>();
   final _markRead = Get.find<MarkNotificationReadUseCase>();
 
@@ -36,17 +61,20 @@ class NotificationRouter extends GetxService {
   @override
   void onInit() {
     super.onInit();
-    _openedSub = NotificationService.openedMessages.listen(_openMessage);
-    _foregroundSub = NotificationService.foregroundMessages.listen(
-      _onForeground,
+    _openedSub = (_openedMessages ?? NotificationService.openedMessages).listen(
+      (message) => _openMessage(message, via: 'tap'),
     );
+    _foregroundSub =
+        (_foregroundMessages ?? NotificationService.foregroundMessages).listen(
+          _onForeground,
+        );
   }
 
   @override
   Future<void> onReady() async {
     super.onReady();
-    final launch = await NotificationService.initialMessage();
-    if (launch != null) _openMessage(launch);
+    final launch = await _initialMessage();
+    if (launch != null) _openMessage(launch, via: 'launch');
   }
 
   @override
@@ -58,23 +86,38 @@ class NotificationRouter extends GetxService {
 
   /// `GetMaterialApp.routingCallback`.
   void onRouteChanged(Routing? routing) {
-    final route = routing?.current;
-    if (route == null) return;
+    // Only a page route says where the user is. When a popup closes over
+    // another popup, GetX reports a stale route name (e.g. /login right after
+    // signing in), which used to look like signing out and parked every
+    // later tap for good.
+    if (routing == null || routing.route is! PageRoute) return;
+    final route = routing.current;
 
     if (_isHome(route)) {
       _homeReached = true;
       final pending = _pending;
       _pending = null;
-      if (pending != null) open(pending);
+      if (pending != null) {
+        // Let home build first: this runs inside a navigator callback, where
+        // pushing a route or a dialog is not allowed. The callback only runs
+        // once a frame is scheduled, so make sure one is.
+        WidgetsBinding.instance
+          ..addPostFrameCallback((_) => open(pending))
+          ..ensureVisualUpdate();
+      }
     } else if (_signedOutRoutes.contains(route)) {
       _homeReached = false;
+      if (_pending != null) _trace('signed out, dropping ${_pending!.type}');
       _pending = null;
     }
   }
 
   Future<void> open(NotificationPayload payload) async {
-    if (!_homeReached || Get.find<UserController>().currentUser.value == null) {
+    final what = '${payload.type.apiValue} (mission ${payload.missionId})';
+
+    if (!_homeReached || !_isSignedIn()) {
       _pending = payload;
+      _trace('$what: waiting until the user is home');
       return;
     }
 
@@ -82,18 +125,25 @@ class NotificationRouter extends GetxService {
     if (id != null) unawaited(_markRead(id));
 
     if (Get.currentRoute == AppRoutes.stream) {
+      _trace('$what: on a live, showing a toast instead');
       Toast.info(payload.body ?? 'Open it once your live ends.');
       return;
     }
 
-    if (payload.type.role != RoleService.instance.role.value) {
-      if (!await _confirmSwitch(payload.type.role)) return;
-      if (!await Get.find<UserController>().switchTo(payload.type.role)) {
+    final role = payload.type.role;
+    if (role != _currentRole()) {
+      if (!await _confirmSwitch(role)) {
+        _trace('$what: user kept their current role');
+        return;
+      }
+      if (!await Get.find<UserController>().switchTo(role)) {
+        _trace('$what: switching to ${role.name} failed');
         return;
       }
       await WidgetsBinding.instance.endOfFrame;
     }
 
+    _trace('$what: ${payload.type.action.name}');
     await _perform(payload);
   }
 
@@ -132,17 +182,21 @@ class NotificationRouter extends GetxService {
         await _loadMission(missionId);
     if (mission != null && mission.awaitingClientPayment) {
       maps.promptPaymentFor(mission);
+    } else {
+      _trace('mission $missionId: nothing left to pay');
     }
   }
 
   Future<void> _joinLive(String? missionId) async {
     final mission = missionId == null ? null : await _loadMission(missionId);
     if (mission == null) {
+      _trace('mission $missionId: not found, cannot join');
       Toast.error('This live is no longer available.');
       return;
     }
 
     if (_hasEnded(mission)) {
+      _trace('mission $missionId: live already ended');
       await _openTab(0);
       Toast.info('That live has already ended.');
       return;
@@ -155,17 +209,28 @@ class NotificationRouter extends GetxService {
 
   // ── Helpers ───────────────────────────────────────────────────────────────
 
-  void _openMessage(RemoteMessage message) {
+  void _openMessage(RemoteMessage message, {required String via}) {
     final payload = _payloadOf(message);
-    if (payload != null) open(payload);
+    if (payload == null) {
+      _trace('$via: ignored, unknown type "${message.data['type']}"');
+      return;
+    }
+    _trace('$via: ${payload.type.apiValue}');
+    open(payload);
   }
 
   void _onForeground(RemoteMessage message) {
     final payload = _payloadOf(message);
     if (payload == null) return;
 
+    // FCM shows nothing while the app is open; at least make it heard.
+    // Not during a live, where it would cut into the call audio.
+    if (Get.currentRoute != AppRoutes.stream) {
+      unawaited(NotificationService.playForegroundAlert(message));
+    }
+
     // The map tab already shows its own dialog for these.
-    final sameRole = payload.type.role == RoleService.instance.role.value;
+    final sameRole = payload.type.role == _currentRole();
     final shownInApp =
         payload.type == NotificationType.scoutLive ||
         (payload.type == NotificationType.missionAccepted &&
@@ -226,6 +291,9 @@ class NotificationRouter extends GetxService {
         title: message.notification?.title,
         body: message.notification?.body,
       );
+
+  void _trace(String message) =>
+      MonitorService.breadcrumb(message, library: _library);
 
   static bool _isHome(String? route) =>
       route == AppRoutes.home || route == AppRoutes.scoutHome;
