@@ -4,7 +4,7 @@ import 'package:zuru/core/utils/toast.dart';
 import 'package:zuru/modules/missions/data/models/enum.dart';
 import 'package:zuru/modules/missions/domain/entities/mission.entity.dart';
 import 'package:zuru/modules/missions/domain/usecases/get_my_missions.usecase.dart';
-import 'package:zuru/modules/missions/presentation/pages/mission_details_page.dart';
+import 'package:zuru/modules/missions/presentation/controllers/radar_controller.dart';
 
 enum MissionFilter { all, active, accepted, completed }
 
@@ -17,6 +17,7 @@ class MissionsController extends GetxController {
   final RxBool isLoading = true.obs;
 
   RealtimeChannel? _sessionChannel;
+  Worker? _activeWorker;
 
   // ── Derived ───────────────────────────────────────────────────────────────
 
@@ -43,10 +44,20 @@ class MissionsController extends GetxController {
   void onReady() {
     super.onReady();
     fetchMissions();
+
+    // The radar is told the moment a held live check changes state (accepted,
+    // live, completed); refetch then instead of waiting for pull-to-refresh.
+    final radar = Get.find<RadarController>();
+    _activeWorker = ever(
+      radar.activeMission,
+      (_) => fetchMissions(),
+      condition: () => !isLoading.value,
+    );
   }
 
   @override
   void onClose() {
+    _activeWorker?.dispose();
     _sessionChannel?.unsubscribe();
     super.onClose();
   }
@@ -65,7 +76,9 @@ class MissionsController extends GetxController {
     });
   }
 
+  /// Same path as the radar's active panel, so a held live check starts the
+  /// same way from either tab.
   void onTapMission(MissionEntity mission) {
-    Get.toNamed(MissionDetailsPage.route, arguments: mission);
+    Get.find<RadarController>().startActiveMission(mission);
   }
 }

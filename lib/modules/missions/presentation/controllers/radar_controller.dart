@@ -3,6 +3,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:zuru/core/routes/app_routes.dart';
 import 'package:zuru/core/services/analytics_service/analytics_service.dart';
 import 'package:zuru/core/services/analytics_service/static/event_enum.dart';
 import 'package:zuru/core/services/fx_service/fx_service.dart';
@@ -20,7 +21,9 @@ import 'package:zuru/modules/missions/domain/usecases/search_missions.usecase.da
 import 'package:zuru/modules/missions/domain/usecases/watch_active_mission.usecase.dart';
 import 'package:zuru/modules/missions/domain/usecases/watch_mission_pool.usecase.dart';
 import 'package:zuru/modules/missions/domain/usecases/watch_scout_requests.usecase.dart';
+import 'package:zuru/modules/home/presentation/controllers/home_controller.dart';
 import 'package:zuru/modules/missions/presentation/pages/mission_details_page.dart';
+import 'package:zuru/modules/missions/presentation/pages/navigation_page.dart';
 import 'package:zuru/modules/user/presentation/controllers/user_controller.dart';
 
 class RadarController extends GetxController
@@ -486,11 +489,13 @@ class RadarController extends GetxController
     );
 
     result.fold((err) => Toast.error(err.message), (_) {
-      Get.back(); // close MissionDetailsPage
       // A live request is only paid for after acceptance — say so, otherwise
       // the guide is left wondering why they can't set off.
       if (mission.isLiveRequest && !mission.isPublished) {
+        _backToRadar();
         Toast.success('Accepted — waiting for the client to pay');
+      } else {
+        startActiveMission(mission);
       }
     });
 
@@ -498,9 +503,39 @@ class RadarController extends GetxController
   }
 
   Future<void> completeMission() async {
-    return Get.toNamed(
-      MissionDetailsPage.route,
-      arguments: activeMission.value,
+    final mission = activeMission.value;
+    if (mission != null) startActiveMission(mission);
+  }
+
+  /// The one way into a held live check — right after accepting, and from the
+  /// radar panel, the details page or the Tasks tab — so the guide always
+  /// takes the same path wherever they started: back to the radar, then
+  /// straight into the stream when it is already live, or on to navigation,
+  /// which hands over to GPS verification and the stream. An unpaid live
+  /// request waits on the radar until the client pays.
+  void startActiveMission(MissionEntity mission) {
+    _backToRadar();
+    if (mission.awaitingClientPayment) return;
+
+    if (mission.status == MissionStatus.live) {
+      // StreamRoleMiddleware renders StreamPage for scouts.
+      Get.toNamed(AppRoutes.stream, arguments: mission);
+    } else {
+      Get.toNamed(NavigationPage.route, arguments: mission);
+    }
+  }
+
+  /// Pops whatever is over the scout home (details, Live Checks, sheets) and
+  /// selects the Radar tab.
+  void _backToRadar() {
+    if (Get.isRegistered<HomeController>()) {
+      Get.find<HomeController>().changePage(0);
+    }
+    Get.until(
+      (route) =>
+          route.isFirst ||
+          route.settings.name == AppRoutes.home ||
+          route.settings.name == AppRoutes.scoutHome,
     );
   }
 

@@ -7,6 +7,7 @@ import 'package:zuru/modules/rating/presentation/pages/rate_client_page.dart';
 import 'package:zuru/modules/stream/data/models/stream.inputs.dart';
 import 'package:zuru/modules/stream/domain/usecases/go_live.usecase.dart';
 import 'package:zuru/modules/stream/presentation/services/stream_audio.dart';
+import 'package:zuru/modules/stream/presentation/services/stream_video.dart';
 
 /// Lifecycle of the remote client as observed from the LiveKit room.
 enum ClientStreamState {
@@ -32,17 +33,7 @@ class LiveStreamController extends GetxController {
   /// [room] is for tests; a page gets a fresh room by default.
   LiveStreamController({required GoLiveUseCase goLiveUseCase, Room? room})
     : _goLiveUseCase = goLiveUseCase,
-      _room =
-          room ??
-          Room(
-            roomOptions: const RoomOptions(
-              adaptiveStream: true,
-              dynacast: true,
-              defaultCameraCaptureOptions: CameraCaptureOptions(
-                cameraPosition: CameraPosition.back,
-              ),
-            ),
-          );
+      _room = room ?? Room(roomOptions: StreamVideo.publisherRoomOptions);
 
   late MissionEntity mission;
 

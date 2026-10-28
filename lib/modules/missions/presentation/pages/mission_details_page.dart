@@ -7,7 +7,6 @@ import 'package:zuru/core/widgets/location_listener.builder.dart';
 import 'package:zuru/modules/missions/data/models/enum.dart';
 import 'package:zuru/modules/missions/domain/entities/mission.entity.dart';
 import 'package:zuru/modules/missions/presentation/controllers/radar_controller.dart';
-import 'package:zuru/modules/missions/presentation/pages/navigation_page.dart';
 
 class MissionDetailsPage extends GetView<RadarController> {
   static const String route = '/mission-details';
@@ -141,18 +140,31 @@ class _ScoutCta extends GetView<RadarController> {
         return _AwaitingPaymentNotice(countdown: controller.paymentCountdown);
       }
 
+      // Over, or no longer the guide's — accepting or declining would only
+      // bounce off the server.
+      if ([
+        MissionStatus.completed,
+        MissionStatus.declined,
+      ].contains(current.status)) {
+        return _EndedNotice();
+      }
+
       if ([
         MissionStatus.accepted,
         MissionStatus.enroute,
+        MissionStatus.live,
       ].contains(current.status)) {
-        // Accepted and paid → show navigation CTA
+        // Held and paid → navigation, or back into the stream once live
+        final isLive = current.status == MissionStatus.live;
         return ElevatedButton.icon(
-          onPressed: () =>
-              Get.toNamed(NavigationPage.route, arguments: current),
-          icon: const Icon(Icons.navigation_rounded, size: 20),
-          label: const Text(
-            'Navigate to Location',
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
+          onPressed: () => controller.startActiveMission(current),
+          icon: Icon(
+            isLive ? Icons.videocam_rounded : Icons.navigation_rounded,
+            size: 20,
+          ),
+          label: Text(
+            isLive ? 'Resume Live Stream' : 'Navigate to Location',
+            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
           ),
           style: ElevatedButton.styleFrom(
             backgroundColor: ClientColors.primary,
@@ -223,6 +235,41 @@ class _ScoutCta extends GetView<RadarController> {
         ],
       );
     });
+  }
+}
+
+/// Shown for a live check that has finished or was declined.
+class _EndedNotice extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: ClientColors.surface,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: ClientColors.divider.withAlpha(120)),
+      ),
+      child: Row(
+        children: [
+          Icon(
+            Icons.check_circle_outline_rounded,
+            size: 18,
+            color: ClientColors.textSecondary,
+          ),
+          12.horizontalSpace,
+          Expanded(
+            child: Text(
+              'This live check has ended.',
+              style: TextStyle(
+                color: ClientColors.textSecondary,
+                fontSize: 13,
+                height: 1.45,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }
 

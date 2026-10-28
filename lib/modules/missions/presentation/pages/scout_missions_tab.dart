@@ -276,6 +276,7 @@ class _MissionCard extends StatelessWidget {
             if ([
               MissionStatus.accepted,
               MissionStatus.enroute,
+              MissionStatus.live,
             ].contains(mission.status)) ...[
               const SizedBox(height: 12),
               SizedBox(
@@ -290,9 +291,14 @@ class _MissionCard extends StatelessWidget {
                         duration: 900.ms,
                         curve: Curves.easeInOut,
                       ),
-                  label: const Text(
-                    'Complete Live Check',
-                    style: TextStyle(fontWeight: FontWeight.w700, fontSize: 14),
+                  label: Text(
+                    mission.status == MissionStatus.live
+                        ? 'Resume Live Stream'
+                        : 'Complete Live Check',
+                    style: const TextStyle(
+                      fontWeight: FontWeight.w700,
+                      fontSize: 14,
+                    ),
                   ),
                   style: ElevatedButton.styleFrom(
                     minimumSize: const Size(double.infinity, 30),

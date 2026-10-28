@@ -4,6 +4,7 @@ import 'package:zuru/config/scout_colors.dart';
 import 'package:zuru/core/utils/extensions.dart';
 import 'package:zuru/core/utils/size.util.dart';
 import 'package:zuru/core/widgets/location_listener.builder.dart';
+import 'package:zuru/modules/missions/data/models/enum.dart';
 import 'package:zuru/modules/missions/domain/entities/mission.entity.dart';
 import 'package:zuru/modules/missions/presentation/controllers/radar_controller.dart';
 import 'package:zuru/modules/missions/presentation/pages/mission_details_page.dart';
@@ -23,6 +24,7 @@ class ActiveMissionPanel extends GetView<RadarController> {
         if (mission == null) return const SizedBox.shrink();
 
         final awaitingPayment = mission.awaitingClientPayment;
+        final isLive = mission.status == MissionStatus.live;
 
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -111,6 +113,8 @@ class ActiveMissionPanel extends GetView<RadarController> {
                             : Text(
                                 awaitingPayment
                                     ? 'Locked until the client pays'
+                                    : isLive
+                                    ? 'Resume Live Stream'
                                     : 'Complete Live Check',
                                 style: const TextStyle(
                                   fontSize: 16,
@@ -120,36 +124,38 @@ class ActiveMissionPanel extends GetView<RadarController> {
                       ),
                     ),
 
-                    10.verticalSpace,
-
-                    // Abandon CTA
-                    Obx(
-                      () => OutlinedButton(
-                        onPressed: controller.isUpdatingStatus.value
-                            ? null
-                            : () => _confirmAbandon(context),
-                        style: OutlinedButton.styleFrom(
-                          foregroundColor: const Color(0xFFFF4444),
-                          side: const BorderSide(
-                            color: Color(0xFF3B1A1A),
-                            width: 1.2,
+                    // Abandon CTA — a stream that has started can't be
+                    // abandoned; the server rejects it.
+                    if (!isLive) ...[
+                      10.verticalSpace,
+                      Obx(
+                        () => OutlinedButton(
+                          onPressed: controller.isUpdatingStatus.value
+                              ? null
+                              : () => _confirmAbandon(context),
+                          style: OutlinedButton.styleFrom(
+                            foregroundColor: const Color(0xFFFF4444),
+                            side: const BorderSide(
+                              color: Color(0xFF3B1A1A),
+                              width: 1.2,
+                            ),
+                            minimumSize: const Size.fromHeight(54),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(14),
+                            ),
                           ),
-                          minimumSize: const Size.fromHeight(54),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(14),
-                          ),
-                        ),
-                        child: Text(
-                          awaitingPayment
-                              ? 'Release Request'
-                              : 'Abandon Live Check',
-                          style: const TextStyle(
-                            fontSize: 15,
-                            fontWeight: FontWeight.w600,
+                          child: Text(
+                            awaitingPayment
+                                ? 'Release Request'
+                                : 'Abandon Live Check',
+                            style: const TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.w600,
+                            ),
                           ),
                         ),
                       ),
-                    ),
+                    ],
                   ],
                 ),
               ),

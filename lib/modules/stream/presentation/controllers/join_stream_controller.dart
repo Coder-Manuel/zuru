@@ -6,6 +6,7 @@ import 'package:zuru/modules/missions/domain/entities/mission.entity.dart';
 import 'package:zuru/modules/rating/presentation/pages/rate_scout_page.dart';
 import 'package:zuru/modules/stream/domain/usecases/join_stream.usecase.dart';
 import 'package:zuru/modules/stream/presentation/services/stream_audio.dart';
+import 'package:zuru/modules/stream/presentation/services/stream_video.dart';
 
 // ── Scout presence status ─────────────────────────────────────────────────────
 
@@ -33,14 +34,7 @@ class JoinStreamController extends GetxController {
     required JoinStreamUseCase joinStreamUseCase,
     Room? room,
   }) : _joinStreamUseCase = joinStreamUseCase,
-       _room =
-           room ??
-           Room(
-             roomOptions: const RoomOptions(
-               adaptiveStream: true,
-               dynacast: true,
-             ),
-           );
+       _room = room ?? Room(roomOptions: StreamVideo.viewerRoomOptions);
 
   late MissionEntity mission;
 
