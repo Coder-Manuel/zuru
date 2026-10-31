@@ -293,13 +293,8 @@ class _RoleSwitchCard extends StatelessWidget {
     final bodyColor = Theme.of(context).textTheme.bodyMedium?.color;
     final surfaceColor = Theme.of(context).colorScheme.surface;
 
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: surfaceColor,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-      ),
-      builder: (_) => Padding(
+    Get.bottomSheet(
+      Padding(
         padding: const EdgeInsets.fromLTRB(24, 16, 24, 32),
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -392,6 +387,11 @@ class _RoleSwitchCard extends StatelessWidget {
             ),
           ],
         ),
+      ),
+      backgroundColor: surfaceColor,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
     );
   }
