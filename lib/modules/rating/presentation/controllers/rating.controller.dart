@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:zuru/core/services/role_service/role_service.dart';
 import 'package:zuru/core/utils/loader.dart';
 import 'package:zuru/core/utils/toast.dart';
 import 'package:zuru/modules/missions/domain/entities/mission.entity.dart';
@@ -48,13 +49,26 @@ class RatingController extends GetxController
     super.onInit();
   }
 
+  /// The other side of the mission: the client rates the guide and the guide
+  /// rates the client. Both pages share this controller, and always sending
+  /// the scout had the guide rating themselves.
+  String? get _ratedProfileId => RoleService.instance.isScout
+      ? mission.clientId ?? mission.client?.id
+      : mission.scoutId ?? mission.scout?.id;
+
   Future<void> createRating() async {
     if (selectedStars.value <= 0) return onBackToHome();
+    final missionId = mission.id;
+    final ratedId = _ratedProfileId;
+    if (missionId == null || ratedId == null) {
+      return Toast.error('Could not find who to rate for this live check.');
+    }
+
     Loader.show(message: 'Posting rating...');
     final response = await _createRatingUsecase(
       CreateRatingInput(
-        missionId: mission.id ?? '',
-        toUserId: mission.scoutId ?? '',
+        missionId: missionId,
+        toUserId: ratedId,
         score: selectedStars.value,
       ),
     );

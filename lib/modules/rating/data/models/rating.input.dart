@@ -2,7 +2,8 @@ class CreateRatingInput {
   /// The mission this rating belongs to.
   final String missionId;
 
-  /// The user being rated (the scout).
+  /// The profile being rated: the scout when the client rates, the client
+  /// when the scout rates.
   final String toUserId;
 
   /// Score from 1 to 5.
