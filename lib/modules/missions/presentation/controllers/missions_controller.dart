@@ -8,6 +8,7 @@ import 'package:zuru/modules/missions/presentation/controllers/radar_controller.
 
 enum MissionFilter { all, active, accepted, completed }
 
+// The controller is a specialized view of a mission, showing only the events.
 class MissionsController extends GetxController {
   final _getMyMissionsUseCase = Get.find<GetMyMissionsUseCase>();
 

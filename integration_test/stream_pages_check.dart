@@ -13,7 +13,10 @@ import 'package:zuru/core/types/repo_reponse.type.dart';
 import 'package:zuru/modules/missions/data/models/mission.model.dart';
 import 'package:zuru/modules/stream/data/models/stream.inputs.dart';
 import 'package:zuru/modules/stream/domain/entities/livekit_session.entity.dart';
+import 'package:zuru/modules/stream/domain/entities/stream_clock.entity.dart';
 import 'package:zuru/modules/stream/domain/repository/stream_repository.dart';
+import 'package:zuru/modules/stream/domain/usecases/end_session.usecase.dart';
+import 'package:zuru/modules/stream/domain/usecases/get_stream_clock.usecase.dart';
 import 'package:zuru/modules/stream/domain/usecases/go_live.usecase.dart';
 import 'package:zuru/modules/stream/domain/usecases/join_stream.usecase.dart';
 import 'package:zuru/modules/stream/presentation/controllers/join_stream_controller.dart';
@@ -31,6 +34,15 @@ class _OfflineStreamRepository implements StreamRepository {
   Future<RepoResponse<LiveKitSessionEntity>> goLive(
     InitStreamInput input,
   ) async => FailureResponse('offline');
+
+  @override
+  Future<RepoResponse<StreamClockEntity>> getStreamClock(
+    String missionId,
+  ) async => FailureResponse('offline');
+
+  @override
+  Future<RepoResponse<bool>> endSession(String missionId) async =>
+      FailureResponse('offline');
 }
 
 final _mission = MissionModel(
@@ -49,6 +61,8 @@ void main() {
     final repo = _OfflineStreamRepository();
     Get.put(JoinStreamUseCase(repo: repo));
     Get.put(GoLiveUseCase(repo: repo));
+    Get.put(GetStreamClockUseCase(repo: repo));
+    Get.put(EndSessionUseCase(repo: repo));
     await WakelockPlus.disable();
   });
 

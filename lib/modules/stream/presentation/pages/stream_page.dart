@@ -6,8 +6,11 @@ import 'package:zuru/config/client_colors.dart';
 import 'package:zuru/core/utils/keep_screen_on.dart';
 import 'package:zuru/core/utils/size.util.dart';
 import 'package:zuru/modules/missions/domain/entities/mission.entity.dart';
+import 'package:zuru/modules/stream/domain/usecases/end_session.usecase.dart';
+import 'package:zuru/modules/stream/domain/usecases/get_stream_clock.usecase.dart';
 import 'package:zuru/modules/stream/domain/usecases/go_live.usecase.dart';
 import 'package:zuru/modules/stream/presentation/controllers/live_stream_controller.dart';
+import 'package:zuru/modules/stream/presentation/widgets/stream_connection_states.dart';
 
 /// Full-screen live-streaming page.
 ///
@@ -44,7 +47,11 @@ class _StreamPageState extends State<StreamPage> with KeepScreenOn {
 
     _mission = Get.arguments as MissionEntity;
     _ctrl = Get.put(
-      LiveStreamController(goLiveUseCase: Get.find<GoLiveUseCase>()),
+      LiveStreamController(
+        goLiveUseCase: Get.find<GoLiveUseCase>(),
+        endSessionUseCase: Get.find<EndSessionUseCase>(),
+        clockUseCase: Get.find<GetStreamClockUseCase>(),
+      ),
       tag: _tag,
     );
     _ctrl.mission = _mission;
@@ -71,6 +78,9 @@ class _StreamPageState extends State<StreamPage> with KeepScreenOn {
         children: [
           // 1. Camera feed — fills the whole screen.
           _CameraFeed(ctrl: _ctrl),
+
+          // Covers the feed while the guide's own connection recovers.
+          _SelfReconnecting(ctrl: _ctrl),
 
           // 2. Top overlay — live badge, scout name, timer.
           _TopOverlay(ctrl: _ctrl),
@@ -164,6 +174,19 @@ class _CameraFeed extends StatelessWidget {
         );
       }
 
+      // ── The guide's connection is gone ─────────────────────────────────────
+      if (ctrl.connectionLost.value) {
+        return StreamNoticeView(
+          icon: Icons.wifi_off_rounded,
+          title: 'You lost connection',
+          subtitle: 'Go live again to carry on. The time left is kept.',
+          accent: ClientColors.primary,
+          actionLabel: 'Go Live Again',
+          onAction: ctrl.rejoin,
+          isBusy: ctrl.isRejoining.value,
+        );
+      }
+
       // ── Live — render camera track ─────────────────────────────────────────
       final track = ctrl.videoTrack.value;
       if (track != null) {
@@ -174,6 +197,26 @@ class _CameraFeed extends StatelessWidget {
 
       // Camera track not yet published — black placeholder.
       return const ColoredBox(color: Colors.black);
+    });
+  }
+}
+
+// ── Guide reconnecting ────────────────────────────────────────────────────────
+
+class _SelfReconnecting extends StatelessWidget {
+  final LiveStreamController ctrl;
+  const _SelfReconnecting({required this.ctrl});
+
+  @override
+  Widget build(BuildContext context) {
+    return Obx(() {
+      if (!ctrl.isReconnecting.value) return const SizedBox.shrink();
+      return StreamReconnectingView(
+        title: 'Reconnecting…',
+        subtitle: 'Your connection dropped. The viewer is kept waiting',
+        secondsLeft: ctrl.selfGrace.secondsLeft.value,
+        accent: ClientColors.primary,
+      );
     });
   }
 }
@@ -208,7 +251,12 @@ class _TopOverlay extends StatelessWidget {
                 8.verticalSpace,
                 const _LiveBadge(),
                 6.verticalSpace,
-                Obx(() => _ClientStatusText(state: ctrl.clientState.value)),
+                Obx(
+                  () => _ClientStatusText(
+                    state: ctrl.clientState.value,
+                    graceSecondsLeft: ctrl.clientGrace.secondsLeft.value,
+                  ),
+                ),
               ],
             ),
 
@@ -515,7 +563,8 @@ class _TimerBadgeState extends State<_TimerBadge>
 
 class _ClientStatusText extends StatelessWidget {
   final ClientStreamState state;
-  const _ClientStatusText({required this.state});
+  final int? graceSecondsLeft;
+  const _ClientStatusText({required this.state, this.graceSecondsLeft});
 
   @override
   Widget build(BuildContext context) {
@@ -526,11 +575,13 @@ class _ClientStatusText extends StatelessWidget {
       ),
       ClientStreamState.joined => ('Viewer is watching', ClientColors.primary),
       ClientStreamState.disconnected => (
-        'Viewer disconnected — reconnecting…',
+        graceSecondsLeft == null
+            ? 'Viewer reconnecting…'
+            : 'Viewer reconnecting… ${graceSecondsLeft}s',
         Color(0xFFF5A020),
       ),
       ClientStreamState.droppedOff => (
-        'Viewer left the stream',
+        "Viewer hasn't reconnected",
         Color(0xFFF5A020),
       ),
       ClientStreamState.terminated => (
@@ -735,7 +786,8 @@ class _EndMissionButton extends StatelessWidget {
           ),
         ),
         content: Text(
-          'This will stop your stream and mark the live check as complete.',
+          'This ends the stream for you and the viewer, and completes the '
+          'live check.',
           style: TextStyle(
             color: ClientColors.textSecondary,
             fontSize: 14,

@@ -6,8 +6,10 @@ import 'package:zuru/config/client_colors.dart';
 import 'package:zuru/core/utils/keep_screen_on.dart';
 import 'package:zuru/core/utils/size.util.dart';
 import 'package:zuru/modules/missions/domain/entities/mission.entity.dart';
+import 'package:zuru/modules/stream/domain/usecases/get_stream_clock.usecase.dart';
 import 'package:zuru/modules/stream/domain/usecases/join_stream.usecase.dart';
 import 'package:zuru/modules/stream/presentation/controllers/join_stream_controller.dart';
+import 'package:zuru/modules/stream/presentation/widgets/stream_connection_states.dart';
 
 /// Full-screen viewer page — client watches a scout's live stream.
 ///
@@ -36,7 +38,10 @@ class _JoinStreamPageState extends State<JoinStreamPage> with KeepScreenOn {
 
     _mission = Get.arguments as MissionEntity;
     _ctrl = Get.put(
-      JoinStreamController(joinStreamUseCase: Get.find<JoinStreamUseCase>()),
+      JoinStreamController(
+        joinStreamUseCase: Get.find<JoinStreamUseCase>(),
+        clockUseCase: Get.find<GetStreamClockUseCase>(),
+      ),
       tag: _tag,
     );
     _ctrl.mission = _mission;
@@ -62,6 +67,7 @@ class _JoinStreamPageState extends State<JoinStreamPage> with KeepScreenOn {
         fit: StackFit.expand,
         children: [
           _RemoteFeed(ctrl: _ctrl),
+          _SelfReconnecting(ctrl: _ctrl),
           _TopOverlay(ctrl: _ctrl),
           _BottomSection(ctrl: _ctrl, mission: _mission),
         ],
@@ -146,40 +152,38 @@ class _RemoteFeed extends StatelessWidget {
         );
       }
 
-      // ── Disconnected ────────────────────────────────────────────────────
+      // ── This device's connection is gone ────────────────────────────────
+      if (ctrl.connectionLost.value) {
+        return StreamNoticeView(
+          icon: Icons.wifi_off_rounded,
+          title: 'You lost connection',
+          subtitle: 'Rejoin to carry on. The time left is kept.',
+          accent: ClientColors.primary,
+          actionLabel: 'Rejoin Stream',
+          onAction: ctrl.rejoin,
+          isBusy: ctrl.isRejoining.value,
+        );
+      }
+
+      // ── Guide dropped: waiting for them ─────────────────────────────────
+      final guide = ctrl.mission.scout?.displayName ?? 'Guide';
       if (ctrl.scoutStatus.value == ScoutStatus.disconnected) {
-        return _FullScreenMessage(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Container(
-                padding: const EdgeInsets.all(18),
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: Colors.grey.withAlpha(30),
-                ),
-                child: const Icon(
-                  Icons.signal_wifi_connected_no_internet_4_rounded,
-                  color: Colors.grey,
-                  size: 42,
-                ),
-              ),
-              20.verticalSpace,
-              const Text(
-                'Guide disconnected',
-                style: TextStyle(
-                  color: Colors.white70,
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              8.verticalSpace,
-              const Text(
-                'Ending session…',
-                style: TextStyle(color: Colors.white38, fontSize: 13),
-              ),
-            ],
-          ),
+        return StreamReconnectingView(
+          title: '$guide lost connection',
+          subtitle: 'Waiting for them to reconnect',
+          secondsLeft: ctrl.scoutGrace.secondsLeft.value,
+          accent: ClientColors.primary,
+        );
+      }
+
+      // ── Guide did not come back in time ─────────────────────────────────
+      if (ctrl.scoutStatus.value == ScoutStatus.left) {
+        return StreamNoticeView(
+          icon: Icons.signal_wifi_connected_no_internet_4_rounded,
+          title: "$guide hasn't reconnected",
+          subtitle:
+              'The stream picks up if they come back. You can also leave.',
+          accent: Colors.grey,
         );
       }
 
@@ -204,6 +208,26 @@ class _RemoteFeed extends StatelessWidget {
             ),
           ],
         ),
+      );
+    });
+  }
+}
+
+// ─── This device reconnecting ────────────────────────────────────────────────
+
+class _SelfReconnecting extends StatelessWidget {
+  final JoinStreamController ctrl;
+  const _SelfReconnecting({required this.ctrl});
+
+  @override
+  Widget build(BuildContext context) {
+    return Obx(() {
+      if (!ctrl.isReconnecting.value) return const SizedBox.shrink();
+      return StreamReconnectingView(
+        title: 'Reconnecting…',
+        subtitle: 'Your connection dropped',
+        secondsLeft: ctrl.selfGrace.secondsLeft.value,
+        accent: ClientColors.primary,
       );
     });
   }
@@ -260,20 +284,6 @@ class _TopOverlay extends StatelessWidget {
                 }),
               ],
             ),
-
-            // ── Reconnecting pill (local user lost connection) ─────────────
-            Obx(() {
-              if (!ctrl.isReconnecting.value) return const SizedBox.shrink();
-              return Padding(
-                padding: const EdgeInsets.only(top: 10),
-                child: _EventPill(
-                  icon: Icons.wifi_off_rounded,
-                  label: 'Reconnecting…',
-                  color: const Color(0xFFFBBF24),
-                  persistent: true,
-                ),
-              );
-            }),
 
             // ── Participant event toast (scout joined / disconnected / etc.) ─
             Obx(() {
@@ -403,7 +413,13 @@ class _StatusBadge extends StatelessWidget {
       ScoutStatus.disconnected => _badge(
         color: Colors.grey,
         dot: false,
-        label: 'DISCONNECTED',
+        label: 'RECONNECTING',
+        icon: Icons.wifi_off_rounded,
+      ),
+      ScoutStatus.left => _badge(
+        color: Colors.grey,
+        dot: false,
+        label: 'GUIDE AWAY',
         icon: Icons.wifi_off_rounded,
       ),
     };
@@ -607,7 +623,7 @@ class _ScoutAvatarState extends State<_ScoutAvatar>
     ScoutStatus.waiting => ClientColors.primary,
     ScoutStatus.streaming => const Color(0xFF3B82F6),
     ScoutStatus.muted => const Color(0xFFEF4444),
-    ScoutStatus.disconnected => Colors.grey,
+    ScoutStatus.disconnected || ScoutStatus.left => Colors.grey,
   };
 
   @override
@@ -631,7 +647,11 @@ class _ScoutAvatarState extends State<_ScoutAvatar>
       child: ClipOval(
         child: AnimatedOpacity(
           duration: const Duration(milliseconds: 300),
-          opacity: widget.status == ScoutStatus.disconnected ? 0.4 : 1.0,
+          opacity:
+              widget.status == ScoutStatus.disconnected ||
+                  widget.status == ScoutStatus.left
+              ? 0.4
+              : 1.0,
           child: Container(
             color: ClientColors.surface,
             alignment: Alignment.center,
@@ -877,19 +897,8 @@ class _PulsingIconState extends State<_PulsingIcon>
 
 class _EventPill extends StatefulWidget {
   final String label;
-  final IconData? icon;
-  final Color color;
 
-  /// When true the pill does not rely on auto-removal — it stays until the
-  /// observable driving the Obx is cleared externally.
-  final bool persistent;
-
-  const _EventPill({
-    required this.label,
-    this.icon,
-    this.color = Colors.white70,
-    this.persistent = false,
-  });
+  const _EventPill({required this.label});
 
   @override
   State<_EventPill> createState() => _EventPillState();
@@ -932,19 +941,15 @@ class _EventPillState extends State<_EventPill>
           decoration: BoxDecoration(
             color: Colors.black.withAlpha(160),
             borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: widget.color.withAlpha(60)),
+            border: Border.all(color: Colors.white70.withAlpha(60)),
           ),
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              if (widget.icon != null) ...[
-                Icon(widget.icon, color: widget.color, size: 13),
-                const SizedBox(width: 5),
-              ],
               Text(
                 widget.label,
-                style: TextStyle(
-                  color: widget.color,
+                style: const TextStyle(
+                  color: Colors.white70,
                   fontSize: 12,
                   fontWeight: FontWeight.w600,
                 ),

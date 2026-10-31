@@ -3,6 +3,8 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:zuru/modules/stream/data/repositories_impl/stream_repository_impl.dart';
 import 'package:zuru/modules/stream/data/sources/remote_stream_datasource.dart';
 import 'package:zuru/modules/stream/domain/repository/stream_repository.dart';
+import 'package:zuru/modules/stream/domain/usecases/end_session.usecase.dart';
+import 'package:zuru/modules/stream/domain/usecases/get_stream_clock.usecase.dart';
 import 'package:zuru/modules/stream/domain/usecases/go_live.usecase.dart';
 import 'package:zuru/modules/stream/domain/usecases/join_stream.usecase.dart';
 
@@ -28,6 +30,14 @@ class StreamBindings extends Bindings {
     );
     Get.lazyPut<GoLiveUseCase>(
       () => GoLiveUseCase(repo: Get.find<StreamRepository>()),
+      fenix: true,
+    );
+    Get.lazyPut<GetStreamClockUseCase>(
+      () => GetStreamClockUseCase(repo: Get.find<StreamRepository>()),
+      fenix: true,
+    );
+    Get.lazyPut<EndSessionUseCase>(
+      () => EndSessionUseCase(repo: Get.find<StreamRepository>()),
       fenix: true,
     );
 

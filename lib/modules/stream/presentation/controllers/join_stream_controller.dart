@@ -4,8 +4,12 @@ import 'package:get/get.dart';
 import 'package:livekit_client/livekit_client.dart';
 import 'package:zuru/modules/missions/domain/entities/mission.entity.dart';
 import 'package:zuru/modules/rating/presentation/pages/rate_scout_page.dart';
+import 'package:zuru/modules/stream/domain/entities/livekit_session.entity.dart';
+import 'package:zuru/modules/stream/domain/usecases/get_stream_clock.usecase.dart';
 import 'package:zuru/modules/stream/domain/usecases/join_stream.usecase.dart';
+import 'package:zuru/modules/stream/presentation/services/reconnect_grace.dart';
 import 'package:zuru/modules/stream/presentation/services/stream_audio.dart';
+import 'package:zuru/modules/stream/presentation/services/stream_countdown.dart';
 import 'package:zuru/modules/stream/presentation/services/stream_video.dart';
 
 // ── Scout presence status ─────────────────────────────────────────────────────
@@ -20,29 +24,36 @@ enum ScoutStatus {
   /// Scout's microphone is muted (video may still be active).
   muted,
 
-  /// Scout left or dropped — waiting for a possible reconnect.
+  /// Scout dropped; they have [ReconnectGrace.period] to come back.
   disconnected,
+
+  /// Scout did not come back in time. They can still rejoin.
+  left,
 }
 
 // ── Controller ────────────────────────────────────────────────────────────────
 
-class JoinStreamController extends GetxController {
+class JoinStreamController extends GetxController with StreamCountdown {
   final JoinStreamUseCase _joinStreamUseCase;
+
+  @override
+  final GetStreamClockUseCase clockUseCase;
 
   /// [room] is for tests; a page gets a fresh room by default.
   JoinStreamController({
     required JoinStreamUseCase joinStreamUseCase,
+    required this.clockUseCase,
     Room? room,
   }) : _joinStreamUseCase = joinStreamUseCase,
        _room = room ?? Room(roomOptions: StreamVideo.viewerRoomOptions);
 
+  @override
   late MissionEntity mission;
 
   final Room _room;
 
   EventsListener<RoomEvent>? _roomListener;
   StreamSubscription<List<MediaDevice>>? _audioDevicesSub;
-  Timer? _countdownTimer;
   Timer? _participantEventTimer;
   bool _hasNavigatedAway = false;
 
@@ -60,38 +71,24 @@ class JoinStreamController extends GetxController {
   /// True while the local client's own connection is recovering.
   final isReconnecting = false.obs;
 
+  /// True once this device's connection is gone for good; the page offers
+  /// [rejoin].
+  final connectionLost = false.obs;
+  final isRejoining = false.obs;
+
   /// Transient one-liner shown when a participant connects or disconnects.
   /// Auto-clears after [_eventDisplayDuration].
   final participantEvent = Rx<String?>(null);
 
-  /// Remaining seconds, counts down from [mission.durationInSec] to zero.
-  final remainingSeconds = Rx<int?>(null);
+  /// Counts down while the scout is gone.
+  final scoutGrace = ReconnectGrace();
 
-  /// True once the countdown hits zero.
-  final isExceeded = false.obs;
+  /// Counts down while this device reconnects.
+  final selfGrace = ReconnectGrace();
 
-  /// Seconds past the deadline (increments after [isExceeded] is true).
-  final exceededSeconds = 0.obs;
-
-  static const _reconnectThreshold = Duration(minutes: 3);
   static const _eventDisplayDuration = Duration(seconds: 4);
 
-  // ── Computed ──────────────────────────────────────────────────────────────
-
-  /// Main timer label: `MM:SS` countdown, then `+MM:SS` once exceeded.
-  String get timerLabel {
-    if (isExceeded.value) return '+${_format(exceededSeconds.value)}';
-    final s = remainingSeconds.value;
-    if (s == null) return _format(mission.durationInSec);
-    return _format(s);
-  }
-
-  /// Non-null when ≤ 60 s remain — ready to drop straight into the UI.
-  String? get endingSoonLabel {
-    final s = remainingSeconds.value;
-    if (s == null || s <= 0 || s > 60) return null;
-    return 'Stream ends in ${s}s';
-  }
+  String get _scoutName => mission.scout?.displayName ?? 'Guide';
 
   // ── Initialise ────────────────────────────────────────────────────────────
 
@@ -108,31 +105,37 @@ class JoinStreamController extends GetxController {
       (data) async {
         try {
           _attachRoomListeners();
-
-          // Before connecting: Android only sees Bluetooth headsets once the
-          // permission is granted.
-          await StreamAudio.ensureBluetoothAccess();
-          await _room.connect(data.url, data.token);
-
+          await _connect(data);
           _room.addListener(_refreshVideoTrack);
-          await Future.delayed(const Duration(milliseconds: 400));
-          _refreshVideoTrack();
-
-          // Route audio now that the WebRTC audio unit has fully settled.
-          // Calling this too early (before the delay) tears down the audio
-          // unit on iOS and silences incoming scout audio.  Loudspeaker unless
-          // a headset is connected.
-          await StreamAudio.routeOutput();
           _audioDevicesSub = StreamAudio.watchDevices();
 
           isConnecting.value = false;
-          _startCountdown();
+          _syncPresence();
+          // The server's deadline, so a rejoin shows the time actually left.
+          unawaited(startClock());
         } catch (_) {
           isConnecting.value = false;
           hasError.value = true;
         }
       },
     );
+  }
+
+  Future<void> _connect(LiveKitSessionEntity data) async {
+    // Before connecting: Android only sees Bluetooth headsets once the
+    // permission is granted.
+    await StreamAudio.ensureBluetoothAccess();
+    await _room.connect(data.url, data.token);
+    isMicEnabled.value = false;
+
+    await Future.delayed(const Duration(milliseconds: 400));
+    _refreshVideoTrack();
+
+    // Route audio now that the WebRTC audio unit has fully settled.
+    // Calling this too early (before the delay) tears down the audio
+    // unit on iOS and silences incoming scout audio.  Loudspeaker unless
+    // a headset is connected.
+    await StreamAudio.routeOutput();
   }
 
   // ── Actions ───────────────────────────────────────────────────────────────
@@ -156,58 +159,87 @@ class JoinStreamController extends GetxController {
     Get.back();
   }
 
+  /// Joins again with a fresh token after the connection was lost. The clock
+  /// carries on from the server's deadline.
+  Future<void> rejoin() async {
+    if (isRejoining.value || _hasNavigatedAway) return;
+    isRejoining.value = true;
+
+    final result = await _joinStreamUseCase(mission.id!);
+    final joined = await result.fold((_) async => false, (data) async {
+      try {
+        await _connect(data);
+        return true;
+      } catch (_) {
+        return false;
+      }
+    });
+    isRejoining.value = false;
+
+    if (joined) {
+      connectionLost.value = false;
+      _syncPresence();
+      unawaited(syncClock());
+      _postEvent("You're back in the stream");
+      return;
+    }
+
+    // go-live refuses a live check that is over.
+    final clock = await syncClock();
+    if (clock?.isOver == true) {
+      await _onSessionEnded();
+    } else {
+      _postEvent("Couldn't rejoin. Check your connection.");
+    }
+  }
+
   // ── LiveKit event listeners ───────────────────────────────────────────────
 
   void _attachRoomListeners() {
-    final name = mission.scout?.displayName;
     _roomListener = _room.createListener()
       // ── Room-level ────────────────────────────────────────────────────────
-      ..on<RoomDisconnectedEvent>((e) => _onRoomTerminated(e.reason))
+      ..on<RoomDisconnectedEvent>((e) => _onRoomDisconnected(e.reason))
       // ── Local client connectivity ─────────────────────────────────────────
       ..on<RoomReconnectingEvent>((_) {
         isReconnecting.value = true;
+        selfGrace.start(_giveUpReconnecting);
       })
       ..on<RoomReconnectedEvent>((_) {
         isReconnecting.value = false;
+        selfGrace.cancel();
+        _syncPresence();
+        unawaited(syncClock());
         _postEvent("You're back online");
       })
       // ── Remote participant lifecycle ──────────────────────────────────────
-      ..on<ParticipantConnectedEvent>((e) {
-        if (scoutStatus.value == ScoutStatus.disconnected) {
-          _postEvent('$name reconnected');
-          scoutStatus.value = ScoutStatus.waiting;
-        } else {
-          _postEvent('$name joined');
-        }
+      ..on<ParticipantConnectedEvent>((_) => _onScoutBack())
+      ..on<ParticipantDisconnectedEvent>((_) {
+        // Our own reconnect drops and re-adds everyone; presence is re-read
+        // once it settles.
+        if (isReconnecting.value) return;
+        if (_room.remoteParticipants.isEmpty) _onScoutDropped();
       })
-      ..on<ParticipantDisconnectedEvent>((e) {
-        scoutStatus.value = ScoutStatus.disconnected;
-        remoteVideoTrack.value = null;
-        _postEvent('$name disconnected');
-
-        // Only end the session if less than 3 minutes remain.
-        // Otherwise leave the room open and wait for the scout to reconnect.
-        final remaining = remainingSeconds.value ?? mission.durationInSec;
-        if (remaining < _reconnectThreshold.inSeconds) {
-          Future.delayed(
-            const Duration(seconds: 2),
-            () => _onRoomTerminated(null),
-          );
+      // The server flags a scout whose connection died before it gives up on
+      // them, so the overlay shows at once instead of on a frozen frame.
+      ..on<ParticipantConnectionQualityUpdatedEvent>((e) {
+        if (e.participant is! RemoteParticipant) return;
+        if (e.connectionQuality == ConnectionQuality.lost) {
+          _onScoutDropped();
+        } else if (scoutStatus.value == ScoutStatus.disconnected) {
+          _onScoutBack();
         }
       })
       // ── Track subscription ────────────────────────────────────────────────
       ..on<TrackSubscribedEvent>((e) {
         if (e.track is VideoTrack) {
           remoteVideoTrack.value = e.track as VideoTrack;
-          scoutStatus.value = ScoutStatus.streaming;
+          if (!_scoutAway) scoutStatus.value = ScoutStatus.streaming;
         }
       })
       ..on<TrackUnsubscribedEvent>((e) {
         if (e.track is VideoTrack) {
           remoteVideoTrack.value = null;
-          if (scoutStatus.value != ScoutStatus.disconnected) {
-            scoutStatus.value = ScoutStatus.waiting;
-          }
+          if (!_scoutAway) scoutStatus.value = ScoutStatus.waiting;
         }
       })
       // ── Mute / unmute ─────────────────────────────────────────────────────
@@ -227,30 +259,80 @@ class JoinStreamController extends GetxController {
       });
   }
 
-  Future<void> _onRoomTerminated(DisconnectReason? reason) async {
+  bool get _scoutAway =>
+      scoutStatus.value == ScoutStatus.disconnected ||
+      scoutStatus.value == ScoutStatus.left;
+
+  /// The scout dropped. The stream stays open; they get the grace period to
+  /// come back, and can still rejoin after it.
+  void _onScoutDropped() {
+    if (_scoutAway) return;
+    scoutStatus.value = ScoutStatus.disconnected;
+    _postEvent('$_scoutName disconnected');
+    scoutGrace.start(() => scoutStatus.value = ScoutStatus.left);
+  }
+
+  void _onScoutBack() {
+    scoutGrace.cancel();
+    if (_scoutAway) {
+      _postEvent('$_scoutName reconnected');
+      scoutStatus.value = ScoutStatus.waiting;
+    } else {
+      _postEvent('$_scoutName joined');
+    }
+    _refreshVideoTrack();
+  }
+
+  /// Presence from who is actually in the room, not from one-off events.
+  void _syncPresence() {
+    if (_room.remoteParticipants.isEmpty) {
+      // A scout who never showed up is "waiting", not "disconnected".
+      if (scoutStatus.value != ScoutStatus.waiting) _onScoutDropped();
+      return;
+    }
+    if (_scoutAway) _onScoutBack();
+    _refreshVideoTrack();
+  }
+
+  Future<void> _onRoomDisconnected(DisconnectReason? reason) async {
+    if (_hasNavigatedAway) return;
+    switch (reason) {
+      // The server closed the room: time ran out or the guide ended it.
+      case DisconnectReason.roomDeleted:
+      case DisconnectReason.participantRemoved:
+        await _onSessionEnded();
+      // Our own disconnect (leaving, or giving up on a reconnect).
+      case DisconnectReason.clientInitiated:
+        break;
+      default:
+        await _onConnectionLost();
+    }
+  }
+
+  void _giveUpReconnecting() {
+    if (!isReconnecting.value) return;
+    _room.disconnect();
+    _onConnectionLost();
+  }
+
+  Future<void> _onConnectionLost() async {
+    if (connectionLost.value || _hasNavigatedAway) return;
+    isReconnecting.value = false;
+    selfGrace.cancel();
+    scoutGrace.cancel();
+    connectionLost.value = true;
+    remoteVideoTrack.value = null;
+
+    // Time may have run out while we were offline.
+    final clock = await syncClock();
+    if (clock?.isOver == true) await _onSessionEnded();
+  }
+
+  Future<void> _onSessionEnded() async {
     if (_hasNavigatedAway) return;
     _hasNavigatedAway = true;
     await _teardown();
     Get.offNamed(RateScoutPage.route, arguments: mission);
-  }
-
-  // ── Countdown timer ───────────────────────────────────────────────────────
-
-  void _startCountdown() {
-    remainingSeconds.value = mission.durationInSec;
-    _countdownTimer = Timer.periodic(const Duration(seconds: 1), (_) {
-      if (isExceeded.value) {
-        exceededSeconds.value++;
-        return;
-      }
-      final next = (remainingSeconds.value ?? 0) - 1;
-      if (next <= 0) {
-        remainingSeconds.value = 0;
-        isExceeded.value = true;
-      } else {
-        remainingSeconds.value = next;
-      }
-    });
   }
 
   // ── Private helpers ───────────────────────────────────────────────────────
@@ -269,8 +351,7 @@ class JoinStreamController extends GetxController {
       for (final pub in participant.videoTrackPublications) {
         if (pub.subscribed && pub.track != null) {
           remoteVideoTrack.value = pub.track as VideoTrack;
-          if (scoutStatus.value != ScoutStatus.muted &&
-              scoutStatus.value != ScoutStatus.disconnected) {
+          if (scoutStatus.value != ScoutStatus.muted && !_scoutAway) {
             scoutStatus.value = ScoutStatus.streaming;
           }
           return;
@@ -284,8 +365,9 @@ class JoinStreamController extends GetxController {
   }
 
   Future<void> _teardown() async {
-    _countdownTimer?.cancel();
-    _countdownTimer = null;
+    stopClock();
+    scoutGrace.cancel();
+    selfGrace.cancel();
     _participantEventTimer?.cancel();
     _participantEventTimer = null;
     await _audioDevicesSub?.cancel();
@@ -296,19 +378,10 @@ class JoinStreamController extends GetxController {
     await _room.disconnect();
   }
 
-  String _format(int totalSeconds) {
-    final secs = totalSeconds.abs();
-    final h = secs ~/ 3600;
-    final m = (secs % 3600) ~/ 60;
-    final s = secs % 60;
-    final mm = m.toString().padLeft(2, '0');
-    final ss = s.toString().padLeft(2, '0');
-    return h > 0 ? '$h:$mm:$ss' : '$mm:$ss';
-  }
-
   @override
   void onClose() {
-    _countdownTimer?.cancel();
+    scoutGrace.cancel();
+    selfGrace.cancel();
     _participantEventTimer?.cancel();
     _audioDevicesSub?.cancel();
     _room.removeListener(_refreshVideoTrack);
